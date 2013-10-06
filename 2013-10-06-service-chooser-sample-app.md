@@ -12,13 +12,13 @@ There are two important things to note here.
 
 ### Ember does nothing until the application is bootstrapped.
 
-An instance of a new Ember application is therefore assigned to the `App` global variable, which is now the namespace of all the code we'll be writing.
+We create a new instance of an Ember application and assign it to the global `App` variable, which is now the namespace of all the code we'll be writing.
 
     App = Ember.Application.create();
 
 ### Everything is rendered inside templates.
 
-The apparently akward `<script>` tag containing our markup is parsed by Handlebars to produce the desired output and attached to the DOM. This looks exactly like regular HTML but just because it's all static.  
+The apparently akward `<script>` tag containing our markup is parsed by Handlebars to produce the desired output and attach it to the DOM. This looks exactly like regular HTML, there's no handlebars stuff yet, it's all static.  
 Pay special attention to the template name declared as an attribute of the `<script>` tag.
 
     <script type="text/x-handlebars" data-template-name="index">
@@ -28,10 +28,10 @@ We're telling Ember this is the template for the `index` Route. So what's a Rout
 
 ### Conventions, conventions, conventions
 
-You might have already read it somewhere: Ember is **heavily** convention oriented. Until you keep naming your stuff the right way, everything will work.  
+You might have already read it somewhere: Ember is **heavily** convention oriented. Until you keep naming things the right way, everything will work.  
 What that means is that you don't need to explicetly declare all your objects, if Ember can't find an object to instantiate, it will create an appropriate default instance under the hood.
 
-This is exactly what happened here, Ember required an `IndexRoute` (note the naming convention) to exists, but we didn't declared it, so it instantiated a perfectly valid Route that made the application work.
+This is exactly what happened here, Ember required an `IndexRoute` (note the naming convention) to exists, but we didn't declare it, so it instantiated a perfectly valid Route that made the application work.
 
 So **why index**? And again, what is the purpose of this Route object?
 
@@ -68,19 +68,19 @@ A Route (in this case the `IndexRoute`, which we're going to define soon) return
         }
     });
 
-We're **overriding** the default `IndexRoute` implementation, that Ember was using before, and declaring our own. It will work identically as we're defining just a single method, the only difference being our template will have some data to consume now.
+We're **overriding** the default `IndexRoute` implementation, that Ember was using before, and declaring our own. It will work identically because we're defining just a single method, the only difference being our template will have some data to consume now.
 
 ### Make the template dynamic
 
-Between the `Route` and the `Template` there is a `Controller` that wires things together. In fact, a model isn't injected directly into the template but is bound to a controller which is then attached to a template. We'll cover the controller briefly later, what's important to note now is that the template *talks* directly to it.
+Between the `Route` and the `Template` there is a `Controller` that wires things together. In fact, a model isn't injected directly into the template but is bound to a controller which is then attached to a template. We'll cover the controller briefly later, what's important to note here is that the template *talks* directly to the controller.
 
-As always, a predefined controller is instantiated for us by Ember. In this case it will inherit from a particular class (namely `ArrayController`) because **the model is an array**. This is not that interesting, except for the fact that when we reference `controller` from our template we will be able to loop over each value.
+As always, a predefined controller is instantiated for us by Ember. In this case it will inherit from a particular class (namely `ArrayController`) because **the model is an array**. This is not that interesting, except for the fact that when we reference `model` from our template we will be able to loop over each value.
 
 That's enough to understand what is going on here, basically we're looping over every object of the services array (which is our **model**, provided by the `IndexRoute`) and displaying title and price.
 
 
     <ul id="services">
-      {{#each controller}}
+      {{#each model}}
         <li>
           <label>
             <input type="checkbox">
@@ -98,7 +98,7 @@ There is a last step, which is updating the total whenever a checkbox is checked
 
 We'll need to use the `{{input}}` helper in our template to make the checkbox react to the application state (and viceversa, make the application react whenever the checkbox is updated).
 
-So change the textbox into this.
+So replace the checkbox with this.
 
     {{input type="checkbox" checkedBinding="isChecked"}}
 
@@ -114,13 +114,13 @@ This is probably the most powerful feature we've seen so far, which is called **
 
 ### Introducing Controllers
 
-We need to define our controller as we did before for the route (how will it be named? You guessed it, `IndexController.).
+We need to define our controller as we did before for the route (how will it be named? You guessed it, `IndexController`).
 
-A controller basically **holds data**, which can be consumed by the template. The `IndexRoute` fetches the model (in our case it's static, but in a real app it probably would have been a call to a webservice or something like that) which is then set as a property on the `IndexController`. [Explain which property: controller, model, content, wtf??].
+A controller basically **holds data**, which can be consumed by the template. The `IndexRoute` fetches the model (in our case it's static, but in a real app it probably would have been a call to a webservice or something like that) which is then set, by default, as the `model` property on the `IndexController`.
 
 The other responsability of the controller is to **respond to events**. In our case, we want it to update the state of the application whenever a checkbox is checked or unchecked. Not all events belong to the controller, if a controller doesn't respond to an event it will be dispatched to the route.
 
-So why do we need to define a controller? Because we want to **update the total** of the order when the `isChecked` property changes (and, therefore, when any of the checkboxes is updated). To do this, we define a method `total` and make it a property with the `.property()` shortcut provided by Ember (that is, it will be accessible as `title` and `price` within the template).
+So why do we need to define a controller? Because we want to **update the total** of the order when the `isChecked` property changes (and, therefore, when any of the checkboxes is updated). To do this, we define a method `total` and make it a property with the `.property()` shortcut provided by Ember (that is, it will be accessible in the same way as `title` and `price` within the template).
 
     App.IndexController = Ember.ArrayController.extend({
         total: function() {
@@ -129,6 +129,10 @@ So why do we need to define a controller? Because we want to **update the total*
     });
 
 `@each.isChecked` means that the property should be re computed (the method will be called again) whenever **any** of the objects in the model will update its `isChecked` property.
+
+This won't actually do anything because `total` is not referenced in the template. This is easily fixed.
+
+    <p id="total">total: <span>${{total}}</span></p>
 
 If you click around for a while, you'll notice that the total is obviously wrong, but nevertheless it is updated at the right time. What's missing is a proper sum of the prices.
 
@@ -155,3 +159,7 @@ Or in a more functional way.
 			.reduce(function(acc, item) { return acc + item; }, 0);
 
 
+
+## Closing words
+
+This has taken longer than I thougt to write, hopefully you are now interested enough in the framework to go build something by yourself!
