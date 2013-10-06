@@ -91,3 +91,24 @@ That's enough to understand what is going on here, basically we're looping over 
         </li>
       {{/each}}
     </ul>
+    
+     
+## Update the Total
+There is a last step, which is updating the total whenever a checkbox is checked/unchecked.
+
+We'll need to use the `{{input}}` helper in our template to make the checkbox react to the application state (and viceversa, make the application react whenever the checkbox is updated).
+
+So change the textbox into this.
+
+    {{input type="checkbox" checkedBinding="isChecked"}}
+
+This looks easy to grasp, but what is that `checkedBinding` thing? We're telling Ember to **bind** the state of the checkbox to a property of the controller. It's pretty simple, basically the controller (yet to be defined) we'll have an `isChecked` property that will map directly to the checkbox.
+
+If the checkbox is **unchecked** then `isChecked` will be **false**.  
+If the checkbox is **checked** then `isChecked` will be **true**.
+
+Similarly, if we update the `isChecked` property within our code, the checkbox will immediatly reflect the changes.
+
+This is probably the most powerful feature we've seen so far, which is called **Two way binding**. No more manual observing shit in jQuery, just declare your bindings and everything will automatically update!
+
+
