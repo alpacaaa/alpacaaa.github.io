@@ -120,14 +120,38 @@ A controller basically **holds data**, which can be consumed by the template. Th
 
 The other responsability of the controller is to **respond to events**. In our case, we want it to update the state of the application whenever a checkbox is checked or unchecked. Not all events belong to the controller, if a controller doesn't respond to an event it will be dispatched to the route.
 
-So why do we need to define a controller? Because we want to **update the total** of the order when the `isChecked` property changes (and, therefore, when any of the checkboxes is updated).
+So why do we need to define a controller? Because we want to **update the total** of the order when the `isChecked` property changes (and, therefore, when any of the checkboxes is updated). To do this, we define a method `total` and make it a property with the `.property()` shortcut provided by Ember (that is, it will be accessible as `title` and `price` within the template).
 
     App.IndexController = Ember.ArrayController.extend({
         total: function() {
-            return this.filterBy('isChecked', true)
-                .map(function(obj) { return obj.price; })
-                .reduce(function(acc, item) { return acc + item; }, 0);
+            return Math.random();
         }.property('@each.isChecked')
     });
+
+`@each.isChecked` means that the property should be re computed (the method will be called again) whenever **any** of the objects in the model will update its `isChecked` property.
+
+If you click around for a while, you'll notice that the total is obviously wrong, but nevertheless it is updated at the right time. What's missing is a proper sum of the prices.
+
+The `ArrayController` has an handy method `filterBy` which filters objects by a specified property. We want those with `isChecked == true`.
+
+    var checkedObjects = this.filterBy('isChecked', true);
+    // [ { title: 'web development', price: 200 }, { title: 'photography', price: 100 } ]
+    
+From there, it's easy to calculate the exact total and return it.
+
+      var checkedObjects = this.filterBy('isChecked', true),
+          total = 0;
+        
+      checkedObjects.forEach(function(obj) {
+        total += obj.price;
+      });
+      
+      return total;
+
+Or in a more functional way.
+
+    return this.filterBy('isChecked', true)
+			.map(function(obj) { return obj.price; })
+			.reduce(function(acc, item) { return acc + item; }, 0);
 
 
