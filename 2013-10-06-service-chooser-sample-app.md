@@ -18,7 +18,7 @@ We create a new instance of an Ember application and assign it to the global `Ap
 
 ### Everything is rendered inside templates.
 
-The apparently akward `<script>` tag containing our markup is parsed by Handlebars to produce the desired output and attach it to the DOM. This looks exactly like regular HTML, there's no handlebars stuff yet, it's all static.  
+The apparently akward `<script>` tag containing our markup is parsed by Handlebars to produce the desired output and attached to the DOM. This looks exactly like regular HTML, there's no handlebars stuff yet, it's all static.  
 Pay special attention to the template name declared as an attribute of the `<script>` tag.
 
     <script type="text/x-handlebars" data-template-name="index">
@@ -35,7 +35,7 @@ This is exactly what happened here, Ember required an `IndexRoute` (note the nam
 
 So **why index**? And again, what is the purpose of this Route object?
 
-Ember makes you think upfront about your URLs, as the framework behaves differently depending on the URL. We won't look at this (powerful) side of the framwork now, because our simple app have just one URL `/` (the root), which is mapped to the `IndexRoute`. That's why that route has been instantiated even if we didn't specified anything.
+Ember makes you think upfront about your URLs, as the framework behaves differently depending on the URL. We won't look at this (powerful) side of the framwork now, because our simple app has just one URL `/` (the root), which is mapped to the `IndexRoute`. That's why that route has been instantiated even if we didn't specified anything.
 
 By convention, the `IndexRoute` will look for a template named `index` to render. It is as simple as that.  
 A Route has a lot of responsabilities, but for the purposes of this example let's say it **renders** the template and **provides** the data (in our case the list of services).
@@ -72,7 +72,7 @@ We're **overriding** the default `IndexRoute` implementation, that Ember was usi
 
 ### Make the template dynamic
 
-Between the `Route` and the `Template` there is a `Controller` that wires things together. In fact, a model isn't injected directly into the template but is bound to a controller which is then attached to a template. We'll cover the controller briefly later, what's important to note here is that the template *talks* directly to the controller.
+Between the `Route` and the `Template` there is a `Controller` that wires things together. In fact, a model isn't injected directly into the template but is bound to a controller which is then attached to a template. We'll cover the controller briefly later, what's important to note here is that the template is connected to the controller (not the route).
 
 As always, a predefined controller is instantiated for us by Ember. In this case it will inherit from a particular class (namely `ArrayController`) because **the model is an array**. This is not that interesting, except for the fact that when we reference `model` from our template we will be able to loop over each value.
 
