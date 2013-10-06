@@ -26,3 +26,17 @@ Pay special attention to the template name declared as an attribute of the `<scr
 We're telling Ember this is the template for the `index` Route. So what's a Route? And how does the framework automagically render that template without even me telling it to do so?
 
 
+## Conventions, conventions, conventions
+
+You might have already read it somewhere: Ember is **heavily** convention oriented. Until you keep naming your stuff the right way, everything will work.  
+What that means is that you don't need to explicetly declare all your objects, if Ember can't find an object to instantiate, it will create an appropriate default instance under the hood.
+
+This is exactly what happened here, Ember required an `IndexRoute` (note the naming convention) to exists, but we didn't declared it, so it instantiated a perfectly valid Route that made the application work.
+
+So **why index**? And again, what is the purpose of this Route object?
+
+Ember makes you think upfront about your URLs, as the framework behaves differently depending on the URL. We won't look at this (powerful) side of the framwork now, because our simple app have just one URL `/` (the root), which is mapped to the `IndexRoute`. That's why that route has been instantiated even if we didn't specified anything.
+
+By convention, the `IndexRoute` will look for a template named `index` to render. It is as simple as that.  
+A Route has a lot of responsabilities, but for the purposes of this example let's say it **renders** the template and **provides** the data (in our case the list of services).
+
