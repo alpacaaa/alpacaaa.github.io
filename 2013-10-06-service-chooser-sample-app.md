@@ -112,3 +112,22 @@ Similarly, if we update the `isChecked` property within our code, the checkbox w
 This is probably the most powerful feature we've seen so far, which is called **Two way binding**. No more manual observing shit in jQuery, just declare your bindings and everything will automatically update!
 
 
+### Introducing Controllers
+
+We need to define our controller as we did before for the route (how will it be named? You guessed it, `IndexController.).
+
+A controller basically **holds data**, which can be consumed by the template. The `IndexRoute` fetches the model (in our case it's static, but in a real app it probably would have been a call to a webservice or something like that) which is then set as a property on the `IndexController`. [Explain which property: controller, model, content, wtf??].
+
+The other responsability of the controller is to **respond to events**. In our case, we want it to update the state of the application whenever a checkbox is checked or unchecked. Not all events belong to the controller, if a controller doesn't respond to an event it will be dispatched to the route.
+
+So why do we need to define a controller? Because we want to **update the total** of the order when the `isChecked` property changes (and, therefore, when any of the checkboxes is updated).
+
+    App.IndexController = Ember.ArrayController.extend({
+        total: function() {
+            return this.filterBy('isChecked', true)
+                .map(function(obj) { return obj.price; })
+                .reduce(function(acc, item) { return acc + item; }, 0);
+        }.property('@each.isChecked')
+    });
+
+
