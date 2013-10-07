@@ -35,7 +35,7 @@ This is exactly what happened here, Ember required an `IndexRoute` (note the nam
 
 So **why index**? And again, what is the purpose of this Route object?
 
-Ember makes you think upfront about your URLs, as the framework behaves differently depending on the URL. We won't look at this (powerful) side of the framwork now, because our simple app has just one URL `/` (the root), which is mapped to the `IndexRoute`. That's why that route has been instantiated even if we didn't specified anything.
+Ember makes you think upfront about your URLs, as the framework behaves differently depending on the URL. We won't look at this (powerful) side of the framwork now, because our simple app has just one URL `/` (the root), which is mapped to the `IndexRoute`. That's why that route has been instantiated even if we didn't specify anything.
 
 By convention, the `IndexRoute` will look for a template named `index` to render. It is as simple as that.  
 A Route has a lot of responsabilities, but for the purposes of this example let's say it **renders** the template and **provides** the data (in our case the list of services).
@@ -68,7 +68,7 @@ A Route (in this case the `IndexRoute`, which we're going to define soon) return
         }
     });
 
-We're **overriding** the default `IndexRoute` implementation, that Ember was using before, and declaring our own. It will work identically because we're defining just a single method, the only difference being our template will have some data to consume now.
+We're **implementing** `IndexRoute` now, so the default implementation that Ember was using before is no longer needed. It will work identically because we're defining just a single method, the only difference being our template will have some data to consume now.
 
 ### Make the template dynamic
 
