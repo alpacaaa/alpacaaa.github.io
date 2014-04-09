@@ -5,6 +5,7 @@ body { margin: 3em auto; width: 90%; max-width: 61em; }
 
 figure { margin: 0; padding: 0; }
 p { margin-bottom: 1.5rem; }
+section { margin: 3rem 0; }
 
 a { color: #ff6600; text-decoration: none; border-bottom: 1px solid; position: relative; }
 a:hover { color: #ff9933; }
@@ -30,20 +31,33 @@ h4 { margin-bottom: 1.5rem; }
 .contacts dt, .contacts dd { display: inline-block; float: left; }
 .contacts dt { width: 10%; margin-right: 2.5%; clear: both; }
 
-
-
-section { margin: 3rem 0; }
-
-.company { margin-bottom: 1.5rem; }
-
+.company {  display: flex; margin-bottom: 1.5rem; }
+.company heading { width: 20%; margin-right: 5%; }
 .company-info { display: block; margin-bottom: 1.5rem; }
 
 
-.company { display: flex; }
-.company heading { width: 20%; margin-right: 5%; }
-.work-description { width: 75%; }
 
-.work-description p:last-of-type { margin: 0; }
+@media screen and (min-width: 900px) {
+	.body-text { margin-left: 25%; }
+
+	.work-description { width: 75%; }
+	.work-description p:last-of-type { margin: 0; }
+
+	.personal-info { display: flex; }
+	.personal-info p { flex-grow: 1; }
+
+	#work-experiences h2 { margin-left: 25%; }
+
+	#get-in-touch { margin-bottom: 0; }
+	#get-in-touch h2 { display: none; }
+	#get-in-touch h3 { float: left; width: 25%; }
+
+	#get-in-touch .contacts { overflow: visible; display: flex; flex-grow: 1; }
+	#get-in-touch .contacts dt { position: relative; left: 0.5rem; }
+	#get-in-touch .contacts dt,
+	#get-in-touch .contacts dd
+	{ clear: none; float: none; flex-grow: 1; width: auto; text-align: right; }
+}
 
 
 
@@ -70,27 +84,6 @@ section { margin: 3rem 0; }
 
 	.main-header img { -webkit-filter: grayscale(100%); max-width: 100%; }
 	#about-me { page-break-before: always; }
-
-	.body-text { margin-left: 25%; }
-	#work-experiences h2 { margin-left: 25%; }
-
-
-	.personal-info { display: flex; }
-	.personal-info p { flex-grow: 1; }
-
-	#get-in-touch { margin-bottom: 0; }
-	#get-in-touch h2 { display: none; }
-	#get-in-touch h3 { float: left; }
-
-	#get-in-touch .contacts { overflow: visible; display: flex; flex-grow: 1; }
-	#get-in-touch .contacts dt { position: relative; left: 0.5rem; }
-	#get-in-touch .contacts dt,
-	#get-in-touch .contacts dd
-	{ clear: none; float: none; flex-grow: 1; width: auto; text-align: right; }
-
-
-	#get-in-touch h3 { width: 25%; }
-
 
     p,
     h2,
