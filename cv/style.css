@@ -81,7 +81,7 @@ h4 { margin-bottom: 1.5rem; }
 	html { font-size: 12px; }
 	body { margin: 0; width: 100%; max-width: auto; }
 
-	.main-header img { -webkit-filter: grayscale(100%); max-width: 100%; }
+	#main-header img { -webkit-filter: grayscale(100%); max-width: 100%; }
 	#about-me { page-break-before: always; }
 
     p,
