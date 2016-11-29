@@ -1,0 +1,595 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Post-rsses on Butt the pasta</title>
+    <link>https://alpacaaa.net/blog/post/index.xml</link>
+    <description>Recent content in Post-rsses on Butt the pasta</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 29 Nov 2016 17:50:39 +0100</lastBuildDate>
+    <atom:link href="https://alpacaaa.net/blog/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Building a memory game in Elm. Step by step, from scratch.</title>
+      <link>https://alpacaaa.net/blog/post/elm-memory-game-from-scratch/</link>
+      <pubDate>Tue, 29 Nov 2016 17:50:39 +0100</pubDate>
+      
+      <guid>https://alpacaaa.net/blog/post/elm-memory-game-from-scratch/</guid>
+      <description>
+
+&lt;p&gt;This is the classic Memory Game that I always use to approach a new frontend framework/language. It is based on a super old implementation that somebody made years ago – this little game is my point of reference to understand how things work.&lt;/p&gt;
+
+&lt;h4 id=&#34;what-are-we-going-to-build&#34;&gt;What are we going to build&lt;/h4&gt;
+
+&lt;p&gt;Here&amp;rsquo;s a working demo of the finished project:&lt;/p&gt;
+
+&lt;iframe
+    src=&#34;https://runelm.io/c/fbi?pane=preview&#34;
+    width=&#34;100%&#34;
+    height=&#34;1000&#34;
+    frameBorder=&#34;0&#34;
+    sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
+  &lt;/iframe&gt;
+
+&lt;p&gt;The whole thing will be about 200LOC so it should be pretty easy to follow. I&amp;rsquo;m not going to touch on what Elm is or why you might want to use it, there&amp;rsquo;s enough of that around for you to read already.&lt;/p&gt;
+
+&lt;h4 id=&#34;step-1-draw-the-grid&#34;&gt;Step 1 – Draw the grid&lt;/h4&gt;
+
+&lt;p&gt;We want to get some static markup going, so let&amp;rsquo;s begin with something very simple.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;module Main exposing (..)
+
+import Html exposing (..)
+import Html.Attributes exposing (..)
+
+
+main : Program Never Model Msg
+main =
+    Html.program
+        { init = createModel
+        , view = view
+        , update = update
+        , subscriptions = \_ -&amp;gt; Sub.none
+        }
+
+
+type alias Model =
+    {}
+
+
+type Msg
+    = NoOp
+
+
+createModel : ( Model, Cmd Msg )
+createModel =
+    ( {}, Cmd.none )
+
+
+update : Msg -&amp;gt; Model -&amp;gt; ( Model, Cmd Msg )
+update msg model =
+    ( model, Cmd.none )
+
+
+view : Model -&amp;gt; Html Msg
+view model =
+    h1 [] [ text &amp;quot;There you go!&amp;quot; ]
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;There&amp;rsquo;s not much to see here yet, just a giant &lt;strong&gt;There you go!&lt;/strong&gt; on our screen (You can check it out &lt;a href=&#34;https://runelm.io/c/qw1&#34;&gt;here&lt;/a&gt;). Let&amp;rsquo;s change that.&lt;/p&gt;
+
+&lt;p&gt;We&amp;rsquo;ll begin with the &lt;code&gt;createCard&lt;/code&gt; function, which will be the single &lt;code&gt;div&lt;/code&gt; showing the card picture.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;createCard : Html Msg
+createCard =
+    div [ class &amp;quot;container&amp;quot; ]
+        -- try changing (&amp;quot;flipped&amp;quot;, False) into (&amp;quot;flipped&amp;quot;, True)
+        [ div [ classList [ ( &amp;quot;card&amp;quot;, True ), ( &amp;quot;flipped&amp;quot;, True ) ] ]
+            [ div [ class &amp;quot;card-back&amp;quot; ] []
+            , div [ class &amp;quot;front card-dinosaur&amp;quot; ] []
+            ]
+        ]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;There&amp;rsquo;s a bunch of hardcoded stuff in here, but it will be enough for now. Specifically, we&amp;rsquo;ll want to replace the &lt;code&gt;dinosaur&lt;/code&gt; image and we&amp;rsquo;ll want the &lt;code&gt;flipped&lt;/code&gt; class to update depending on the state of our card.&lt;/p&gt;
+
+&lt;p&gt;For now, let&amp;rsquo;s just place a few cards on the page, by changing our &lt;code&gt;view&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;view : Model -&amp;gt; Html Msg
+view model =
+    div [ class &amp;quot;wrapper&amp;quot; ]
+        [ createCard
+        , createCard
+        , createCard
+        , createCard
+        , createCard
+        ]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Our grid is starting to take shape.&lt;/p&gt;
+
+&lt;iframe
+    src=&#34;https://runelm.io/c/tt2?pane=preview&#34;
+    width=&#34;100%&#34;
+    height=&#34;500&#34;
+    frameBorder=&#34;0&#34;
+    sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
+  &lt;/iframe&gt;
+
+&lt;h4 id=&#34;step-2-show-some-cards&#34;&gt;Step 2 – Show some cards&lt;/h4&gt;
+
+&lt;p&gt;Time to show some real cards.&lt;/p&gt;
+
+&lt;p&gt;First of all, we need to introduce a couple of types:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type alias Card =
+    { id : String
+    , group : Group
+    , flipped : Bool
+    }
+
+
+type Group
+    = A
+    | B
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;Card&lt;/code&gt; type is quite simple, we need to have a &lt;code&gt;group&lt;/code&gt; property to differentiate between the two different copies of the same card in the deck. Let&amp;rsquo;s also list all the available cards:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cards : List String
+cards =
+    [ &amp;quot;dinosaur&amp;quot;
+    , &amp;quot;8-ball&amp;quot;
+    , &amp;quot;baked-potato&amp;quot;
+    , &amp;quot;kronos&amp;quot;
+    , &amp;quot;rocket&amp;quot;
+    , &amp;quot;skinny-unicorn&amp;quot;
+    , &amp;quot;that-guy&amp;quot;
+    , &amp;quot;zeppelin&amp;quot;
+    ]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We&amp;rsquo;ll define a function &lt;code&gt;initCard&lt;/code&gt; that returns a &lt;code&gt;Card&lt;/code&gt; object:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;initCard : Group -&amp;gt; String -&amp;gt; Card
+initCard group name =
+    { id = name
+    , group = group
+    , flipped = False
+    }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It can be used like this: &lt;code&gt;initCard A &amp;quot;dinosaur&amp;quot;&lt;/code&gt; and that&amp;rsquo;s exactly what we&amp;rsquo;re going to do in order to create our deck:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;deck : Deck
+deck =
+    let
+        groupA =
+            List.map (initCard A) cards
+
+        groupB =
+            List.map (initCard B) cards
+    in
+        List.concat [ groupA, groupB ]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;deck&lt;/code&gt; will hold two copies of all the cards we defined. You might notice this doesn&amp;rsquo;t take shuffling into account, we&amp;rsquo;ll look into it later.&lt;/p&gt;
+
+&lt;p&gt;Cool, let&amp;rsquo;s update the &lt;code&gt;Model&lt;/code&gt; so that we can show actual cards in our &lt;code&gt;view&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type Model
+    = Playing Deck
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And the &lt;code&gt;createModel&lt;/code&gt; function.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;createModel : ( Model, Cmd Msg )
+createModel =
+    -- Our model now constists of the unshuffled deck
+    ( Playing deck, Cmd.none )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Our game will only have a generic &lt;code&gt;Playing&lt;/code&gt; state for now, we&amp;rsquo;ll add more later on.&lt;/p&gt;
+
+&lt;p&gt;And now to the view layer. &lt;code&gt;createCard&lt;/code&gt;, as it is, is pretty useless because we can&amp;rsquo;t say what&amp;rsquo;s the card we want to create, so let&amp;rsquo;s add an argument and update the function accordingly.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cardClass : Card -&amp;gt; String
+cardClass card =
+    &amp;quot;card-&amp;quot; ++ card.id
+
+
+createCard : Card -&amp;gt; Html Msg
+createCard card =
+    div [ class &amp;quot;container&amp;quot; ]
+        -- try changing (&amp;quot;flipped&amp;quot;, False) into (&amp;quot;flipped&amp;quot;, True)
+        [ div [ classList [ ( &amp;quot;card&amp;quot;, True ), ( &amp;quot;flipped&amp;quot;, False ) ] ]
+            [ div [ class &amp;quot;card-back&amp;quot; ] []
+            , div [ class (&amp;quot;front &amp;quot; ++ cardClass card) ] []
+            ]
+        ]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We introduced &lt;code&gt;cardClass&lt;/code&gt; to get the proper CSS class. You can see that the &lt;code&gt;front&lt;/code&gt; image is now dynamic, and this also shows how you can concatenate strings in Elm (which are just aliases for &lt;code&gt;List Char&lt;/code&gt; – that&amp;rsquo;s why it works!)&lt;/p&gt;
+
+&lt;p&gt;We can get rid of the hardcoded cards that we have and properly map through our deck, by changing the &lt;code&gt;view&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;view : Model -&amp;gt; Html Msg
+view model =
+    case model of
+        Playing deck -&amp;gt;
+            div [ class &amp;quot;wrapper&amp;quot; ] (List.map createCard deck)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Notice we had to pattern match on the model. It looks dumb with a single case but we&amp;rsquo;ll add more. Now change &lt;code&gt;(&amp;quot;flipped&amp;quot;, False)&lt;/code&gt; to &lt;code&gt;(&amp;quot;flipped&amp;quot;, True)&lt;/code&gt; in &lt;code&gt;createCard&lt;/code&gt; and look at all the beautiful card pictures (do it yourself below, just edit the code and run it! It&amp;rsquo;s on line 110).&lt;/p&gt;
+
+&lt;iframe
+    src=&#34;https://runelm.io/c/nee&#34;
+    width=&#34;100%&#34;
+    height=&#34;500&#34;
+    frameBorder=&#34;0&#34;
+    sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
+  &lt;/iframe&gt;
+
+&lt;h4 id=&#34;step-3-introducing-messages-and-commands&#34;&gt;Step 3 – Introducing Messages and Commands&lt;/h4&gt;
+
+&lt;p&gt;You might already be familiar with the concept of Messages in Elm, but I feel like Commands are the truly beautiful thing about TEA (which took me a while to realize is an achronym for &amp;ldquo;The Elm Architecture&amp;rdquo;).&lt;/p&gt;
+
+&lt;p&gt;Commands are our way to describe side effects – impure, nasty stuff that our programs need to do at some point, but undermine the purity of our code. With Commands, you can &lt;em&gt;describe&lt;/em&gt; (this is very important) what you want the platform (or runtime) to do, and then tell it to send back the results through a Message.&lt;/p&gt;
+
+&lt;p&gt;You might be wondering what an example of an effect could be: HTTP requests, saving to localStorage, reading the time. Ultimately, even rendering our Elm app and having it inserted into the DOM is a side effect, but managed by the Elm runtime. So, what kind of side effect is involved here? At the end of the day, this program is so simple that it could do without any effects. Well, we need to shuffle the deck remember? That implies we need some kind of random number generator, which is impure.&lt;/p&gt;
+
+&lt;p&gt;We can return commands along side the updated model in the &lt;code&gt;udpate&lt;/code&gt; function (that explains why the returned type is a tuple in the form of &lt;code&gt;(Model, Cmd Msg)&lt;/code&gt;). But we can also hand over Commands to the runtime when we first create our model in our &lt;code&gt;main&lt;/code&gt; function. So let&amp;rsquo;s get down to do some random number generation.&lt;/p&gt;
+
+&lt;p&gt;First of all, import the &lt;code&gt;Random&lt;/code&gt; module.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import Random
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can read about how this module works in &lt;a href=&#34;http://package.elm-lang.org/packages/elm-lang/core/latest/Random&#34;&gt;the docs&lt;/a&gt; but the gist of it is that you first need to create an appropriate &lt;code&gt;Generator&lt;/code&gt;, depending on the type you&amp;rsquo;re dealing with, and then use &lt;code&gt;Random.generate&lt;/code&gt; to create the Command that will be handed off to the runtime. We need to generate random numbers, so we can stick with &lt;code&gt;Generator Int&lt;/code&gt; but it would be cool if we could get back a list of random numbers instead of a single one, and for that we can use &lt;code&gt;Random.list&lt;/code&gt;. So we can create a function &lt;code&gt;randomList&lt;/code&gt; which gets an argument &lt;code&gt;len&lt;/code&gt; and returns a Command that will generate &lt;code&gt;len&lt;/code&gt; random numbers from 0 to 100.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;randomList : (List Int -&amp;gt; Msg) -&amp;gt; Int -&amp;gt; Cmd Msg
+randomList msg len =
+    Random.int 0 100
+        |&amp;gt; Random.list len
+        |&amp;gt; Random.generate msg
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As we said, when the runtime executes our command, it will pass back the results in the update function using a Message of our choice. We can extend our &lt;code&gt;Msg&lt;/code&gt; type to include a &lt;code&gt;Shuffle (List Int)&lt;/code&gt; value.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type Msg
+    = NoOp
+    | Shuffle (List Int)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We can now return a Command in our &lt;code&gt;createModel&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;createModel : ( Model, Cmd Msg )
+createModel =
+    let
+        model =
+            Playing deck
+
+        cmd =
+            randomList Shuffle (List.length deck)
+    in
+        ( model, cmd )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;That&amp;rsquo;s pretty cool, so we can now use the random list of numbers to shuffle our deck. Let&amp;rsquo;s take care of the &lt;code&gt;update&lt;/code&gt; function for a second, because right now it&amp;rsquo;s pretty static and dumb. We want it to react to the different actions that will be coming through – right now we&amp;rsquo;re interested in &lt;code&gt;Shuffle&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;-- a ! b is equivalent to (a, b)
+update : Msg -&amp;gt; Model -&amp;gt; ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        NoOp -&amp;gt;
+            model ! []
+
+        Shuffle xs -&amp;gt;
+            let
+                newDeck =
+                    shuffleDeck deck xs
+            in
+                Playing newDeck ! []
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We need to implement &lt;code&gt;shuffleDeck&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;shuffleDeck : Deck -&amp;gt; List comparable -&amp;gt; Deck
+shuffleDeck deck xs =
+    List.map2 (,) deck xs
+        |&amp;gt; List.sortBy Tuple.second
+        |&amp;gt; List.unzip
+        |&amp;gt; Tuple.first
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Here&amp;rsquo;s what it does:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;It creates tuples of this form &lt;code&gt;(Card, Int)&lt;/code&gt; where the second element is the random number&lt;/li&gt;
+&lt;li&gt;Then the list gets sorted by the second element, effectively shuffling it.&lt;/li&gt;
+&lt;li&gt;We use &lt;code&gt;unzip&lt;/code&gt; to transform our list of tuples to the original form with two lists &lt;code&gt;([Card], [Int])&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;We&amp;rsquo;re no longer interested in the random numbers (second list) so we only return the first element.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;If we use the &lt;code&gt;(&amp;quot;flipped&amp;quot;, False)&lt;/code&gt; trick again on &lt;code&gt;createCard&lt;/code&gt;, you can see that by refreshing a few times our cards change order, yay! Try it for yourself!&lt;/p&gt;
+
+&lt;iframe
+    src=&#34;https://runelm.io/c/0wh&#34;
+    width=&#34;100%&#34;
+    height=&#34;500&#34;
+    frameBorder=&#34;0&#34;
+    sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
+  &lt;/iframe&gt;
+
+&lt;h4 id=&#34;step-4-make-cards-flippable&#34;&gt;Step 4 – Make cards flippable&lt;/h4&gt;
+
+&lt;p&gt;Looking back at our &lt;code&gt;Model&lt;/code&gt; we can see there&amp;rsquo;s a &lt;code&gt;flipped&lt;/code&gt; property that indicates whether the card is facing up or down. We want to switch this when the user clicks on a card.&lt;/p&gt;
+
+&lt;p&gt;That&amp;rsquo;s easy enough to do, but we need to add the &lt;code&gt;Flip&lt;/code&gt; tag in our &lt;code&gt;Msg&lt;/code&gt; to indicate the user has clicked on a card.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type Msg
+    = NoOp
+    | Shuffle (List Int)
+    | Flip Card
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Great, now let&amp;rsquo;s take this action into account in the &lt;code&gt;update&lt;/code&gt; function. We&amp;rsquo;ll need to implement an helper function (let&amp;rsquo;s call it &lt;code&gt;flip&lt;/code&gt;) that, given our desired flipped state and two cards, takes care of updating the &lt;code&gt;flipped&lt;/code&gt; property if the cards match.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;flip : Bool -&amp;gt; Card -&amp;gt; Card -&amp;gt; Card
+flip isFlipped a b =
+    if (a.id == b.id) &amp;amp;&amp;amp; (a.group == b.group) then
+        { b | flipped = isFlipped }
+    else
+        b
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This might seem pointless but it&amp;rsquo;s actually very much needed when extending the &lt;code&gt;update&lt;/code&gt; function, because there is no mutable stuff (luckily!) so we have to return a new copy of the &lt;code&gt;deck&lt;/code&gt; and, in order to do that, it&amp;rsquo;s quite useful to have a &lt;code&gt;flip&lt;/code&gt; function that only updates the card we want to update. Let&amp;rsquo;s see how we might use it:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;-- update function
+Flip card -&amp;gt;
+    case model of
+        Playing deck -&amp;gt;
+            let
+                newDeck =
+                    List.map (flip True card) deck
+            in
+                Playing newDeck ! []
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We need to import &lt;code&gt;onClick&lt;/code&gt; so that users can click on cards:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import Html.Events exposing (onClick)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;At this point, we can proceed updating the &lt;code&gt;createCard&lt;/code&gt; function so that it tags click events with &lt;code&gt;Flip&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;--- createCard
+[ div [ classList [ ( &amp;quot;card&amp;quot;, True ), ( &amp;quot;flipped&amp;quot;, card.flipped ) ], onClick (Flip card) ]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You&amp;rsquo;ll now be able to flip cards back and forth without any constraints. In the next step we&amp;rsquo;re going to implement a proper game logic when &lt;code&gt;Flip&lt;/code&gt; is dispatched, so that cards can be flipped only when the game allows it and matched cards remain face up.&lt;/p&gt;
+
+&lt;iframe
+    src=&#34;https://runelm.io/c/ug4&#34;
+    width=&#34;100%&#34;
+    height=&#34;500&#34;
+    frameBorder=&#34;0&#34;
+    sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
+  &lt;/iframe&gt;
+
+&lt;h4 id=&#34;step-5-game-logic&#34;&gt;Step 5 – Game logic&lt;/h4&gt;
+
+&lt;p&gt;So far, our model consisted of a single state &lt;code&gt;Playing Deck&lt;/code&gt;. We&amp;rsquo;ll add two more: &lt;code&gt;Guessing Deck Card&lt;/code&gt; and &lt;code&gt;MatchCard Deck Card Card&lt;/code&gt;. It&amp;rsquo;s intuitive to see how they might be used, but just to make sure we&amp;rsquo;re on the same page:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Our game will be in the state &lt;code&gt;Guessing Deck Card&lt;/code&gt; when a single card is flipped and another one awaits to be flipped and (eventually) matched.&lt;/li&gt;
+&lt;li&gt;The state &lt;code&gt;MatchCard Deck Card Card&lt;/code&gt; will represent the game state where two cards are flipped simultaneously, whether they match or not (the check will be made at the next &lt;code&gt;Flip&lt;/code&gt;, otherwise you wouldn&amp;rsquo;t be able to see the card you just flipped).&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;type Model
+    = Playing Deck
+    | Guessing Deck Card
+    | MatchCard Deck Card Card
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Cool, now we have to decide how to update our &lt;code&gt;model&lt;/code&gt; whenever a &lt;code&gt;Flip&lt;/code&gt; action comes through:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;If the game is in the &lt;code&gt;Playing&lt;/code&gt; state, it means we have to flip the first card. This is easy, we&amp;rsquo;ll just transition to the &lt;code&gt;Guessing&lt;/code&gt; state.&lt;/li&gt;
+&lt;li&gt;If the game is in the &lt;code&gt;Guessing&lt;/code&gt; state we can transition to the &lt;code&gt;MatchCard&lt;/code&gt; state. This is where we will check if the game is over later on.&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;MatchCard&lt;/code&gt; state is the most interesting. We have two cards that the user flipped, and we have to decide if they match and can stay face up or if they should be turned faced down (in which case, the current&lt;code&gt;Flip&lt;/code&gt; action does not have any impact on the game, it just reset the model to a &lt;code&gt;Playing&lt;/code&gt; state).&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Let&amp;rsquo;s try to implement this, it is definitely the trickiest part of the game, but it&amp;rsquo;s not that difficult, maybe just a little bit overwhelming if you&amp;rsquo;re not familiar with how to reason in FP yet.&lt;/p&gt;
+
+&lt;p&gt;First, we&amp;rsquo;ll define &lt;code&gt;checkIfCorrect&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;checkIfCorrect : Card -&amp;gt; Model -&amp;gt; ( Model, Cmd Msg )
+checkIfCorrect card model =
+    case model of
+        Playing deck -&amp;gt;
+            let
+                newDeck =
+                    List.map (flip True card) deck
+            in
+                Guessing newDeck card ! []
+
+        Guessing deck guess -&amp;gt;
+            let
+                newDeck =
+                    List.map (flip True card) deck
+
+                newModel =
+                    MatchCard newDeck guess card
+            in
+                newModel ! []
+
+        MatchCard deck guess1 guess2 -&amp;gt;
+            if guess1.id == guess2.id then
+                {-
+                   user has guessed correctly!
+                   keep both cards flipped and then run update
+                   again to flip the new card that has been just clicked
+                -}
+                update (Flip card) (Playing deck)
+            else
+                -- flip the two cards face down because they don&#39;t match
+                let
+                    flipGuess =
+                        flip False guess1 &amp;gt;&amp;gt; flip False guess2
+
+                    newDeck =
+                        List.map flipGuess deck
+                in
+                    Playing newDeck ! []
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And then we&amp;rsquo;ll change the &lt;code&gt;Flip&lt;/code&gt; branch in the &lt;code&gt;update&lt;/code&gt; function:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Flip card -&amp;gt;
+    if card.flipped then
+	    -- if a user clicks on an image that&#39;s flipped already
+        -- then don&#39;t do anything
+        model ! []
+    else
+        checkIfCorrect card model
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This should all make sense, but I want to go over a couple of things that might not be immediately clear.&lt;/p&gt;
+
+&lt;p&gt;First, in order to change the flip status of two cards, we define &lt;code&gt;flipGuess&lt;/code&gt; using function composition (spefically, the &lt;code&gt;&amp;gt;&amp;gt;&lt;/code&gt; operator). Another way of writing &lt;code&gt;flipGuess&lt;/code&gt; would be:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;flipGuess card = flip False guess (flip False current card)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It is just easier to write functions as a result of composition, once you understand how that works.&lt;/p&gt;
+
+&lt;p&gt;Second, we can see that &lt;code&gt;update&lt;/code&gt; is calling itself recursively when the two cards match. This is so we don&amp;rsquo;t need to repeat the same logic we already have in the &lt;code&gt;Playing&lt;/code&gt; branch. &lt;code&gt;update&lt;/code&gt; is just a function after all, there&amp;rsquo;s nothing magical behind it and we can use it as any other function!&lt;/p&gt;
+
+&lt;p&gt;You can play with what we have here. You&amp;rsquo;ll see that the game works as expected, except that it never terminates. We need to add one last game state so that we can detect when the player wins and another action to reset the game and start over.&lt;/p&gt;
+
+&lt;iframe
+    src=&#34;https://runelm.io/c/i7p&#34;
+    width=&#34;100%&#34;
+    height=&#34;500&#34;
+    frameBorder=&#34;0&#34;
+    sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
+  &lt;/iframe&gt;
+
+&lt;h4 id=&#34;step-6-game-over-and-final-touches&#34;&gt;Step 6 – Game over and final touches&lt;/h4&gt;
+
+&lt;p&gt;All right, we&amp;rsquo;re pretty much done!&lt;/p&gt;
+
+&lt;p&gt;The only thing left is to detect when the player has won the game, and display a message to play again. Let&amp;rsquo;s update our &lt;code&gt;Model&lt;/code&gt; and add a new &lt;code&gt;GameOver&lt;/code&gt; state.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type Model
+    = Playing Deck
+    | Guessing Deck Card
+    | MatchCard Deck Card Card
+    | GameOver Deck
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now we have to change our &lt;code&gt;update&lt;/code&gt; function to transition in the &lt;code&gt;GameOver&lt;/code&gt; state when appropriate. This is done in the &lt;code&gt;Guessing&lt;/code&gt; branch, where we already have a card flipped. When we flip the second card, and all cards are flipped, it means the game is over!&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Guessing deck guess -&amp;gt;
+    let
+        newDeck =
+            List.map (flip True card) deck
+
+        -- when all cards are flipped, the game is over
+        isOver =
+            List.all .flipped newDeck
+
+        newModel =
+            if isOver then
+                GameOver newDeck
+            else
+                MatchCard newDeck guess card
+    in
+        newModel ! []
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We&amp;rsquo;ll have to deal with the &lt;code&gt;GameOver&lt;/code&gt; branch in the &lt;code&gt;update&lt;/code&gt; function as well. This doesn&amp;rsquo;t make much sense because a &lt;code&gt;Flip&lt;/code&gt; action shouldn&amp;rsquo;t come through when the game is over. Still, it&amp;rsquo;s good that the compiler forces us to take care of this as well, and we&amp;rsquo;ll just return the current model as is:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;GameOver deck -&amp;gt;
+    GameOver deck ! []
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Let&amp;rsquo;s also create a &lt;code&gt;playAgainOverlay&lt;/code&gt; which will be shown when the game finishes.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;playAgainOverlay : Html Msg
+playAgainOverlay =
+    div [ class &amp;quot;congrats&amp;quot; ]
+        [ p [] [ text &amp;quot;Yay! You win!&amp;quot; ]
+        , text &amp;quot;Do you want to &amp;quot;
+        , span [ onClick Reset ] [ text &amp;quot;play again?&amp;quot; ]
+        ]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We&amp;rsquo;re adding a new Action to our Messages – &lt;code&gt;Reset&lt;/code&gt; – indicating we want to clear the current game and start fresh. Let&amp;rsquo;s add it to the &lt;code&gt;Msg&lt;/code&gt; type:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;type Msg
+    = NoOp
+    | Reset -- add Reset
+    | Shuffle (List Int)
+    | Flip Card
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And the &lt;code&gt;update&lt;/code&gt; function:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Reset -&amp;gt;
+    createModel
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Our addition to &lt;code&gt;update&lt;/code&gt; is extremely straightforward because we already have &lt;code&gt;createModel&lt;/code&gt; laying around and it&amp;rsquo;s exactly what we need. All that is left is to change &lt;code&gt;view&lt;/code&gt; to show the overlay when we&amp;rsquo;re in the &lt;code&gt;GameOver&lt;/code&gt; state.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;wrapper : Deck -&amp;gt; Html Msg -&amp;gt; Html Msg
+wrapper deck overlay =
+    div [ class &amp;quot;wrapper&amp;quot; ]
+        [ div [] (List.map createCard deck)
+        , overlay
+        ]
+
+
+game : Deck -&amp;gt; Html Msg
+game deck =
+    wrapper deck (text &amp;quot;&amp;quot;)
+
+
+view : Model -&amp;gt; Html Msg
+view model =
+    case model of
+        Playing deck -&amp;gt;
+            game deck
+
+        Guessing deck _ -&amp;gt;
+            game deck
+
+        MatchCard deck _ _ -&amp;gt;
+            game deck
+
+        GameOver deck -&amp;gt;
+            wrapper deck playAgainOverlay
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We&amp;rsquo;re changing the markup a bit, but the essence remains the same. The &lt;code&gt;game&lt;/code&gt; function will just show some empty text in place of the overlay when the game is still running.&lt;/p&gt;
+
+&lt;p&gt;This is it! There&amp;rsquo;s other stuff that you might want to add as an exercise, such as counting the moves the player has made and stop the game if it&amp;rsquo;s taking them too long (in terms of time and or moves).&lt;/p&gt;
+
+&lt;p&gt;Hopefully this has been helpful, the full source code is available on &lt;a href=&#34;https://runelm.io&#34;&gt;runelm.io&lt;/a&gt; and you can play with it here directly in your browser!&lt;/p&gt;
+
+&lt;iframe
+  src=&#34;https://runelm.io/c/fbi&#34;
+  width=&#34;100%&#34;
+  height=&#34;1000&#34;
+  frameBorder=&#34;0&#34;
+  sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
+&lt;/iframe&gt;
+
+&lt;p&gt;If you enjoyed this article, do let me know and share it along! You can &lt;a href=&#34;https://twitter.com/_alpacaaa&#34;&gt;follow me&lt;/a&gt; on Twitter if this kind of things interest you.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
