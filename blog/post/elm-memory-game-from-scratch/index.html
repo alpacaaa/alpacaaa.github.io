@@ -389,7 +389,7 @@ createModel =
 
 <p>That&rsquo;s pretty cool, so we can now use the random list of numbers to shuffle our deck. Let&rsquo;s take care of the <code>update</code> function for a second, because right now it&rsquo;s pretty static and dumb. We want it to react to the different actions that will be coming through – right now we&rsquo;re interested in <code>Shuffle</code>.</p>
 
-<pre><code>-- a ! b is equivalent to (a, b)
+<pre><code>-- a ! b is equivalent to (a, Cmd.batch b)
 update : Msg -&gt; Model -&gt; ( Model, Cmd Msg )
 update msg model =
     case msg of
