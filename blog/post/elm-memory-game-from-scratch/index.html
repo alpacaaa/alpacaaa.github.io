@@ -28,7 +28,7 @@ What are we going to build Here&rsquo;s a working demo of the finished project:
     
   	<meta property="og:type" content="article" />
 
-    <meta property="og:article:published_time" content="2016-11-29T17:50:39&#43;01:00" />
+    <meta property="og:article:published_time" content="2016-11-30T11:00:39&#43;01:00" />
 
     
     
@@ -117,8 +117,8 @@ What are we going to build Here&rsquo;s a working demo of the finished project:
 
         <section class="post-meta">
         
-          <time class="post-date" datetime="2016-11-29T17:50:39&#43;01:00">
-            Nov 29, 2016
+          <time class="post-date" datetime="2016-11-30T11:00:39&#43;01:00">
+            Nov 30, 2016
           </time>
         
          
@@ -509,7 +509,7 @@ Flip card -&gt;
 <ol>
 <li>If the game is in the <code>Playing</code> state, it means we have to flip the first card. This is easy, we&rsquo;ll just transition to the <code>Guessing</code> state.</li>
 <li>If the game is in the <code>Guessing</code> state we can transition to the <code>MatchCard</code> state. This is where we will check if the game is over later on.</li>
-<li>The <code>MatchCard</code> state is the most interesting. We have two cards that the user flipped, and we have to decide if they match and can stay face up or if they should be turned faced down (in which case, the current<code>Flip</code> action does not have any impact on the game, it just reset the model to a <code>Playing</code> state).</li>
+<li>The <code>MatchCard</code> state is the most interesting. We have two cards that the user flipped, and we have to decide if they match and can stay face up or if they should be turned face down (in which case, the current<code>Flip</code> action does not have any impact on the game, it just resets the model to a <code>Playing</code> state).</li>
 </ol>
 
 <p>Let&rsquo;s try to implement this, it is definitely the trickiest part of the game, but it&rsquo;s not that difficult, maybe just a little bit overwhelming if you&rsquo;re not familiar with how to reason in FP yet.</p>
@@ -560,7 +560,7 @@ checkIfCorrect card model =
 
 <pre><code>Flip card -&gt;
     if card.flipped then
-	    -- if a user clicks on an image that's flipped already
+        -- if a user clicks on an image that's flipped already
         -- then don't do anything
         model ! []
     else

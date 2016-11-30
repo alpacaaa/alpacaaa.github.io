@@ -6,13 +6,13 @@
     <description>Recent content on alpacaaa</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 29 Nov 2016 17:50:39 +0100</lastBuildDate>
+    <lastBuildDate>Wed, 30 Nov 2016 11:00:39 +0100</lastBuildDate>
     <atom:link href="https://alpacaaa.net/blog/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Building a memory game in Elm. Step by step, from scratch.</title>
       <link>https://alpacaaa.net/blog/post/elm-memory-game-from-scratch/</link>
-      <pubDate>Tue, 29 Nov 2016 17:50:39 +0100</pubDate>
+      <pubDate>Wed, 30 Nov 2016 11:00:39 +0100</pubDate>
       
       <guid>https://alpacaaa.net/blog/post/elm-memory-game-from-scratch/</guid>
       <description>
@@ -398,7 +398,7 @@ Flip card -&amp;gt;
 &lt;ol&gt;
 &lt;li&gt;If the game is in the &lt;code&gt;Playing&lt;/code&gt; state, it means we have to flip the first card. This is easy, we&amp;rsquo;ll just transition to the &lt;code&gt;Guessing&lt;/code&gt; state.&lt;/li&gt;
 &lt;li&gt;If the game is in the &lt;code&gt;Guessing&lt;/code&gt; state we can transition to the &lt;code&gt;MatchCard&lt;/code&gt; state. This is where we will check if the game is over later on.&lt;/li&gt;
-&lt;li&gt;The &lt;code&gt;MatchCard&lt;/code&gt; state is the most interesting. We have two cards that the user flipped, and we have to decide if they match and can stay face up or if they should be turned faced down (in which case, the current&lt;code&gt;Flip&lt;/code&gt; action does not have any impact on the game, it just reset the model to a &lt;code&gt;Playing&lt;/code&gt; state).&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;MatchCard&lt;/code&gt; state is the most interesting. We have two cards that the user flipped, and we have to decide if they match and can stay face up or if they should be turned face down (in which case, the current&lt;code&gt;Flip&lt;/code&gt; action does not have any impact on the game, it just resets the model to a &lt;code&gt;Playing&lt;/code&gt; state).&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;p&gt;Let&amp;rsquo;s try to implement this, it is definitely the trickiest part of the game, but it&amp;rsquo;s not that difficult, maybe just a little bit overwhelming if you&amp;rsquo;re not familiar with how to reason in FP yet.&lt;/p&gt;
@@ -449,7 +449,7 @@ checkIfCorrect card model =
 
 &lt;pre&gt;&lt;code&gt;Flip card -&amp;gt;
     if card.flipped then
-	    -- if a user clicks on an image that&#39;s flipped already
+        -- if a user clicks on an image that&#39;s flipped already
         -- then don&#39;t do anything
         model ! []
     else
