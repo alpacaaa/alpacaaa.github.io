@@ -955,7 +955,7 @@ body.nav-opened .menu-button .word {
 }
 
 .single-post .runelm-wrapper:not(.no-focus) iframe {
-  pointer-events: none;
+  /*pointer-events: none;*/
 }
 
 .single-post .runelm-wrapper.events-enabled iframe {
