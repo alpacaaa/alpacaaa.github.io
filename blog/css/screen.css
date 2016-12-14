@@ -954,11 +954,11 @@ body.nav-opened .menu-button .word {
   max-width: none;
 }
 
-.single-post iframe {
+.single-post .runelm-wrapper:not(.no-focus) iframe {
   pointer-events: none;
 }
 
-.single-post .events-enabled iframe {
+.single-post .runelm-wrapper.events-enabled iframe {
   pointer-events: auto;
 }
 

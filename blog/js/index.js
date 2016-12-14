@@ -52,7 +52,7 @@
     };
 
 
-    var runelmWrapper = $('.single-post .runelm-wrapper')
+    var runelmWrapper = $('.single-post .runelm-wrapper:not(.no-focus)')
 
     runelmWrapper.each(function(i, wrapper) {
       // $(wrapper).append('<div class="click-to-enable"><div class="msg">Enable me</div></div>')

@@ -19,15 +19,17 @@
 
 &lt;p&gt;This is the classic Rock Paper Scissors game on steroids. There are two more choices that I&amp;rsquo;ve never heard before – &lt;code&gt;Lizard&lt;/code&gt; and &lt;code&gt;Spock&lt;/code&gt; – and the implementation is a bit more spicy because we&amp;rsquo;re going to grab random numbers from &lt;a href=&#34;https://www.random.org&#34;&gt;random.org&lt;/a&gt; so that we get to explore the &lt;code&gt;Http&lt;/code&gt; module as well.&lt;/p&gt;
 
-&lt;p&gt;This is based off the &lt;a href=&#34;https://github.com/spicydonuts/pux-rock-paper-scissors&#34;&gt;pux-rock-paper-scissors&lt;/a&gt; made by &lt;a href=&#34;https://github.com/spicydonuts/&#34;&gt;@spicydonuts&lt;/a&gt; in Purescript. If you&amp;rsquo;re interested in that language you should definitely give &lt;a href=&#34;https://github.com/alexmingoia/purescript-pux&#34;&gt;Pux&lt;/a&gt; a go because it has an almost 1:1 reimplementation of the Elm architecture and I find it pretty awesome.&lt;/p&gt;
+&lt;p&gt;This is based off the &lt;a href=&#34;https://github.com/spicydonuts/pux-rock-paper-scissors&#34;&gt;pux-rock-paper-scissors&lt;/a&gt; game made by &lt;a href=&#34;https://github.com/spicydonuts/&#34;&gt;@spicydonuts&lt;/a&gt; in Purescript. If you&amp;rsquo;re interested in that language you should definitely give &lt;a href=&#34;https://github.com/alexmingoia/purescript-pux&#34;&gt;Pux&lt;/a&gt; a go because it has an almost 1:1 reimplementation of the Elm architecture and I find it pretty awesome.&lt;/p&gt;
 
 &lt;h4 id=&#34;what-we-are-going-to-build&#34;&gt;What we are going to build&lt;/h4&gt;
 
-&lt;div class=&#34;runelm-wrapper&#34;&gt;
+&lt;p&gt;Here&amp;rsquo;s a working demo of the finished project:&lt;/p&gt;
+
+&lt;div class=&#34;runelm-wrapper no-focus&#34;&gt;
   &lt;iframe
-    src=&#34;https://runelm.io/c/9cr&#34;
+    src=&#34;https://runelm.io/c/9cr?pane=preview&#34;
     width=&#34;100%&#34;
-    height=&#34;1000&#34;
+    height=&#34;550&#34;
     frameBorder=&#34;0&#34;
     sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
   &lt;/iframe&gt;
@@ -407,9 +409,9 @@
 
 &lt;p&gt;With &lt;code&gt;gameView&lt;/code&gt;, the main &lt;code&gt;view&lt;/code&gt; function is extremely nice and I really dig how it is laid out.&lt;/p&gt;
 
-&lt;p&gt;This is it! You can play with this code directly in your browser on &lt;a href=&#34;https://runelm.io/c/9cr&#34;&gt;runelm.io&lt;/a&gt; or you can grab the source on &lt;a href=&#34;https://github.com/alpacaaa/elm-rock-paper-scissors&#34;&gt;Github&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This is it! You can play with this code directly in your browser here or on &lt;a href=&#34;https://runelm.io/c/9cr&#34;&gt;runelm.io&lt;/a&gt;. The source code is also available on &lt;a href=&#34;https://github.com/alpacaaa/elm-rock-paper-scissors&#34;&gt;Github&lt;/a&gt;.&lt;/p&gt;
 
-&lt;div class=&#34;runelm-wrapper&#34;&gt;
+&lt;div class=&#34;runelm-wrapper &#34;&gt;
   &lt;iframe
     src=&#34;https://runelm.io/c/9cr&#34;
     width=&#34;100%&#34;
@@ -438,7 +440,7 @@
 
 &lt;p&gt;Here&amp;rsquo;s a working demo of the finished project:&lt;/p&gt;
 
-&lt;div class=&#34;runelm-wrapper&#34;&gt;
+&lt;div class=&#34;runelm-wrapper no-focus&#34;&gt;
   &lt;iframe
     src=&#34;https://runelm.io/c/fbi?pane=preview&#34;
     width=&#34;100%&#34;
@@ -523,7 +525,7 @@
 
 &lt;p&gt;Our grid is starting to take shape.&lt;/p&gt;
 
-&lt;div class=&#34;runelm-wrapper&#34;&gt;
+&lt;div class=&#34;runelm-wrapper no-focus&#34;&gt;
   &lt;iframe
     src=&#34;https://runelm.io/c/tt2?pane=preview&#34;
     width=&#34;100%&#34;
@@ -632,7 +634,7 @@
 
 &lt;p&gt;Notice we had to pattern match on the model. It looks dumb with a single case but we&amp;rsquo;ll add more. Now change &lt;code&gt;(&amp;quot;flipped&amp;quot;, False)&lt;/code&gt; to &lt;code&gt;(&amp;quot;flipped&amp;quot;, True)&lt;/code&gt; in &lt;code&gt;createCard&lt;/code&gt; and look at all the beautiful card pictures (do it yourself below, just edit the code and run it! It&amp;rsquo;s on line 110).&lt;/p&gt;
 
-&lt;div class=&#34;runelm-wrapper&#34;&gt;
+&lt;div class=&#34;runelm-wrapper &#34;&gt;
   &lt;iframe
     src=&#34;https://runelm.io/c/nee&#34;
     width=&#34;100%&#34;
@@ -720,7 +722,7 @@
 
 &lt;p&gt;If we use the &lt;code&gt;(&amp;quot;flipped&amp;quot;, False)&lt;/code&gt; trick again on &lt;code&gt;createCard&lt;/code&gt;, you can see that by refreshing a few times our cards change order, yay! Try it for yourself!&lt;/p&gt;
 
-&lt;div class=&#34;runelm-wrapper&#34;&gt;
+&lt;div class=&#34;runelm-wrapper &#34;&gt;
   &lt;iframe
     src=&#34;https://runelm.io/c/0wh&#34;
     width=&#34;100%&#34;
@@ -774,7 +776,7 @@
 
 &lt;p&gt;You&amp;rsquo;ll now be able to flip cards back and forth without any constraints. In the next step we&amp;rsquo;re going to implement a proper game logic when &lt;code&gt;Flip&lt;/code&gt; is dispatched, so that cards can be flipped only when the game allows it and matched cards remain face up.&lt;/p&gt;
 
-&lt;div class=&#34;runelm-wrapper&#34;&gt;
+&lt;div class=&#34;runelm-wrapper &#34;&gt;
   &lt;iframe
     src=&#34;https://runelm.io/c/ug4&#34;
     width=&#34;100%&#34;
@@ -872,7 +874,7 @@
 
 &lt;p&gt;You can play with what we have here. You&amp;rsquo;ll see that the game works as expected, except that it never terminates. We need to add one last game state so that we can detect when the player wins and another action to reset the game and start over.&lt;/p&gt;
 
-&lt;div class=&#34;runelm-wrapper&#34;&gt;
+&lt;div class=&#34;runelm-wrapper &#34;&gt;
   &lt;iframe
     src=&#34;https://runelm.io/c/i7p&#34;
     width=&#34;100%&#34;
@@ -978,7 +980,7 @@
 
 &lt;p&gt;Hopefully this has been helpful, the full source code is available on &lt;a href=&#34;https://runelm.io&#34;&gt;runelm.io&lt;/a&gt; and you can play with it here directly in your browser!&lt;/p&gt;
 
-&lt;div class=&#34;runelm-wrapper&#34;&gt;
+&lt;div class=&#34;runelm-wrapper &#34;&gt;
   &lt;iframe
     src=&#34;https://runelm.io/c/fbi&#34;
     width=&#34;100%&#34;
