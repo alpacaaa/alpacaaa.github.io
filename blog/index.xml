@@ -25,6 +25,10 @@
 
 &lt;p&gt;Here&amp;rsquo;s a working demo of the finished project:&lt;/p&gt;
 
+&lt;p&gt;&lt;img src=&#34;https://i.imgur.com/CGuMoEF.gif&#34; alt=&#34;Rock paper scissors deathmatch&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Just kidding, here&amp;rsquo;s the finished project. Please enjoy this game responsibly and reach out if you become a world champion.&lt;/p&gt;
+
 &lt;div class=&#34;runelm-wrapper no-focus&#34;&gt;
   &lt;iframe
     src=&#34;https://runelm.io/c/9cr?pane=preview&#34;
@@ -117,7 +121,7 @@
 
 &lt;p&gt;Decoders are provided in the &lt;code&gt;Json&lt;/code&gt; module that comes shipped in &lt;a href=&#34;http://package.elm-lang.org/packages/elm-lang/core/latest&#34;&gt;core&lt;/a&gt;. You can find pretty well written tutorials on decoders elsewhere, but I just want to briefly point out what our simple decoder is doing. The &lt;code&gt;Json.Decode.int&lt;/code&gt; decoder essentially takes a JSON number and converts it into an &lt;code&gt;Int&lt;/code&gt; so that we can work with it. There&amp;rsquo;s no black magic, that&amp;rsquo;s all is happening here.&lt;/p&gt;
 
-&lt;p&gt;Moving on, we&amp;rsquo;re piping our &lt;code&gt;Request&lt;/code&gt; into a call to &lt;code&gt;Http.send&lt;/code&gt; that will effectively create a &lt;code&gt;Cmd&lt;/code&gt; describing the http request we want to make and what &lt;code&gt;Msg&lt;/code&gt; will be fed back into the update function once the request completes. Note that the message will have to accept a &lt;code&gt;Result&lt;/code&gt; as an argument, because we have to take failure into account and the &lt;code&gt;Result&lt;/code&gt; allows us to do just that (either we get an error or the data we wanted).&lt;/p&gt;
+&lt;p&gt;Moving on, we&amp;rsquo;re piping our &lt;code&gt;Request&lt;/code&gt; into a call to &lt;code&gt;Http.send&lt;/code&gt; that will effectively create a &lt;code&gt;Cmd&lt;/code&gt; describing the http request we want to make and what &lt;code&gt;Msg&lt;/code&gt; will be fed back into the update function once the request completes. Note that the message will have to accept a &lt;code&gt;Result&lt;/code&gt; as an argument, because we have to take failure into account and the &lt;code&gt;Result&lt;/code&gt; type allows us to do just that (either we get an error or the data we wanted).&lt;/p&gt;
 
 &lt;p&gt;Here are a few type signatures in case you&amp;rsquo;re wondering.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Http&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;get&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;String&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Decoder&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Request&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;

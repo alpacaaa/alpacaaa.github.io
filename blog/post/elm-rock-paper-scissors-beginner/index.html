@@ -136,6 +136,10 @@ This is based off the pux-rock-paper-scissors game made by @spicydonuts in Pures
 
 <p>Here&rsquo;s a working demo of the finished project:</p>
 
+<p><img src="https://i.imgur.com/CGuMoEF.gif" alt="Rock paper scissors deathmatch" /></p>
+
+<p>Just kidding, here&rsquo;s the finished project. Please enjoy this game responsibly and reach out if you become a world champion.</p>
+
 <div class="runelm-wrapper no-focus">
   <iframe
     src="https://runelm.io/c/9cr?pane=preview"
@@ -228,7 +232,7 @@ This is based off the pux-rock-paper-scissors game made by @spicydonuts in Pures
 
 <p>Decoders are provided in the <code>Json</code> module that comes shipped in <a href="http://package.elm-lang.org/packages/elm-lang/core/latest">core</a>. You can find pretty well written tutorials on decoders elsewhere, but I just want to briefly point out what our simple decoder is doing. The <code>Json.Decode.int</code> decoder essentially takes a JSON number and converts it into an <code>Int</code> so that we can work with it. There&rsquo;s no black magic, that&rsquo;s all is happening here.</p>
 
-<p>Moving on, we&rsquo;re piping our <code>Request</code> into a call to <code>Http.send</code> that will effectively create a <code>Cmd</code> describing the http request we want to make and what <code>Msg</code> will be fed back into the update function once the request completes. Note that the message will have to accept a <code>Result</code> as an argument, because we have to take failure into account and the <code>Result</code> allows us to do just that (either we get an error or the data we wanted).</p>
+<p>Moving on, we&rsquo;re piping our <code>Request</code> into a call to <code>Http.send</code> that will effectively create a <code>Cmd</code> describing the http request we want to make and what <code>Msg</code> will be fed back into the update function once the request completes. Note that the message will have to accept a <code>Result</code> as an argument, because we have to take failure into account and the <code>Result</code> type allows us to do just that (either we get an error or the data we wanted).</p>
 
 <p>Here are a few type signatures in case you&rsquo;re wondering.</p>
 <div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kt">Http</span><span class="o">.</span><span class="n">get</span> <span class="kt">:</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Decoder</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Request</span> <span class="n">a</span>
