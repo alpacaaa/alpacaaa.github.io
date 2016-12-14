@@ -407,7 +407,7 @@
 
 &lt;p&gt;With &lt;code&gt;gameView&lt;/code&gt;, the main &lt;code&gt;view&lt;/code&gt; function is extremely nice and I really dig how it is laid out.&lt;/p&gt;
 
-&lt;p&gt;This is it! You can play with this code directly in your browser on &lt;a href=&#34;https://runelm.io/c/9cr&#34;&gt;runelm.io&lt;/a&gt; or you can grab the source on Github.&lt;/p&gt;
+&lt;p&gt;This is it! You can play with this code directly in your browser on &lt;a href=&#34;https://runelm.io/c/9cr&#34;&gt;runelm.io&lt;/a&gt; or you can grab the source on &lt;a href=&#34;https://github.com/alpacaaa/elm-rock-paper-scissors&#34;&gt;Github&lt;/a&gt;.&lt;/p&gt;
 
 &lt;div class=&#34;runelm-wrapper&#34;&gt;
   &lt;iframe
