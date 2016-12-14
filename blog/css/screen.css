@@ -926,7 +926,7 @@ body.nav-opened .menu-button .word {
 /* Every post, on every page, gets this style on its <article> tag */
 .post {
     position: relative;
-    width: 80%;
+    /*width: 80%;*/
     /*max-width: 710px;*/
     max-width: 62.5em;
     margin: 4rem auto;
@@ -937,6 +937,49 @@ body.nav-opened .menu-button .word {
     -ms-hyphens: auto;
     -webkit-hyphens: auto;
     hyphens: auto;
+}
+
+
+
+.single-post .post-header,
+.single-post .post-footer,
+.single-post .post-content >* {
+  max-width: 110rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.single-post .post,
+.single-post .post-content .runelm-wrapper {
+  max-width: none;
+}
+
+.single-post iframe {
+  pointer-events: none;
+}
+
+.single-post .events-enabled iframe {
+  pointer-events: auto;
+}
+
+.runelm-wrapper {
+  position: relative;
+}
+
+.runelm-wrapper .click-to-enable {
+  opacity: 0;
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: rgba(0,0,0,0.25);
+  transition: all 0.2s ease-in-out;
+}
+
+.runelm-wrapper:hover .click-to-enable {
+  opacity: 1;
 }
 
 /* Add a little circle in the middle of the border-bottom on our .post

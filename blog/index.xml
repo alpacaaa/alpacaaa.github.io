@@ -6,8 +6,423 @@
     <description>Recent content on alpacaaa</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 30 Nov 2016 11:00:39 +0100</lastBuildDate>
+    <lastBuildDate>Wed, 14 Dec 2016 11:00:39 +0100</lastBuildDate>
     <atom:link href="https://alpacaaa.net/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Rock Paper Scissors in Elm. A beginner friendly implementation.</title>
+      <link>https://alpacaaa.net/blog/post/elm-rock-paper-scissors-beginner/</link>
+      <pubDate>Wed, 14 Dec 2016 11:00:39 +0100</pubDate>
+      
+      <guid>https://alpacaaa.net/blog/post/elm-rock-paper-scissors-beginner/</guid>
+      <description>
+
+&lt;p&gt;This is the classic Rock Paper Scissors game on steroids. There are two more choices that I&amp;rsquo;ve never heard before – &lt;code&gt;Lizard&lt;/code&gt; and &lt;code&gt;Spock&lt;/code&gt; – and the implementation is a bit more spicy because we&amp;rsquo;re going to grab random numbers from &lt;a href=&#34;https://www.random.org&#34;&gt;random.org&lt;/a&gt; so that we get to explore the &lt;code&gt;Http&lt;/code&gt; module as well.&lt;/p&gt;
+
+&lt;p&gt;This is based off the &lt;a href=&#34;https://github.com/spicydonuts/pux-rock-paper-scissors&#34;&gt;pux-rock-paper-scissors&lt;/a&gt; made by &lt;a href=&#34;https://github.com/spicydonuts/&#34;&gt;@spicydonuts&lt;/a&gt; in Purescript. If you&amp;rsquo;re interested in that language you should definitely give &lt;a href=&#34;https://github.com/alexmingoia/purescript-pux&#34;&gt;Pux&lt;/a&gt; a go because it has an almost 1:1 reimplementation of the Elm architecture and I find it pretty awesome.&lt;/p&gt;
+
+&lt;h4 id=&#34;what-we-are-going-to-build&#34;&gt;What we are going to build&lt;/h4&gt;
+
+&lt;div class=&#34;runelm-wrapper&#34;&gt;
+  &lt;iframe
+    src=&#34;https://runelm.io/c/9cr&#34;
+    width=&#34;100%&#34;
+    height=&#34;1000&#34;
+    frameBorder=&#34;0&#34;
+    sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
+  &lt;/iframe&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;It&amp;rsquo;s very simple, in about 300 LOC it should be pretty easy to follow along.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Disclaimer&lt;/strong&gt;: If you&amp;rsquo;re looking for a more in depth tutorial, check out &lt;a href=&#34;https://alpacaaa.net/blog/post/elm-memory-game-from-scratch/&#34;&gt;Building a memory game in Elm from scratch&lt;/a&gt; that covers some basic ground that will be assumed here.&lt;/p&gt;
+
+&lt;h4 id=&#34;types-first&#34;&gt;Types first&lt;/h4&gt;
+
+&lt;p&gt;All right let&amp;rsquo;s get down to it. First of all we&amp;rsquo;ll want to encode all the possible choices, so we&amp;rsquo;ll create a new type &lt;code&gt;Choice&lt;/code&gt; for this purpose.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;kr&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Choice&lt;/span&gt;
+    &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Rock&lt;/span&gt;
+    &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Paper&lt;/span&gt;
+    &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Scissors&lt;/span&gt;
+    &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Lizard&lt;/span&gt;
+    &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Spock&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Next up, we want to define the different outcomes of a match. That is, whether the player or the computer won, or it&amp;rsquo;s a tie.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;kr&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;GameResult&lt;/span&gt;
+    &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;PlayerWins&lt;/span&gt;
+    &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;ComputerWins&lt;/span&gt;
+    &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Tie&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We&amp;rsquo;re going to keep the player score that it&amp;rsquo;s going to be updated after every match. This is just an &lt;code&gt;Int&lt;/code&gt; but to make our code more explicit, let&amp;rsquo;s add a type alias.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;kr&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;alias&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Score&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;Int&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Our &lt;code&gt;Model&lt;/code&gt; defines 3 states:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The player has to make a choice, so only the score will be stored in the model.&lt;/li&gt;
+&lt;li&gt;We have a player choice and we&amp;rsquo;re waiting for the computer to generate a random one.&lt;/li&gt;
+&lt;li&gt;The game is over, we have both choices, the game result and the updated score.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Let&amp;rsquo;s write this down&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;kr&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Model&lt;/span&gt;
+    &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;PlayerTurn&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Score&lt;/span&gt;
+    &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;ComputerTurn&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Score&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Choice&lt;/span&gt;
+    &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;GameOver&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Score&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Choice&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Choice&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;GameResult&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Now to the &lt;code&gt;Msg&lt;/code&gt;! It&amp;rsquo;s pretty straightforward.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;kr&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt;
+    &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;NoOp&lt;/span&gt;
+    &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;ChoiceClicked&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Choice&lt;/span&gt;
+    &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;RandomNumberReceived&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Result&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Http&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Error&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Reset&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The reason for the &lt;code&gt;Result Http.Error Int&lt;/code&gt; type is pretty straightforward . Given that there&amp;rsquo;s an http request involved (remember, we&amp;rsquo;re grabbing random numbers from an online api) we have to account for errors. If all it&amp;rsquo;s fine we&amp;rsquo;ll get back an &lt;code&gt;Int&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h5 id=&#34;a-little-tour-of-http-requests-and-json-decoding&#34;&gt;A little tour of HTTP requests and JSON decoding&lt;/h5&gt;
+
+&lt;p&gt;Next up, a function that creates a &lt;code&gt;Task&lt;/code&gt; describing the http request we want the Elm runtime to make. Just a reminder, in Elm there&amp;rsquo;s no way to perform side effects inside our code. We can only &lt;em&gt;describe&lt;/em&gt; what needs to happen by returning a Command (&lt;code&gt;Cmd&lt;/code&gt;) in our &lt;code&gt;update&lt;/code&gt; function.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;randomNumberUrl&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;s&#34;&gt;&amp;quot;https://www.random.org/integers/?num=1&amp;amp;min=1&amp;amp;max=5&amp;amp;col=1&amp;amp;base=10&amp;amp;format=plain&amp;amp;rnd=new&amp;quot;&lt;/span&gt;
+
+
+&lt;span class=&#34;nf&#34;&gt;grabRandomNumber&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Cmd&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;grabRandomNumber&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;Http&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;get&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;randomNumberUrl&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Json&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Decode&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;int&lt;/span&gt;
+        &lt;span class=&#34;o&#34;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Http&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;send&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;RandomNumberReceived&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This might not seem like a lot, but it&amp;rsquo;s helpful to go over what&amp;rsquo;s happening. &lt;code&gt;randomNumberUrl&lt;/code&gt; is easy, it&amp;rsquo;s just the api endpoint that will return a integer between 1 and 5. &lt;code&gt;Http.get&lt;/code&gt; is a function provided by the &lt;code&gt;Http&lt;/code&gt; module that given a URL and a &lt;code&gt;Decoder&lt;/code&gt;, will return a &lt;code&gt;Request&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Now, JSON encoding and decoding is an hot topic among the Elm community and for a reason. It&amp;rsquo;s not always easy to wrap your head around code that performs these kind of operations.&lt;/p&gt;
+
+&lt;p&gt;But let&amp;rsquo;s take a step back. Why do we need decoding in the first place? What does it even mean? When we make http requests, we are talking to the external world (meaning we&amp;rsquo;re leaving the peaceful and pure land of Elm) and we are getting back &lt;em&gt;some kind&lt;/em&gt; of data. Being Elm a strongly typed language, we have to know at compile time what kind of data we&amp;rsquo;re dealing with. This might seem like a burden at first, because every little detail of the (possibly complicated) JSON data we&amp;rsquo;re getting back from our api, needs to be explicitely described in Elm, otherwhise that data cannot be consumed.&lt;/p&gt;
+
+&lt;p&gt;If you think this sucks and it&amp;rsquo;s just a waste of time, take a deep breath and appreciate how awesome this really is.&lt;/p&gt;
+
+&lt;p&gt;You can be &lt;em&gt;absolutely sure&lt;/em&gt; at compile time that whatever data you&amp;rsquo;re getting back from the server, will have the &lt;strong&gt;correct&lt;/strong&gt; shape that your code is &lt;strong&gt;expecting&lt;/strong&gt; it to. Or you&amp;rsquo;ll find yourself with an error that, by the way, you&amp;rsquo;ll be forced to handle by the compiler. So there&amp;rsquo;s no way your program is going to blow up at runtime because you were expecting the &lt;code&gt;description&lt;/code&gt; field to be a &lt;code&gt;String&lt;/code&gt; but the api is returning &lt;code&gt;null&lt;/code&gt;! How cool is that?&lt;/p&gt;
+
+&lt;p&gt;In order to have this peace of mind we need to spend a little bit of time to tell the compiler how to transform the JSON data that we receive from the outside into a valid Elm type. You can go pretty crazy when decoding, by using nice stuff like &lt;code&gt;Maybe&lt;/code&gt; or adding field conditionally, based on the presence of another field or the value of some other.&lt;/p&gt;
+
+&lt;p&gt;So, this is why &lt;strong&gt;we need a Decoder&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;Decoders are provided in the &lt;code&gt;Json&lt;/code&gt; module that comes shipped in &lt;a href=&#34;http://package.elm-lang.org/packages/elm-lang/core/latest&#34;&gt;core&lt;/a&gt;. You can find pretty well written tutorials on decoders elsewhere, but I just want to briefly point out what our simple decoder is doing. The &lt;code&gt;Json.Decode.int&lt;/code&gt; decoder essentially takes a JSON number and converts it into an &lt;code&gt;Int&lt;/code&gt; so that we can work with it. There&amp;rsquo;s no black magic, that&amp;rsquo;s all is happening here.&lt;/p&gt;
+
+&lt;p&gt;Moving on, we&amp;rsquo;re piping our &lt;code&gt;Request&lt;/code&gt; into a call to &lt;code&gt;Http.send&lt;/code&gt; that will effectively create a &lt;code&gt;Cmd&lt;/code&gt; describing the http request we want to make and what &lt;code&gt;Msg&lt;/code&gt; will be fed back into the update function once the request completes. Note that the message will have to accept a &lt;code&gt;Result&lt;/code&gt; as an argument, because we have to take failure into account and the &lt;code&gt;Result&lt;/code&gt; allows us to do just that (either we get an error or the data we wanted).&lt;/p&gt;
+
+&lt;p&gt;Here are a few type signatures in case you&amp;rsquo;re wondering.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Http&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;get&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;String&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Decoder&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Request&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;Http&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;send&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Result&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Error&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;msg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Request&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Cmd&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;msg&lt;/span&gt;
+
+&lt;span class=&#34;kr&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Decoder&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;Json&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Decode&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Decoder&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Int&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4 id=&#34;the-update-function&#34;&gt;The Update function&lt;/h4&gt;
+
+&lt;p&gt;Let&amp;rsquo;s begin with a simple function that returns the initial state of the game. We simply say that it&amp;rsquo;s the player&amp;rsquo;s turn and that the score is zero.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;createModel&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Model&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Cmd&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;createModel&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;let&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;kt&#34;&gt;PlayerTurn&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;in&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Cmd&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;none&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We also need a &lt;code&gt;List (Choice, Choice)&lt;/code&gt; that holds all the possible winning pairs that we will use to determine the winner.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;winConditions&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Choice&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Choice&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;winConditions&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Rock&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Scissors&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Rock&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Lizard&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Paper&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Rock&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Paper&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Spock&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Scissors&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Paper&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Scissors&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Lizard&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Lizard&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Paper&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Lizard&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Spock&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Spock&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Rock&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Spock&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Scissors&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Here&amp;rsquo;s how we do it. Given two values of type &lt;code&gt;Choice&lt;/code&gt;, check if the first one wins the game.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;wins&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Choice&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Choice&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Bool&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;wins&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;b&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;let&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;match&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;b&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;in&lt;/span&gt;
+        &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;any&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;match&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;winConditions&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;List.any&lt;/code&gt; is pretty cool because it will stop at the first match, so it won&amp;rsquo;t iterate over the full list. We are creating a simple helper function &lt;code&gt;match&lt;/code&gt; that uses the &lt;code&gt;==&lt;/code&gt; function in prefix position (note the &lt;code&gt;()&lt;/code&gt; brackets) and partially applies it with the two choices we got as input (&lt;code&gt;a&lt;/code&gt; and &lt;code&gt;b&lt;/code&gt;).&lt;/p&gt;
+
+&lt;p&gt;We also want to know the result of a game.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;determineResult&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Choice&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Choice&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;GameResult&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;determineResult&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;player&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;computer&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;player&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;computer&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;then&lt;/span&gt;
+        &lt;span class=&#34;kt&#34;&gt;Tie&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;wins&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;player&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;computer&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;then&lt;/span&gt;
+        &lt;span class=&#34;kt&#34;&gt;PlayerWins&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;else&lt;/span&gt;
+        &lt;span class=&#34;kt&#34;&gt;ComputerWins&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Pretty straightforward stuff.&lt;/p&gt;
+
+&lt;p&gt;Now we&amp;rsquo;ll need a way to convert the &lt;code&gt;Int&lt;/code&gt; we&amp;rsquo;re getting back from our random number generator into a &lt;code&gt;Choice&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;intToChoice&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Int&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Choice&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;intToChoice&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;n&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;n&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;of&lt;/span&gt;
+        &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;kt&#34;&gt;Rock&lt;/span&gt;
+
+        &lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;kt&#34;&gt;Paper&lt;/span&gt;
+
+        &lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;kt&#34;&gt;Scissors&lt;/span&gt;
+
+        &lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;kt&#34;&gt;Lizard&lt;/span&gt;
+
+        &lt;span class=&#34;mi&#34;&gt;5&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;kt&#34;&gt;Spock&lt;/span&gt;
+
+        &lt;span class=&#34;kr&#34;&gt;_&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;intToChoice&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;|&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;n&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;n&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Note the &lt;code&gt;_&lt;/code&gt; branch. This is needed because the compiler tells us that there are many more numbers we should account for besides those in the range of our interest (1-5). A very simple and acceptable solution would be to pick a fixed choice and return that for any other integer greater than 5. But we can be a little bit smarter and feed back the unexpected integer we received by making sure that it&amp;rsquo;s between 1 and 5, in order to keep some sort of randomness in place.&lt;/p&gt;
+
+&lt;p&gt;Let&amp;rsquo;s create an helper function that updates the current score given a game result.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;updateScore&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Score&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;GameResult&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Score&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;updateScore&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;score&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;result&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;result&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;of&lt;/span&gt;
+        &lt;span class=&#34;kt&#34;&gt;Tie&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;score&lt;/span&gt;
+
+        &lt;span class=&#34;kt&#34;&gt;PlayerWins&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;score&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;
+
+        &lt;span class=&#34;kt&#34;&gt;ComputerWins&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;score&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Now a function that we will use to update the game state and return the &lt;code&gt;Cmd&lt;/code&gt; that generates a random number whenever it&amp;rsquo;s appropriate (after the player&amp;rsquo;s turn). Note that we return the &lt;code&gt;model&lt;/code&gt; unchanged if we&amp;rsquo;re in a state where we&amp;rsquo;re not expecting the player to make their choice. Think for example of a slow http request that would allow the player to click on a different choice button. That would dispatch another &lt;code&gt;ChoiceClicked&lt;/code&gt; message inside our &lt;code&gt;update&lt;/code&gt; function, but given that we know it&amp;rsquo;s the computer&amp;rsquo;s turn, we don&amp;rsquo;t do anything and wait for the random number to arrive.&lt;/p&gt;
+
+&lt;p&gt;Also, we could improve our game further by making sure the buttons in the UI are disabled when we are in the &lt;code&gt;ComputerTurn&lt;/code&gt; state.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;updatePlayerChoice&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Choice&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Model&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Cmd&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;updatePlayerChoice&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;choice&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;of&lt;/span&gt;
+        &lt;span class=&#34;kt&#34;&gt;ComputerTurn&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;_&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;_&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;!&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt;
+
+        &lt;span class=&#34;kt&#34;&gt;PlayerTurn&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;score&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;kt&#34;&gt;ComputerTurn&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;score&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;choice&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;!&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;grabRandomNumber&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+
+        &lt;span class=&#34;kt&#34;&gt;GameOver&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;score&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;_&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;_&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;_&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;kt&#34;&gt;ComputerTurn&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;score&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;choice&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;!&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;grabRandomNumber&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Here&amp;rsquo;s our helper function to deal with the random number that will be transformed into a valid computer choice.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;updateComputerChoice&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Int&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Model&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Cmd&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;updateComputerChoice&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;n&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;of&lt;/span&gt;
+        &lt;span class=&#34;kt&#34;&gt;ComputerTurn&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;score&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;player&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;kr&#34;&gt;let&lt;/span&gt;
+                &lt;span class=&#34;n&#34;&gt;computer&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+                    &lt;span class=&#34;n&#34;&gt;intToChoice&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;n&lt;/span&gt;
+
+                &lt;span class=&#34;n&#34;&gt;result&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+                    &lt;span class=&#34;n&#34;&gt;determineResult&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;player&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;computer&lt;/span&gt;
+
+                &lt;span class=&#34;n&#34;&gt;newScore&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+                    &lt;span class=&#34;n&#34;&gt;updateScore&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;score&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;result&lt;/span&gt;
+            &lt;span class=&#34;kr&#34;&gt;in&lt;/span&gt;
+                &lt;span class=&#34;kt&#34;&gt;GameOver&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;newScore&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;player&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;computer&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;result&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;!&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt;
+
+        &lt;span class=&#34;kr&#34;&gt;_&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;!&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;After that, we&amp;rsquo;ll transition to the &lt;code&gt;GameOver&lt;/code&gt; state. And finally, the &lt;code&gt;update&lt;/code&gt; function in all its glory. Simple and to the point thanks to the functions we just wrote.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;update&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Model&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Cmd&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;update&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;msg&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;msg&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;of&lt;/span&gt;
+        &lt;span class=&#34;kt&#34;&gt;NoOp&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;!&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt;
+
+        &lt;span class=&#34;kt&#34;&gt;ChoiceClicked&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;choice&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;updatePlayerChoice&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;choice&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt;
+
+        &lt;span class=&#34;kt&#34;&gt;RandomNumberReceived&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Ok&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;n&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;updateComputerChoice&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;n&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt;
+
+        &lt;span class=&#34;kt&#34;&gt;RandomNumberReceived&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Err&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;_&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;!&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt;
+
+        &lt;span class=&#34;kt&#34;&gt;Reset&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;createModel&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Of course this is a bad example in terms of error handling, because we&amp;rsquo;re just ignoring it! Ideally we&amp;rsquo;ll have some kind of error message in our &lt;code&gt;Model&lt;/code&gt; that we can populate appropriately when things explode.&lt;/p&gt;
+
+&lt;h4 id=&#34;the-view-function&#34;&gt;The View function&lt;/h4&gt;
+
+&lt;p&gt;Let&amp;rsquo;s begin with a simple function to convert a &lt;code&gt;Choice&lt;/code&gt; into a &lt;code&gt;String&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;choiceToString&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Choice&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;String&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;choiceToString&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;choice&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;choice&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;of&lt;/span&gt;
+        &lt;span class=&#34;kt&#34;&gt;Rock&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;s&#34;&gt;&amp;quot;Rock&amp;quot;&lt;/span&gt;
+
+        &lt;span class=&#34;kt&#34;&gt;Paper&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;s&#34;&gt;&amp;quot;Paper&amp;quot;&lt;/span&gt;
+
+        &lt;span class=&#34;kt&#34;&gt;Scissors&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;s&#34;&gt;&amp;quot;Scissors&amp;quot;&lt;/span&gt;
+
+        &lt;span class=&#34;kt&#34;&gt;Lizard&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;s&#34;&gt;&amp;quot;Lizard&amp;quot;&lt;/span&gt;
+
+        &lt;span class=&#34;kt&#34;&gt;Spock&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;s&#34;&gt;&amp;quot;Spock&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Same stuff when we have a &lt;code&gt;GameResult&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;resultToString&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;GameResult&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;String&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;resultToString&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;result&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;result&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;of&lt;/span&gt;
+        &lt;span class=&#34;kt&#34;&gt;Tie&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;s&#34;&gt;&amp;quot;It&amp;#39;s a tie!&amp;quot;&lt;/span&gt;
+
+        &lt;span class=&#34;kt&#34;&gt;PlayerWins&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;s&#34;&gt;&amp;quot;Yay, you win!&amp;quot;&lt;/span&gt;
+
+        &lt;span class=&#34;kt&#34;&gt;ComputerWins&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;s&#34;&gt;&amp;quot;You lose :(&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We&amp;rsquo;ll need a lower case css class for each &lt;code&gt;Choice&lt;/code&gt;, that&amp;rsquo;s easy enough with our &lt;code&gt;choiceToString&lt;/code&gt; helper.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;choiceToClass&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Choice&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;String&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;choiceToClass&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;String&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;toLower&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;choiceToString&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Remember: &lt;code&gt;&amp;lt;&amp;lt;&lt;/code&gt; is function composition. It&amp;rsquo;s equivalent to &lt;code&gt;choiceToClass c = String.toLower (choiceToString c)&lt;/code&gt; but cleaner and shorter.&lt;/p&gt;
+
+&lt;p&gt;The next one is purely cosmetic, it just creates an &lt;code&gt;&amp;lt;hr /&amp;gt;&lt;/code&gt; tag.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;divider&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Html&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;divider&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;hr&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Now, we have a &lt;code&gt;Choice&lt;/code&gt; and we want to show a corresponding huge image on the screen.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;showChoice&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Choice&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Html&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;showChoice&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;choice&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;div&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;quot;card &amp;quot;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;++&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;choiceToClass&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;choice&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Same with &lt;code&gt;GameResult&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;showResult&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;GameResult&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Html&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;showResult&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;result&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;text&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;|&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;resultToString&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;result&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;And &lt;code&gt;Score&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;showPlayerScore&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Score&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Html&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;showPlayerScore&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;score&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;text&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;|&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;Score: &amp;quot;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;++&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;toString&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;score&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We want a Reset button that will reset the game state.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;resetButton&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Html&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;resetButton&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;button&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;onClick&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Reset&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;reset&amp;quot;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;text&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;Reset!&amp;quot;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;And also a Choice button so that the player can make a choice.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;choiceButton&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Choice&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Html&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;choiceButton&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;choice&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;button&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;|&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;choice &amp;quot;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;++&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;choiceToClass&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;choice&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;onClick&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;ChoiceClicked&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;choice&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;text&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;|&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;choiceToString&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;choice&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The next is a cool one. Basically, if you look at our &lt;code&gt;Model&lt;/code&gt; at any one time we could have a player choice, a computer choice and a result. But we want our UI code to be written in a simple and straightforward way, so instead of making the &lt;code&gt;showChoice&lt;/code&gt; and &lt;code&gt;showResult&lt;/code&gt; functions more complicated so that they could accept a &lt;code&gt;Maybe&lt;/code&gt; and render something appropriately, we&amp;rsquo;ll create another function to do the dirty work and call the appropriate view function only when we have a value.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;maybeRender&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Html&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Maybe&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Html&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;maybeRender&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;f&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;Maybe&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;map&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;f&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;
+        &lt;span class=&#34;o&#34;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Maybe&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;withDefault&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;div&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Let&amp;rsquo;s say we want to render the computer&amp;rsquo;s choice. We don&amp;rsquo;t want to check whether the state is &lt;code&gt;PlayerTurn&lt;/code&gt; or &lt;code&gt;ComputerTurn&lt;/code&gt; or whatever, we just want to call &lt;code&gt;showChoice&lt;/code&gt;. To make it safe, we&amp;rsquo;ll call &lt;code&gt;maybeRender showChoice computerChoice&lt;/code&gt; so that an empty &lt;code&gt;div&lt;/code&gt; will be rendered if there&amp;rsquo;s nothing to show. This is very important because it allows us to keep our other functions simple and stupid (again, by not having to deal with &lt;code&gt;Maybe&lt;/code&gt; directly).&lt;/p&gt;
+
+&lt;p&gt;We are almost done, our last helper is &lt;code&gt;gameView&lt;/code&gt; which employs the &lt;code&gt;maybeRender&lt;/code&gt; function quite a bit so that our UI is simple to read and reason about.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;gameView&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Score&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Maybe&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Choice&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Maybe&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Choice&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Maybe&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;GameResult&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Html&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;gameView&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;score&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;playerChoice&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;computerChoice&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;gameResult&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;div&lt;/span&gt;
+        &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;choiceButton&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Rock&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;choiceButton&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Paper&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;choiceButton&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Scissors&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;choiceButton&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Lizard&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;choiceButton&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Spock&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;divider&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;maybeRender&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;showChoice&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;playerChoice&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;maybeRender&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;showChoice&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;computerChoice&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;maybeRender&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;showResult&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;gameResult&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;showPlayerScore&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;score&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;maybeRender&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;\&lt;/span&gt;&lt;span class=&#34;kr&#34;&gt;_&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;resetButton&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;gameResult&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This function will be called by the main &lt;code&gt;view&lt;/code&gt; function with different parameters depending on the state. I can&amp;rsquo;t stress enough how useful it is to restrict the use of &lt;code&gt;Maybe&lt;/code&gt; to a couple of functions (&lt;code&gt;maybeRender&lt;/code&gt; and &lt;code&gt;gameView&lt;/code&gt;). All the other functions are as simple as they can be and this greatly improves the quality of our program in my opinion.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;view&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Html&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;view&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;of&lt;/span&gt;
+        &lt;span class=&#34;kt&#34;&gt;PlayerTurn&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;score&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;div&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt;
+                &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;gameView&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;score&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Nothing&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Nothing&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Nothing&lt;/span&gt;
+                &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;h3&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;text&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;Make your move!&amp;quot;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+                &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+
+        &lt;span class=&#34;kt&#34;&gt;ComputerTurn&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;score&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;player&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;gameView&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;score&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Just&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;player&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Nothing&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Nothing&lt;/span&gt;
+
+        &lt;span class=&#34;kt&#34;&gt;GameOver&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;score&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;player&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;computer&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;result&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;gameView&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;score&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Just&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;player&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Just&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;computer&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Just&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;result&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;With &lt;code&gt;gameView&lt;/code&gt;, the main &lt;code&gt;view&lt;/code&gt; function is extremely nice and I really dig how it is laid out.&lt;/p&gt;
+
+&lt;p&gt;This is it! You can play with this code directly in your browser on &lt;a href=&#34;https://runelm.io/c/9cr&#34;&gt;runelm.io&lt;/a&gt; or you can grab the source on Github.&lt;/p&gt;
+
+&lt;div class=&#34;runelm-wrapper&#34;&gt;
+  &lt;iframe
+    src=&#34;https://runelm.io/c/9cr&#34;
+    width=&#34;100%&#34;
+    height=&#34;1000&#34;
+    frameBorder=&#34;0&#34;
+    sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
+  &lt;/iframe&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;If you enjoyed this article, do let me know and share it along! You can &lt;a href=&#34;https://twitter.com/_alpacaaa&#34;&gt;follow me&lt;/a&gt; on Twitter if this kind of things interest you.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Building a memory game in Elm. Step by step, from scratch.</title>
@@ -23,13 +438,16 @@
 
 &lt;p&gt;Here&amp;rsquo;s a working demo of the finished project:&lt;/p&gt;
 
-&lt;iframe
+&lt;div class=&#34;runelm-wrapper&#34;&gt;
+  &lt;iframe
     src=&#34;https://runelm.io/c/fbi?pane=preview&#34;
     width=&#34;100%&#34;
     height=&#34;1000&#34;
     frameBorder=&#34;0&#34;
     sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
   &lt;/iframe&gt;
+&lt;/div&gt;
+
 
 &lt;p&gt;The whole thing will be about 200LOC so it should be pretty easy to follow. I&amp;rsquo;m not going to touch on what Elm is or why you might want to use it, there&amp;rsquo;s enough of that around for you to read already.&lt;/p&gt;
 
@@ -105,13 +523,16 @@
 
 &lt;p&gt;Our grid is starting to take shape.&lt;/p&gt;
 
-&lt;iframe
+&lt;div class=&#34;runelm-wrapper&#34;&gt;
+  &lt;iframe
     src=&#34;https://runelm.io/c/tt2?pane=preview&#34;
     width=&#34;100%&#34;
     height=&#34;500&#34;
     frameBorder=&#34;0&#34;
     sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
   &lt;/iframe&gt;
+&lt;/div&gt;
+
 
 &lt;h4 id=&#34;step-2-show-some-cards&#34;&gt;Step 2 – Show some cards&lt;/h4&gt;
 
@@ -211,13 +632,16 @@
 
 &lt;p&gt;Notice we had to pattern match on the model. It looks dumb with a single case but we&amp;rsquo;ll add more. Now change &lt;code&gt;(&amp;quot;flipped&amp;quot;, False)&lt;/code&gt; to &lt;code&gt;(&amp;quot;flipped&amp;quot;, True)&lt;/code&gt; in &lt;code&gt;createCard&lt;/code&gt; and look at all the beautiful card pictures (do it yourself below, just edit the code and run it! It&amp;rsquo;s on line 110).&lt;/p&gt;
 
-&lt;iframe
+&lt;div class=&#34;runelm-wrapper&#34;&gt;
+  &lt;iframe
     src=&#34;https://runelm.io/c/nee&#34;
     width=&#34;100%&#34;
     height=&#34;500&#34;
     frameBorder=&#34;0&#34;
     sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
   &lt;/iframe&gt;
+&lt;/div&gt;
+
 
 &lt;h4 id=&#34;step-3-introducing-messages-and-commands&#34;&gt;Step 3 – Introducing Messages and Commands&lt;/h4&gt;
 
@@ -296,13 +720,16 @@
 
 &lt;p&gt;If we use the &lt;code&gt;(&amp;quot;flipped&amp;quot;, False)&lt;/code&gt; trick again on &lt;code&gt;createCard&lt;/code&gt;, you can see that by refreshing a few times our cards change order, yay! Try it for yourself!&lt;/p&gt;
 
-&lt;iframe
+&lt;div class=&#34;runelm-wrapper&#34;&gt;
+  &lt;iframe
     src=&#34;https://runelm.io/c/0wh&#34;
     width=&#34;100%&#34;
     height=&#34;500&#34;
     frameBorder=&#34;0&#34;
     sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
   &lt;/iframe&gt;
+&lt;/div&gt;
+
 
 &lt;h4 id=&#34;step-4-make-cards-flippable&#34;&gt;Step 4 – Make cards flippable&lt;/h4&gt;
 
@@ -347,13 +774,16 @@
 
 &lt;p&gt;You&amp;rsquo;ll now be able to flip cards back and forth without any constraints. In the next step we&amp;rsquo;re going to implement a proper game logic when &lt;code&gt;Flip&lt;/code&gt; is dispatched, so that cards can be flipped only when the game allows it and matched cards remain face up.&lt;/p&gt;
 
-&lt;iframe
+&lt;div class=&#34;runelm-wrapper&#34;&gt;
+  &lt;iframe
     src=&#34;https://runelm.io/c/ug4&#34;
     width=&#34;100%&#34;
     height=&#34;500&#34;
     frameBorder=&#34;0&#34;
     sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
   &lt;/iframe&gt;
+&lt;/div&gt;
+
 
 &lt;h4 id=&#34;step-5-game-logic&#34;&gt;Step 5 – Game logic&lt;/h4&gt;
 
@@ -442,13 +872,16 @@
 
 &lt;p&gt;You can play with what we have here. You&amp;rsquo;ll see that the game works as expected, except that it never terminates. We need to add one last game state so that we can detect when the player wins and another action to reset the game and start over.&lt;/p&gt;
 
-&lt;iframe
+&lt;div class=&#34;runelm-wrapper&#34;&gt;
+  &lt;iframe
     src=&#34;https://runelm.io/c/i7p&#34;
     width=&#34;100%&#34;
     height=&#34;500&#34;
     frameBorder=&#34;0&#34;
     sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
   &lt;/iframe&gt;
+&lt;/div&gt;
+
 
 &lt;h4 id=&#34;step-6-game-over-and-final-touches&#34;&gt;Step 6 – Game over and final touches&lt;/h4&gt;
 
@@ -545,13 +978,16 @@
 
 &lt;p&gt;Hopefully this has been helpful, the full source code is available on &lt;a href=&#34;https://runelm.io&#34;&gt;runelm.io&lt;/a&gt; and you can play with it here directly in your browser!&lt;/p&gt;
 
-&lt;iframe
-  src=&#34;https://runelm.io/c/fbi&#34;
-  width=&#34;100%&#34;
-  height=&#34;1000&#34;
-  frameBorder=&#34;0&#34;
-  sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
-&lt;/iframe&gt;
+&lt;div class=&#34;runelm-wrapper&#34;&gt;
+  &lt;iframe
+    src=&#34;https://runelm.io/c/fbi&#34;
+    width=&#34;100%&#34;
+    height=&#34;1000&#34;
+    frameBorder=&#34;0&#34;
+    sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
+  &lt;/iframe&gt;
+&lt;/div&gt;
+
 
 &lt;p&gt;If you enjoyed this article, do let me know and share it along! You can &lt;a href=&#34;https://twitter.com/_alpacaaa&#34;&gt;follow me&lt;/a&gt; on Twitter if this kind of things interest you.&lt;/p&gt;
 </description>

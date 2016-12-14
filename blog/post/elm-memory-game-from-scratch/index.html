@@ -17,7 +17,7 @@
 <meta name="twitter:title" content="Building a memory game in Elm. Step by step, from scratch."/>
 <meta name="twitter:description" content="This is the classic Memory Game that I always use to approach a new frontend framework/language. It is based on a super old implementation that somebody made years ago – this little game is my point of reference to understand how things work.
 What are we going to build Here&rsquo;s a working demo of the finished project:
- The whole thing will be about 200LOC so it should be pretty easy to follow."/>
+  The whole thing will be about 200LOC so it should be pretty easy to follow."/>
 
 
 
@@ -73,10 +73,10 @@ What are we going to build Here&rsquo;s a working demo of the finished project:
     </a>
     <ul>
         
-        
+
         
     </ul>
-    
+
     
     <a class="subscribe-button icon-feed" href="https://alpacaaa.net/blog/index.xml">Subscribe</a>
     
@@ -94,6 +94,7 @@ What are we going to build Here&rsquo;s a working demo of the finished project:
 
 
   
+      <a class="blog-logo" href="https://alpacaaa.net/blog/"><img src="https://alpacaaa.net/blog/images/logo.png" alt="Home" /></a>
       
   
   
@@ -134,13 +135,16 @@ What are we going to build Here&rsquo;s a working demo of the finished project:
 
 <p>Here&rsquo;s a working demo of the finished project:</p>
 
-<iframe
+<div class="runelm-wrapper">
+  <iframe
     src="https://runelm.io/c/fbi?pane=preview"
     width="100%"
     height="1000"
     frameBorder="0"
     sandbox="allow-forms allow-popups allow-scripts allow-same-origin allow-modals">
   </iframe>
+</div>
+
 
 <p>The whole thing will be about 200LOC so it should be pretty easy to follow. I&rsquo;m not going to touch on what Elm is or why you might want to use it, there&rsquo;s enough of that around for you to read already.</p>
 
@@ -216,13 +220,16 @@ What are we going to build Here&rsquo;s a working demo of the finished project:
 
 <p>Our grid is starting to take shape.</p>
 
-<iframe
+<div class="runelm-wrapper">
+  <iframe
     src="https://runelm.io/c/tt2?pane=preview"
     width="100%"
     height="500"
     frameBorder="0"
     sandbox="allow-forms allow-popups allow-scripts allow-same-origin allow-modals">
   </iframe>
+</div>
+
 
 <h4 id="step-2-show-some-cards">Step 2 – Show some cards</h4>
 
@@ -322,13 +329,16 @@ What are we going to build Here&rsquo;s a working demo of the finished project:
 
 <p>Notice we had to pattern match on the model. It looks dumb with a single case but we&rsquo;ll add more. Now change <code>(&quot;flipped&quot;, False)</code> to <code>(&quot;flipped&quot;, True)</code> in <code>createCard</code> and look at all the beautiful card pictures (do it yourself below, just edit the code and run it! It&rsquo;s on line 110).</p>
 
-<iframe
+<div class="runelm-wrapper">
+  <iframe
     src="https://runelm.io/c/nee"
     width="100%"
     height="500"
     frameBorder="0"
     sandbox="allow-forms allow-popups allow-scripts allow-same-origin allow-modals">
   </iframe>
+</div>
+
 
 <h4 id="step-3-introducing-messages-and-commands">Step 3 – Introducing Messages and Commands</h4>
 
@@ -407,13 +417,16 @@ What are we going to build Here&rsquo;s a working demo of the finished project:
 
 <p>If we use the <code>(&quot;flipped&quot;, False)</code> trick again on <code>createCard</code>, you can see that by refreshing a few times our cards change order, yay! Try it for yourself!</p>
 
-<iframe
+<div class="runelm-wrapper">
+  <iframe
     src="https://runelm.io/c/0wh"
     width="100%"
     height="500"
     frameBorder="0"
     sandbox="allow-forms allow-popups allow-scripts allow-same-origin allow-modals">
   </iframe>
+</div>
+
 
 <h4 id="step-4-make-cards-flippable">Step 4 – Make cards flippable</h4>
 
@@ -458,13 +471,16 @@ What are we going to build Here&rsquo;s a working demo of the finished project:
 
 <p>You&rsquo;ll now be able to flip cards back and forth without any constraints. In the next step we&rsquo;re going to implement a proper game logic when <code>Flip</code> is dispatched, so that cards can be flipped only when the game allows it and matched cards remain face up.</p>
 
-<iframe
+<div class="runelm-wrapper">
+  <iframe
     src="https://runelm.io/c/ug4"
     width="100%"
     height="500"
     frameBorder="0"
     sandbox="allow-forms allow-popups allow-scripts allow-same-origin allow-modals">
   </iframe>
+</div>
+
 
 <h4 id="step-5-game-logic">Step 5 – Game logic</h4>
 
@@ -553,13 +569,16 @@ What are we going to build Here&rsquo;s a working demo of the finished project:
 
 <p>You can play with what we have here. You&rsquo;ll see that the game works as expected, except that it never terminates. We need to add one last game state so that we can detect when the player wins and another action to reset the game and start over.</p>
 
-<iframe
+<div class="runelm-wrapper">
+  <iframe
     src="https://runelm.io/c/i7p"
     width="100%"
     height="500"
     frameBorder="0"
     sandbox="allow-forms allow-popups allow-scripts allow-same-origin allow-modals">
   </iframe>
+</div>
+
 
 <h4 id="step-6-game-over-and-final-touches">Step 6 – Game over and final touches</h4>
 
@@ -656,13 +675,16 @@ What are we going to build Here&rsquo;s a working demo of the finished project:
 
 <p>Hopefully this has been helpful, the full source code is available on <a href="https://runelm.io">runelm.io</a> and you can play with it here directly in your browser!</p>
 
-<iframe
-  src="https://runelm.io/c/fbi"
-  width="100%"
-  height="1000"
-  frameBorder="0"
-  sandbox="allow-forms allow-popups allow-scripts allow-same-origin allow-modals">
-</iframe>
+<div class="runelm-wrapper">
+  <iframe
+    src="https://runelm.io/c/fbi"
+    width="100%"
+    height="1000"
+    frameBorder="0"
+    sandbox="allow-forms allow-popups allow-scripts allow-same-origin allow-modals">
+  </iframe>
+</div>
+
 
 <p>If you enjoyed this article, do let me know and share it along! You can <a href="https://twitter.com/_alpacaaa">follow me</a> on Twitter if this kind of things interest you.</p>
 
@@ -715,7 +737,6 @@ What are we going to build Here&rsquo;s a working demo of the finished project:
     </footer>
     </div>
     <script type="text/javascript" src="https://alpacaaa.net/blog/js/jquery.js"></script>
-    <script type="text/javascript" src="https://alpacaaa.net/blog/js/jquery.fitvids.js"></script>
     <script type="text/javascript" src="https://alpacaaa.net/blog/js/index.js"></script>
     
 </body>
