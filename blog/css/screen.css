@@ -943,7 +943,8 @@ body.nav-opened .menu-button .word {
 
 .single-post .post-header,
 .single-post .post-footer,
-.single-post .post-content >* {
+.single-post .post-content >*,
+ #content {
   max-width: 90rem;
   padding-left: 5%;
   padding-right: 5%;
