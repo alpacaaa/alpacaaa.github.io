@@ -6,8 +6,262 @@
     <description>Recent content in Post-rsses on alpacaaa</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 14 Dec 2016 11:00:39 +0100</lastBuildDate>
+    <lastBuildDate>Wed, 04 Jan 2017 11:00:39 +0100</lastBuildDate>
     <atom:link href="https://alpacaaa.net/blog/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Building a Mastermind game in Elm.</title>
+      <link>https://alpacaaa.net/blog/post/elm-mastermind-game/</link>
+      <pubDate>Wed, 04 Jan 2017 11:00:39 +0100</pubDate>
+      
+      <guid>https://alpacaaa.net/blog/post/elm-mastermind-game/</guid>
+      <description>
+
+&lt;p&gt;Let&amp;rsquo;s kick off the new year with another game. This is a little bit more complex than the &lt;a href=&#34;https://alpacaaa.net/blog/post/elm-memory-game-from-scratch/&#34;&gt;Memory Game&lt;/a&gt; and &lt;a href=&#34;https://alpacaaa.net/blog/post/elm-rock-paper-scissors-beginner/&#34;&gt;Rock Paper Scissors&lt;/a&gt; clones I implemented in Elm over the past few weeks. You might want to refer to those previous tutorials if you&amp;rsquo;re not entirely familiar with Elm and how the Elm Architecture works. This is what we&amp;rsquo;re going to build:&lt;/p&gt;
+
+&lt;div class=&#34;runelm-wrapper no-focus&#34;&gt;
+  &lt;iframe
+    src=&#34;https://runelm.io/c/f2t?pane=preview&#34;
+    width=&#34;100%&#34;
+    height=&#34;550&#34;
+    frameBorder=&#34;0&#34;
+    sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
+  &lt;/iframe&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;So this is &lt;strong&gt;Mastermind&lt;/strong&gt;! I created this little explanation of the types we&amp;rsquo;re going to use. Refer back to it as you skim through the code if you need to.&lt;/p&gt;
+
+&lt;div class=&#34;runelm-wrapper no-focus&#34;&gt;
+  &lt;iframe
+    src=&#34;https://runelm.io/c/qbm?pane=preview&#34;
+    width=&#34;100%&#34;
+    height=&#34;750&#34;
+    frameBorder=&#34;0&#34;
+    sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
+  &lt;/iframe&gt;
+&lt;/div&gt;
+
+
+&lt;h4 id=&#34;types&#34;&gt;Types&lt;/h4&gt;
+
+&lt;p&gt;We&amp;rsquo;ll need some colors to play with:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;kr&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Color&lt;/span&gt;
+    &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Red&lt;/span&gt;
+    &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Green&lt;/span&gt;
+    &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Blue&lt;/span&gt;
+    &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Cyan&lt;/span&gt;
+    &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Yellow&lt;/span&gt;
+    &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Empty&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Notice the &lt;code&gt;Empty&lt;/code&gt; constructor. It has essentially the same meaning as &lt;code&gt;Nothing&lt;/code&gt; in &lt;code&gt;Maybe&lt;/code&gt; and should make the code much easier to write and understand.&lt;/p&gt;
+
+&lt;p&gt;A &lt;code&gt;Combination&lt;/code&gt; is just a list of colors.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;kr&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;alias&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Combination&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Color&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;When the user makes a guess, we&amp;rsquo;ll encode it with the &lt;code&gt;Guess&lt;/code&gt; type. We also need to give back some hints to the user (the black and white pegs).&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;kr&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Hint&lt;/span&gt;
+    &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;CorrectPosition&lt;/span&gt;
+    &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;WrongPosition&lt;/span&gt;
+
+&lt;span class=&#34;kr&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;alias&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Guess&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Combination&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Hint&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Our model is pretty simple. We have a &lt;code&gt;correct&lt;/code&gt; field which is the &lt;code&gt;Combination&lt;/code&gt; that the user has to guess. &lt;code&gt;guesses&lt;/code&gt; is the list of &lt;code&gt;Guess&lt;/code&gt; that the user has made so far and &lt;code&gt;state&lt;/code&gt; indicates if we&amp;rsquo;re still playing or else.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;Playing&lt;/code&gt; state holds the current guess (&lt;code&gt;Combination&lt;/code&gt;). Notice that, thanks to &lt;code&gt;Empty&lt;/code&gt; as a &lt;code&gt;Color&lt;/code&gt; constructor, we can have a combination that looks like this &lt;code&gt;[Red, Empty, Cyan, Cyan]&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;Index&lt;/code&gt; is only needed for the UI, it indicates which color in the current combination the user is choosing.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;kr&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;alias&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Index&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;Int&lt;/span&gt;
+
+&lt;span class=&#34;kr&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;GameState&lt;/span&gt;
+    &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Playing&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Combination&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Maybe&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Index&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;GameOver&lt;/span&gt;
+    &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Surrender&lt;/span&gt;
+
+&lt;span class=&#34;kr&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;alias&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;correct&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Combination&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;guesses&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Guess&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;state&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;GameState&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4 id=&#34;update&#34;&gt;Update&lt;/h4&gt;
+
+&lt;p&gt;Let&amp;rsquo;s write some helper functions to generate a list of random colors that we&amp;rsquo;ll use to create the &lt;code&gt;Combination&lt;/code&gt; the user has to guess.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;randomList&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Int&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Int&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Cmd&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;randomList&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;msg&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;len&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;Random&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;100&lt;/span&gt;
+        &lt;span class=&#34;o&#34;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Random&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;list&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;len&lt;/span&gt;
+        &lt;span class=&#34;o&#34;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Random&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;generate&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;msg&lt;/span&gt;
+
+
+&lt;span class=&#34;nf&#34;&gt;shuffle&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;comparable&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;shuffle&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;random&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;list&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;map2&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(,)&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;list&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;random&lt;/span&gt;
+        &lt;span class=&#34;o&#34;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sortBy&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Tuple&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;second&lt;/span&gt;
+        &lt;span class=&#34;o&#34;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;unzip&lt;/span&gt;
+        &lt;span class=&#34;o&#34;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Tuple&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;first&lt;/span&gt;
+
+
+&lt;span class=&#34;nf&#34;&gt;randomCombination&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Int&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;comparable&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;randomCombination&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;size&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;xs&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;random&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;map&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;repeat&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;size&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;xs&lt;/span&gt;
+        &lt;span class=&#34;o&#34;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;concat&lt;/span&gt;
+        &lt;span class=&#34;o&#34;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;shuffle&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;random&lt;/span&gt;
+        &lt;span class=&#34;o&#34;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;take&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;size&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This is very similar to the random number generation we&amp;rsquo;ve seen in the &lt;a href=&#34;https://alpacaaa.net/blog/post/elm-memory-game-from-scratch/&#34;&gt;Memory Game&lt;/a&gt;. I suggest you read that post if you don&amp;rsquo;t understand what&amp;rsquo;s going on and/or you&amp;rsquo;re still struggling with commands and the Elm architecture.&lt;/p&gt;
+
+&lt;p&gt;I think &lt;code&gt;randomCombination&lt;/code&gt; is pretty cool because it first creates a list of lists in this form &lt;code&gt;[ [ Red, Red, Red ], [Cyan, Cyan, Cyan], …]&lt;/code&gt;, it concatenates them so we get a flat list and then uses  the other list we get as input (&lt;code&gt;random&lt;/code&gt;) to generate a shuffled version, of which we&amp;rsquo;re only interested in the first &lt;code&gt;size&lt;/code&gt; elements.&lt;/p&gt;
+
+&lt;p&gt;The most interesting piece of this little game is the algorithm that takes a &lt;code&gt;Combination&lt;/code&gt; and returns a &lt;code&gt;Guess&lt;/code&gt;. I followed the guidelines found on a Stackoverflow post (&lt;a href=&#34;http://stackoverflow.com/questions/2005723/how-to-count-the-white-correctly-in-mastermind-guessing-game-in-c&#34;&gt;How to count the “white” correctly in mastermind guessing game&lt;/a&gt;), here they are:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;ol&gt;
+&lt;li&gt;Make two arrays, &lt;code&gt;ans&lt;/code&gt; and &lt;code&gt;guess&lt;/code&gt;, with a slot for each color.&lt;/li&gt;
+&lt;li&gt;For each color, populate &lt;code&gt;ans&lt;/code&gt; with the number of pegs of that color. Similarly for &lt;code&gt;guess&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;Add up &lt;code&gt;min(ans[i], guess[i])&lt;/code&gt; for each &lt;code&gt;i&lt;/code&gt;. This is whites plus blacks.&lt;/li&gt;
+&lt;li&gt;Add up &lt;code&gt;max(ans[i] - guess[i], 0)&lt;/code&gt; for each &lt;code&gt;i&lt;/code&gt;. This is the number of whites.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;We obviously need to convert them in a more functional style. This will be a good exercise if you find yourself thinking in imperative code and can&amp;rsquo;t figure out how to write something in a functional manner. Let&amp;rsquo;s go over each of these steps:&lt;/p&gt;
+
+&lt;h5 id=&#34;1-make-two-arrays-ans-and-guess-with-a-slot-for-each-color&#34;&gt;1. Make two arrays, &lt;code&gt;ans&lt;/code&gt; and &lt;code&gt;guess&lt;/code&gt;, with a slot for each color.&lt;/h5&gt;
+
+&lt;p&gt;This one is easy, we&amp;rsquo;ll just create a fixed &lt;code&gt;List&lt;/code&gt; with all of our colors.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;colors&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Color&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;colors&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Red&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Green&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Blue&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Cyan&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Yellow&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h5 id=&#34;2-for-each-color-populate-ans-with-the-number-of-pegs-of-that-color-similarly-for-guess&#34;&gt;2. For each color, populate &lt;code&gt;ans&lt;/code&gt; with the number of pegs of that color. Similarly for &lt;code&gt;guess&lt;/code&gt;.&lt;/h5&gt;
+
+&lt;p&gt;Let&amp;rsquo;s make a function &lt;code&gt;populate&lt;/code&gt; that does exactly that. It takes a &lt;code&gt;Combination&lt;/code&gt; (either &lt;code&gt;ans&lt;/code&gt; or &lt;code&gt;guess&lt;/code&gt;) and returns a list of tuples in the form &lt;code&gt;( Color, Int )&lt;/code&gt;. The second value (&lt;code&gt;Int&lt;/code&gt;) is obviously the number of occurencies of that color in the &lt;code&gt;Combination&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;populate&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Combination&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Color&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Int&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;populate&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;combination&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;let&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;countOccurrencies&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;filter&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;((&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;combination&lt;/span&gt;
+                &lt;span class=&#34;o&#34;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;length&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;in&lt;/span&gt;
+        &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;map&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;\&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;countOccurrencies&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;colors&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h5 id=&#34;3-add-up-min-ans-i-guess-i-for-each-i-this-is-whites-plus-blacks&#34;&gt;3. Add up &lt;code&gt;min(ans[i], guess[i])&lt;/code&gt; for each &lt;code&gt;i&lt;/code&gt;. This is whites plus blacks.&lt;/h5&gt;
+
+&lt;p&gt;We&amp;rsquo;ll create a function &lt;code&gt;processGuess&lt;/code&gt; that takes two &lt;code&gt;Combination&lt;/code&gt; (the guess and the correct one). We&amp;rsquo;ll employ the &lt;code&gt;populate&lt;/code&gt; function we just created.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;processGuess&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Combination&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Combination&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Guess&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;processGuess&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;guess&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;correct&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;let&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;ans&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;populate&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;correct&lt;/span&gt;
+
+        &lt;span class=&#34;n&#34;&gt;gus&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;populate&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;guess&lt;/span&gt;
+
+        &lt;span class=&#34;n&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;_&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;count1&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;_&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;count2&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;min&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;count1&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;count2&lt;/span&gt;
+
+        &lt;span class=&#34;n&#34;&gt;whiteBlacks&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sum&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;map2&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ans&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;gus&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;in&lt;/span&gt;
+      &lt;span class=&#34;c1&#34;&gt;-- TODO...  &lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;p&lt;/code&gt; is a helper function that takes two tuples in the form &lt;code&gt;( Color, Int )&lt;/code&gt; and returns the minimum value between the two integers. &lt;code&gt;whiteBlacks&lt;/code&gt; is clearly the sum of the blacks and whites.&lt;/p&gt;
+
+&lt;h5 id=&#34;4-add-up-max-ans-i-guess-i-0-for-each-i-this-is-the-number-of-whites&#34;&gt;4. Add up &lt;code&gt;max(ans[i] - guess[i], 0)&lt;/code&gt; for each &lt;code&gt;i&lt;/code&gt;. This is the number of whites.&lt;/h5&gt;
+
+&lt;p&gt;I found this to be very much unnecessary. Instead of counting the number of whites, it is much easier to count the number of blacks and then derive the whites by just subtracting the blacks from the total. Finding out the number of blacks is fairly straightforward:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;blacks&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;map2&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;guess&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;correct&lt;/span&gt;
+        &lt;span class=&#34;o&#34;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;filter&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;identity&lt;/span&gt;
+        &lt;span class=&#34;o&#34;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;length&lt;/span&gt;
+
+&lt;span class=&#34;nf&#34;&gt;whites&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;whiteBlacks&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;blacks&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We&amp;rsquo;re essentially creating a new list with the result of comparing the two colors at the same index. This will be a list like &lt;code&gt;[True, False, False, False]&lt;/code&gt;. All is left to do is to count the &lt;code&gt;True&lt;/code&gt; values, so we&amp;rsquo;ll filter on &lt;code&gt;identity&lt;/code&gt; (recall that &lt;code&gt;List.filter&lt;/code&gt; expects a &lt;code&gt;Bool&lt;/code&gt; so we&amp;rsquo;re already good) and take the length of the resulting list.&lt;/p&gt;
+
+&lt;p&gt;Here&amp;rsquo;s the function in full:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;tag&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Int&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;tag&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;flip&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;repeat&lt;/span&gt;
+
+&lt;span class=&#34;nf&#34;&gt;processGuess&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Combination&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Combination&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Guess&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;processGuess&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;guess&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;correct&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;let&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;ans&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;populate&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;correct&lt;/span&gt;
+
+        &lt;span class=&#34;n&#34;&gt;gus&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;populate&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;guess&lt;/span&gt;
+
+        &lt;span class=&#34;n&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;_&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;count1&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;_&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;count2&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;min&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;count1&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;count2&lt;/span&gt;
+
+        &lt;span class=&#34;n&#34;&gt;whiteBlacks&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sum&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;map2&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ans&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;gus&lt;/span&gt;
+
+        &lt;span class=&#34;n&#34;&gt;blacks&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;map2&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;guess&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;correct&lt;/span&gt;
+                &lt;span class=&#34;o&#34;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;filter&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;identity&lt;/span&gt;
+                &lt;span class=&#34;o&#34;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;length&lt;/span&gt;
+
+        &lt;span class=&#34;n&#34;&gt;whites&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;whiteBlacks&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;blacks&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;in&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;guess&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tag&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;CorrectPosition&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;blacks&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;++&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tag&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;WrongPosition&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;whites&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Just for reference, we can use it in the &lt;code&gt;update&lt;/code&gt; function like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;kr&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;state&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;of&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;Playing&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;combination&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;_&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+        &lt;span class=&#34;kr&#34;&gt;let&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;isOver&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+                &lt;span class=&#34;n&#34;&gt;combination&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;correct&lt;/span&gt;
+
+            &lt;span class=&#34;n&#34;&gt;guess&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+                &lt;span class=&#34;n&#34;&gt;processGuess&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;combination&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;correct&lt;/span&gt;
+
+            &lt;span class=&#34;n&#34;&gt;newModel&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+                &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;guesses&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;guesses&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;++&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;guess&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+        &lt;span class=&#34;kr&#34;&gt;in&lt;/span&gt;
+            &lt;span class=&#34;kr&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;isOver&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;then&lt;/span&gt;
+                &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;newModel&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;state&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;GameOver&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+            &lt;span class=&#34;kr&#34;&gt;else&lt;/span&gt;
+                &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;newModel&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;state&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Playing&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;emptyCombination&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Nothing&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Super cool!&lt;/p&gt;
+
+&lt;h4 id=&#34;wrapping-up&#34;&gt;Wrapping up&lt;/h4&gt;
+
+&lt;p&gt;The view is fairly simple so I&amp;rsquo;m not going to touch on that. As always, I encourage you to go through the source code and play with it! You can do it directly in your browser here or on &lt;a href=&#34;https://runelm.io/c/f2t&#34;&gt;runelm.io&lt;/a&gt;. The source code is also available on &lt;a href=&#34;https://github.com/alpacaaa/elm-mastermind&#34;&gt;Github&lt;/a&gt;.&lt;/p&gt;
+
+&lt;div class=&#34;runelm-wrapper &#34;&gt;
+  &lt;iframe
+    src=&#34;https://runelm.io/c/f2t&#34;
+    width=&#34;100%&#34;
+    height=&#34;550&#34;
+    frameBorder=&#34;0&#34;
+    sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
+  &lt;/iframe&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;I hope you got something out of this, if you enjoyed this article &lt;a href=&#34;https://twitter.com/_alpacaaa&#34;&gt;follow me&lt;/a&gt; on Twitter and &lt;code&gt;Maybe&lt;/code&gt; share it along :)&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Rock Paper Scissors in Elm. A beginner friendly implementation.</title>

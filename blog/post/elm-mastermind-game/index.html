@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    
+
+
+    
+        <meta name="twitter:card" content="summary"/>
+    
+
+
+
+<meta name="twitter:title" content="Building a Mastermind game in Elm."/>
+<meta name="twitter:description" content="Let&rsquo;s kick off the new year with another game. This is a little bit more complex than the Memory Game and Rock Paper Scissors clones I implemented in Elm over the past few weeks. You might want to refer to those previous tutorials if you&rsquo;re not entirely familiar with Elm and how the Elm Architecture works. This is what we&rsquo;re going to build:
+  So this is Mastermind! I created this little explanation of the types we&rsquo;re going to use."/>
+
+
+
+  	<meta property="og:title" content=" Building a Mastermind game in Elm. &middot;  alpacaaa" />
+  	<meta property="og:site_name" content="alpacaaa" />
+  	<meta property="og:url" content="https://alpacaaa.net/blog/post/elm-mastermind-game/" />
+
+    
+  	<meta property="og:type" content="article" />
+
+    <meta property="og:article:published_time" content="2017-01-04T11:00:39&#43;01:00" />
+
+    
+    
+
+    <title>
+       Building a Mastermind game in Elm. &middot;  alpacaaa
+    </title>
+
+    <meta name="description" content="Marco Sampellegrini" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="https://alpacaaa.net/blog/images/favicon.ico">
+	  <link rel="apple-touch-icon" href="https://alpacaaa.net/blog/images/apple-touch-icon.png" />
+
+    <link rel="stylesheet" type="text/css" href="https://alpacaaa.net/blog/css/screen.css" />
+    <link rel="stylesheet" type="text/css" href="https://alpacaaa.net/blog/css/nav.css" />
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400|Inconsolata" />
+
+
+    
+      
+          <link href="https://alpacaaa.net/blog/index.xml" rel="alternate" type="application/rss+xml" title="alpacaaa" />
+      
+      
+    
+    <meta name="generator" content="Hugo 0.17" />
+
+    <link rel="canonical" href="https://alpacaaa.net/blog/post/elm-mastermind-game/" />
+
+    
+
+    
+</head>
+<body class="nav-closed">
+
+  <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        
+
+        
+    </ul>
+
+    
+    <a class="subscribe-button icon-feed" href="https://alpacaaa.net/blog/index.xml">Subscribe</a>
+    
+</div>
+<span class="nav-cover"></span>
+
+
+ <div class="site-wrapper">
+
+
+
+
+<header class="main-header post-head no-cover">
+  <nav class="main-nav clearfix">
+
+
+  
+      <a class="blog-logo" href="https://alpacaaa.net/blog/"><img src="https://alpacaaa.net/blog/images/logo.png" alt="Home" /></a>
+      
+  
+  
+      <a class="menu-button icon-feed" href="https://alpacaaa.net/blog/index.xml">&nbsp;&nbsp;Subscribe</a>
+  
+  </nav>
+</header>
+
+
+
+<main class="content single-post" role="main">
+
+
+
+
+  <article class="post post">
+
+    <header class="post-header">
+        <h1 class="post-title">Building a Mastermind game in Elm.</h1>
+        <small></small>
+
+        <section class="post-meta">
+        
+          <time class="post-date" datetime="2017-01-04T11:00:39&#43;01:00">
+            Jan 4, 2017
+          </time>
+        
+         
+        </section>
+    </header>
+
+    <section class="post-content">
+      
+
+<p>Let&rsquo;s kick off the new year with another game. This is a little bit more complex than the <a href="https://alpacaaa.net/blog/post/elm-memory-game-from-scratch/">Memory Game</a> and <a href="https://alpacaaa.net/blog/post/elm-rock-paper-scissors-beginner/">Rock Paper Scissors</a> clones I implemented in Elm over the past few weeks. You might want to refer to those previous tutorials if you&rsquo;re not entirely familiar with Elm and how the Elm Architecture works. This is what we&rsquo;re going to build:</p>
+
+<div class="runelm-wrapper no-focus">
+  <iframe
+    src="https://runelm.io/c/f2t?pane=preview"
+    width="100%"
+    height="550"
+    frameBorder="0"
+    sandbox="allow-forms allow-popups allow-scripts allow-same-origin allow-modals">
+  </iframe>
+</div>
+
+
+<p>So this is <strong>Mastermind</strong>! I created this little explanation of the types we&rsquo;re going to use. Refer back to it as you skim through the code if you need to.</p>
+
+<div class="runelm-wrapper no-focus">
+  <iframe
+    src="https://runelm.io/c/qbm?pane=preview"
+    width="100%"
+    height="750"
+    frameBorder="0"
+    sandbox="allow-forms allow-popups allow-scripts allow-same-origin allow-modals">
+  </iframe>
+</div>
+
+
+<h4 id="types">Types</h4>
+
+<p>We&rsquo;ll need some colors to play with:</p>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="kt">Color</span>
+    <span class="ow">=</span> <span class="kt">Red</span>
+    <span class="o">|</span> <span class="kt">Green</span>
+    <span class="o">|</span> <span class="kt">Blue</span>
+    <span class="o">|</span> <span class="kt">Cyan</span>
+    <span class="o">|</span> <span class="kt">Yellow</span>
+    <span class="o">|</span> <span class="kt">Empty</span>
+</code></pre></div>
+
+<p>Notice the <code>Empty</code> constructor. It has essentially the same meaning as <code>Nothing</code> in <code>Maybe</code> and should make the code much easier to write and understand.</p>
+
+<p>A <code>Combination</code> is just a list of colors.</p>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="n">alias</span> <span class="kt">Combination</span> <span class="ow">=</span>
+    <span class="kt">List</span> <span class="kt">Color</span>
+</code></pre></div>
+
+<p>When the user makes a guess, we&rsquo;ll encode it with the <code>Guess</code> type. We also need to give back some hints to the user (the black and white pegs).</p>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="kt">Hint</span>
+    <span class="ow">=</span> <span class="kt">CorrectPosition</span>
+    <span class="o">|</span> <span class="kt">WrongPosition</span>
+
+<span class="kr">type</span> <span class="n">alias</span> <span class="kt">Guess</span> <span class="ow">=</span>
+    <span class="p">(</span> <span class="kt">Combination</span><span class="p">,</span> <span class="kt">List</span> <span class="kt">Hint</span> <span class="p">)</span>
+</code></pre></div>
+
+<p>Our model is pretty simple. We have a <code>correct</code> field which is the <code>Combination</code> that the user has to guess. <code>guesses</code> is the list of <code>Guess</code> that the user has made so far and <code>state</code> indicates if we&rsquo;re still playing or else.</p>
+
+<p>The <code>Playing</code> state holds the current guess (<code>Combination</code>). Notice that, thanks to <code>Empty</code> as a <code>Color</code> constructor, we can have a combination that looks like this <code>[Red, Empty, Cyan, Cyan]</code>.</p>
+
+<p><code>Index</code> is only needed for the UI, it indicates which color in the current combination the user is choosing.</p>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="n">alias</span> <span class="kt">Index</span> <span class="ow">=</span>
+    <span class="kt">Int</span>
+
+<span class="kr">type</span> <span class="kt">GameState</span>
+    <span class="ow">=</span> <span class="kt">Playing</span> <span class="kt">Combination</span> <span class="p">(</span><span class="kt">Maybe</span> <span class="kt">Index</span><span class="p">)</span>
+    <span class="o">|</span> <span class="kt">GameOver</span>
+    <span class="o">|</span> <span class="kt">Surrender</span>
+
+<span class="kr">type</span> <span class="n">alias</span> <span class="kt">Model</span> <span class="ow">=</span>
+    <span class="p">{</span> <span class="n">correct</span> <span class="kt">:</span> <span class="kt">Combination</span>
+    <span class="p">,</span> <span class="n">guesses</span> <span class="kt">:</span> <span class="kt">List</span> <span class="kt">Guess</span>
+    <span class="p">,</span> <span class="n">state</span> <span class="kt">:</span> <span class="kt">GameState</span>
+    <span class="p">}</span>
+</code></pre></div>
+
+<h4 id="update">Update</h4>
+
+<p>Let&rsquo;s write some helper functions to generate a list of random colors that we&rsquo;ll use to create the <code>Combination</code> the user has to guess.</p>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">randomList</span> <span class="kt">:</span> <span class="p">(</span><span class="kt">List</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Msg</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Cmd</span> <span class="kt">Msg</span>
+<span class="nf">randomList</span> <span class="n">msg</span> <span class="n">len</span> <span class="ow">=</span>
+    <span class="kt">Random</span><span class="o">.</span><span class="n">int</span> <span class="mi">0</span> <span class="mi">100</span>
+        <span class="o">|&gt;</span> <span class="kt">Random</span><span class="o">.</span><span class="n">list</span> <span class="n">len</span>
+        <span class="o">|&gt;</span> <span class="kt">Random</span><span class="o">.</span><span class="n">generate</span> <span class="n">msg</span>
+
+
+<span class="nf">shuffle</span> <span class="kt">:</span> <span class="kt">List</span> <span class="n">comparable</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="n">a</span>
+<span class="nf">shuffle</span> <span class="n">random</span> <span class="n">list</span> <span class="ow">=</span>
+    <span class="kt">List</span><span class="o">.</span><span class="n">map2</span> <span class="p">(,)</span> <span class="n">list</span> <span class="n">random</span>
+        <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="n">sortBy</span> <span class="kt">Tuple</span><span class="o">.</span><span class="n">second</span>
+        <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="n">unzip</span>
+        <span class="o">|&gt;</span> <span class="kt">Tuple</span><span class="o">.</span><span class="n">first</span>
+
+
+<span class="nf">randomCombination</span> <span class="kt">:</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="n">comparable</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="n">a</span>
+<span class="nf">randomCombination</span> <span class="n">size</span> <span class="n">xs</span> <span class="n">random</span> <span class="ow">=</span>
+    <span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="p">(</span><span class="kt">List</span><span class="o">.</span><span class="n">repeat</span> <span class="n">size</span><span class="p">)</span> <span class="n">xs</span>
+        <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="n">concat</span>
+        <span class="o">|&gt;</span> <span class="n">shuffle</span> <span class="n">random</span>
+        <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="n">take</span> <span class="n">size</span>
+</code></pre></div>
+
+<p>This is very similar to the random number generation we&rsquo;ve seen in the <a href="https://alpacaaa.net/blog/post/elm-memory-game-from-scratch/">Memory Game</a>. I suggest you read that post if you don&rsquo;t understand what&rsquo;s going on and/or you&rsquo;re still struggling with commands and the Elm architecture.</p>
+
+<p>I think <code>randomCombination</code> is pretty cool because it first creates a list of lists in this form <code>[ [ Red, Red, Red ], [Cyan, Cyan, Cyan], …]</code>, it concatenates them so we get a flat list and then uses  the other list we get as input (<code>random</code>) to generate a shuffled version, of which we&rsquo;re only interested in the first <code>size</code> elements.</p>
+
+<p>The most interesting piece of this little game is the algorithm that takes a <code>Combination</code> and returns a <code>Guess</code>. I followed the guidelines found on a Stackoverflow post (<a href="http://stackoverflow.com/questions/2005723/how-to-count-the-white-correctly-in-mastermind-guessing-game-in-c">How to count the “white” correctly in mastermind guessing game</a>), here they are:</p>
+
+<blockquote>
+<ol>
+<li>Make two arrays, <code>ans</code> and <code>guess</code>, with a slot for each color.</li>
+<li>For each color, populate <code>ans</code> with the number of pegs of that color. Similarly for <code>guess</code>.</li>
+<li>Add up <code>min(ans[i], guess[i])</code> for each <code>i</code>. This is whites plus blacks.</li>
+<li>Add up <code>max(ans[i] - guess[i], 0)</code> for each <code>i</code>. This is the number of whites.</li>
+</ol>
+</blockquote>
+
+<p>We obviously need to convert them in a more functional style. This will be a good exercise if you find yourself thinking in imperative code and can&rsquo;t figure out how to write something in a functional manner. Let&rsquo;s go over each of these steps:</p>
+
+<h5 id="1-make-two-arrays-ans-and-guess-with-a-slot-for-each-color">1. Make two arrays, <code>ans</code> and <code>guess</code>, with a slot for each color.</h5>
+
+<p>This one is easy, we&rsquo;ll just create a fixed <code>List</code> with all of our colors.</p>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">colors</span> <span class="kt">:</span> <span class="kt">List</span> <span class="kt">Color</span>
+<span class="nf">colors</span> <span class="ow">=</span>
+    <span class="p">[</span> <span class="kt">Red</span><span class="p">,</span> <span class="kt">Green</span><span class="p">,</span> <span class="kt">Blue</span><span class="p">,</span> <span class="kt">Cyan</span><span class="p">,</span> <span class="kt">Yellow</span> <span class="p">]</span>
+</code></pre></div>
+
+<h5 id="2-for-each-color-populate-ans-with-the-number-of-pegs-of-that-color-similarly-for-guess">2. For each color, populate <code>ans</code> with the number of pegs of that color. Similarly for <code>guess</code>.</h5>
+
+<p>Let&rsquo;s make a function <code>populate</code> that does exactly that. It takes a <code>Combination</code> (either <code>ans</code> or <code>guess</code>) and returns a list of tuples in the form <code>( Color, Int )</code>. The second value (<code>Int</code>) is obviously the number of occurencies of that color in the <code>Combination</code>.</p>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">populate</span> <span class="kt">:</span> <span class="kt">Combination</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="p">(</span> <span class="kt">Color</span><span class="p">,</span> <span class="kt">Int</span> <span class="p">)</span>
+<span class="nf">populate</span> <span class="n">combination</span> <span class="ow">=</span>
+    <span class="kr">let</span>
+        <span class="n">countOccurrencies</span> <span class="n">c</span> <span class="ow">=</span>
+            <span class="kt">List</span><span class="o">.</span><span class="n">filter</span> <span class="p">((</span><span class="o">==</span><span class="p">)</span> <span class="n">c</span><span class="p">)</span> <span class="n">combination</span>
+                <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="n">length</span>
+    <span class="kr">in</span>
+        <span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">c</span> <span class="ow">-&gt;</span> <span class="p">(</span> <span class="n">c</span><span class="p">,</span> <span class="n">countOccurrencies</span> <span class="n">c</span> <span class="p">))</span> <span class="n">colors</span>
+</code></pre></div>
+
+<h5 id="3-add-up-min-ans-i-guess-i-for-each-i-this-is-whites-plus-blacks">3. Add up <code>min(ans[i], guess[i])</code> for each <code>i</code>. This is whites plus blacks.</h5>
+
+<p>We&rsquo;ll create a function <code>processGuess</code> that takes two <code>Combination</code> (the guess and the correct one). We&rsquo;ll employ the <code>populate</code> function we just created.</p>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">processGuess</span> <span class="kt">:</span> <span class="kt">Combination</span> <span class="ow">-&gt;</span> <span class="kt">Combination</span> <span class="ow">-&gt;</span> <span class="kt">Guess</span>
+<span class="nf">processGuess</span> <span class="n">guess</span> <span class="n">correct</span> <span class="ow">=</span>
+    <span class="kr">let</span>
+        <span class="n">ans</span> <span class="ow">=</span>
+            <span class="n">populate</span> <span class="n">correct</span>
+
+        <span class="n">gus</span> <span class="ow">=</span>
+            <span class="n">populate</span> <span class="n">guess</span>
+
+        <span class="n">p</span> <span class="p">(</span> <span class="kr">_</span><span class="p">,</span> <span class="n">count1</span> <span class="p">)</span> <span class="p">(</span> <span class="kr">_</span><span class="p">,</span> <span class="n">count2</span> <span class="p">)</span> <span class="ow">=</span>
+            <span class="n">min</span> <span class="n">count1</span> <span class="n">count2</span>
+
+        <span class="n">whiteBlacks</span> <span class="ow">=</span>
+            <span class="kt">List</span><span class="o">.</span><span class="n">sum</span> <span class="o">&lt;|</span> <span class="kt">List</span><span class="o">.</span><span class="n">map2</span> <span class="n">p</span> <span class="n">ans</span> <span class="n">gus</span>
+    <span class="kr">in</span>
+      <span class="c1">-- TODO...  </span>
+</code></pre></div>
+
+<p><code>p</code> is a helper function that takes two tuples in the form <code>( Color, Int )</code> and returns the minimum value between the two integers. <code>whiteBlacks</code> is clearly the sum of the blacks and whites.</p>
+
+<h5 id="4-add-up-max-ans-i-guess-i-0-for-each-i-this-is-the-number-of-whites">4. Add up <code>max(ans[i] - guess[i], 0)</code> for each <code>i</code>. This is the number of whites.</h5>
+
+<p>I found this to be very much unnecessary. Instead of counting the number of whites, it is much easier to count the number of blacks and then derive the whites by just subtracting the blacks from the total. Finding out the number of blacks is fairly straightforward:</p>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">blacks</span> <span class="ow">=</span>
+    <span class="kt">List</span><span class="o">.</span><span class="n">map2</span> <span class="p">(</span><span class="o">==</span><span class="p">)</span> <span class="n">guess</span> <span class="n">correct</span>
+        <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="n">filter</span> <span class="n">identity</span>
+        <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="n">length</span>
+
+<span class="nf">whites</span> <span class="ow">=</span>
+    <span class="n">whiteBlacks</span> <span class="o">-</span> <span class="n">blacks</span>
+</code></pre></div>
+
+<p>We&rsquo;re essentially creating a new list with the result of comparing the two colors at the same index. This will be a list like <code>[True, False, False, False]</code>. All is left to do is to count the <code>True</code> values, so we&rsquo;ll filter on <code>identity</code> (recall that <code>List.filter</code> expects a <code>Bool</code> so we&rsquo;re already good) and take the length of the resulting list.</p>
+
+<p>Here&rsquo;s the function in full:</p>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">tag</span> <span class="kt">:</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="n">a</span>
+<span class="nf">tag</span> <span class="ow">=</span>
+    <span class="n">flip</span> <span class="kt">List</span><span class="o">.</span><span class="n">repeat</span>
+
+<span class="nf">processGuess</span> <span class="kt">:</span> <span class="kt">Combination</span> <span class="ow">-&gt;</span> <span class="kt">Combination</span> <span class="ow">-&gt;</span> <span class="kt">Guess</span>
+<span class="nf">processGuess</span> <span class="n">guess</span> <span class="n">correct</span> <span class="ow">=</span>
+    <span class="kr">let</span>
+        <span class="n">ans</span> <span class="ow">=</span>
+            <span class="n">populate</span> <span class="n">correct</span>
+
+        <span class="n">gus</span> <span class="ow">=</span>
+            <span class="n">populate</span> <span class="n">guess</span>
+
+        <span class="n">p</span> <span class="p">(</span> <span class="kr">_</span><span class="p">,</span> <span class="n">count1</span> <span class="p">)</span> <span class="p">(</span> <span class="kr">_</span><span class="p">,</span> <span class="n">count2</span> <span class="p">)</span> <span class="ow">=</span>
+            <span class="n">min</span> <span class="n">count1</span> <span class="n">count2</span>
+
+        <span class="n">whiteBlacks</span> <span class="ow">=</span>
+            <span class="kt">List</span><span class="o">.</span><span class="n">sum</span> <span class="o">&lt;|</span> <span class="kt">List</span><span class="o">.</span><span class="n">map2</span> <span class="n">p</span> <span class="n">ans</span> <span class="n">gus</span>
+
+        <span class="n">blacks</span> <span class="ow">=</span>
+            <span class="kt">List</span><span class="o">.</span><span class="n">map2</span> <span class="p">(</span><span class="o">==</span><span class="p">)</span> <span class="n">guess</span> <span class="n">correct</span>
+                <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="n">filter</span> <span class="n">identity</span>
+                <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="n">length</span>
+
+        <span class="n">whites</span> <span class="ow">=</span>
+            <span class="n">whiteBlacks</span> <span class="o">-</span> <span class="n">blacks</span>
+    <span class="kr">in</span>
+        <span class="p">(</span> <span class="n">guess</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span> <span class="kt">CorrectPosition</span> <span class="n">blacks</span><span class="p">)</span> <span class="o">++</span> <span class="p">(</span><span class="n">tag</span> <span class="kt">WrongPosition</span> <span class="n">whites</span><span class="p">)</span> <span class="p">)</span>
+</code></pre></div>
+
+<p>Just for reference, we can use it in the <code>update</code> function like this:</p>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">case</span> <span class="n">model</span><span class="o">.</span><span class="n">state</span> <span class="kr">of</span>
+    <span class="kt">Playing</span> <span class="n">combination</span> <span class="kr">_</span> <span class="ow">-&gt;</span>
+        <span class="kr">let</span>
+            <span class="n">isOver</span> <span class="ow">=</span>
+                <span class="n">combination</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">correct</span>
+
+            <span class="n">guess</span> <span class="ow">=</span>
+                <span class="n">processGuess</span> <span class="n">combination</span> <span class="n">model</span><span class="o">.</span><span class="n">correct</span>
+
+            <span class="n">newModel</span> <span class="ow">=</span>
+                <span class="p">{</span> <span class="n">model</span> <span class="o">|</span> <span class="n">guesses</span> <span class="ow">=</span> <span class="n">model</span><span class="o">.</span><span class="n">guesses</span> <span class="o">++</span> <span class="p">[</span> <span class="n">guess</span> <span class="p">]</span> <span class="p">}</span>
+        <span class="kr">in</span>
+            <span class="kr">if</span> <span class="n">isOver</span> <span class="kr">then</span>
+                <span class="p">{</span> <span class="n">newModel</span> <span class="o">|</span> <span class="n">state</span> <span class="ow">=</span> <span class="kt">GameOver</span> <span class="p">}</span>
+            <span class="kr">else</span>
+                <span class="p">{</span> <span class="n">newModel</span> <span class="o">|</span> <span class="n">state</span> <span class="ow">=</span> <span class="kt">Playing</span> <span class="n">emptyCombination</span> <span class="kt">Nothing</span> <span class="p">}</span>
+</code></pre></div>
+
+<p>Super cool!</p>
+
+<h4 id="wrapping-up">Wrapping up</h4>
+
+<p>The view is fairly simple so I&rsquo;m not going to touch on that. As always, I encourage you to go through the source code and play with it! You can do it directly in your browser here or on <a href="https://runelm.io/c/f2t">runelm.io</a>. The source code is also available on <a href="https://github.com/alpacaaa/elm-mastermind">Github</a>.</p>
+
+<div class="runelm-wrapper ">
+  <iframe
+    src="https://runelm.io/c/f2t"
+    width="100%"
+    height="550"
+    frameBorder="0"
+    sandbox="allow-forms allow-popups allow-scripts allow-same-origin allow-modals">
+  </iframe>
+</div>
+
+
+<p>I hope you got something out of this, if you enjoyed this article <a href="https://twitter.com/_alpacaaa">follow me</a> on Twitter and <code>Maybe</code> share it along :)</p>
+
+    </section>
+
+
+  <footer class="post-footer">
+
+
+    
+    <figure class="author-image">
+        <a class="img" href="https://alpacaaa.net/blog/" style="background-image: url(https://alpacaaa.net/blog/images/avatar.png)"><span class="hidden">Marco Sampellegrini's Picture</span></a>
+    </figure>
+    
+
+    
+
+
+
+
+
+<section class="author">
+  <h4><a href="https://alpacaaa.net/blog/">Marco Sampellegrini</a></h4>
+  
+  <p>Exploring functional programming ideas.</p>
+  
+  <div class="author-meta">
+    <span class="author-location icon-location">Milan, Italy</span>
+    <span class="author-link icon-link"><a href="https://alpacaaa.net">https://alpacaaa.net</a></span>
+  </div>
+</section>
+
+
+
+    
+
+
+    
+
+
+
+
+  </footer>
+</article>
+
+</main>
+    <footer class="site-footer clearfix">
+        <section class="copyright"><a href="">alpacaaa</a> </section>
+        
+    </footer>
+    </div>
+    <script type="text/javascript" src="https://alpacaaa.net/blog/js/jquery.js"></script>
+    <script type="text/javascript" src="https://alpacaaa.net/blog/js/index.js"></script>
+    
+</body>
+</html>
+
