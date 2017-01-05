@@ -315,7 +315,7 @@ This is based off the pux-rock-paper-scissors game made by @spicydonuts in Pures
             <span class="kt">Spock</span>
 
         <span class="kr">_</span> <span class="ow">-&gt;</span>
-            <span class="n">intToChoice</span> <span class="o">&lt;|</span> <span class="n">n</span> <span class="o">-</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span>
+            <span class="n">intToChoice</span> <span class="o">&lt;|</span> <span class="p">(</span><span class="n">rem</span> <span class="n">n</span> <span class="mi">5</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
 </code></pre></div>
 
 <p>Note the <code>_</code> branch. This is needed because the compiler tells us that there are many more numbers we should account for besides those in the range of our interest (1-5). A very simple and acceptable solution would be to pick a fixed choice and return that for any other integer greater than 5. But we can be a little bit smarter and feed back the unexpected integer we received by making sure that it&rsquo;s between 1 and 5, in order to keep some sort of randomness in place.</p>

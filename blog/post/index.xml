@@ -458,7 +458,7 @@
             &lt;span class=&#34;kt&#34;&gt;Spock&lt;/span&gt;
 
         &lt;span class=&#34;kr&#34;&gt;_&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
-            &lt;span class=&#34;n&#34;&gt;intToChoice&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;|&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;n&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;n&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;intToChoice&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;|&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rem&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;n&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Note the &lt;code&gt;_&lt;/code&gt; branch. This is needed because the compiler tells us that there are many more numbers we should account for besides those in the range of our interest (1-5). A very simple and acceptable solution would be to pick a fixed choice and return that for any other integer greater than 5. But we can be a little bit smarter and feed back the unexpected integer we received by making sure that it&amp;rsquo;s between 1 and 5, in order to keep some sort of randomness in place.&lt;/p&gt;
