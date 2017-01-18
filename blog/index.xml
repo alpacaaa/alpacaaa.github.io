@@ -6,8 +6,356 @@
     <description>Recent content on alpacaaa</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 04 Jan 2017 11:00:39 +0100</lastBuildDate>
+    <lastBuildDate>Wed, 18 Jan 2017 13:00:39 +0100</lastBuildDate>
     <atom:link href="https://alpacaaa.net/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Let&#39;s make a GraphQL client in Elm!</title>
+      <link>https://alpacaaa.net/blog/post/elm-graphql-client/</link>
+      <pubDate>Wed, 18 Jan 2017 13:00:39 +0100</pubDate>
+      
+      <guid>https://alpacaaa.net/blog/post/elm-graphql-client/</guid>
+      <description>
+
+&lt;p&gt;I&amp;rsquo;m a big fan of GraphQL and I&amp;rsquo;d like to explore how to use it in Elm. With a statically typed language (like Elm) we should be able to achieve very nice things, such as using a DSL to write queries and determine their correctness at compile time. We&amp;rsquo;ll initially build a simple implementation and see where that takes us.&lt;/p&gt;
+
+&lt;p&gt;I&amp;rsquo;m going to use a service called &lt;a href=&#34;https://www.graphqlhub.com/&#34;&gt;graphqlhub&lt;/a&gt; which exposes some famous REST apis as a GraphQL endpoint. We&amp;rsquo;ll use Hacker News for our experiments.&lt;/p&gt;
+
+&lt;h3 id=&#34;anatomy-of-a-query&#34;&gt;Anatomy of a query&lt;/h3&gt;
+
+&lt;p&gt;I&amp;rsquo;ll worry about the dsl and getting a fancy api to build queries later, for now let&amp;rsquo;s make sure we&amp;rsquo;re able to send a query and get some result back.&lt;/p&gt;
+
+&lt;p&gt;It can be a little bit daunting to wrap your head around json encoders and decoders in Elm, but once you get the hang of it, you&amp;rsquo;ll realize it is not that hard. If you need a refresher on HTTP and how to send requests in Elm, check out my &lt;a href=&#34;https://alpacaaa.net/blog/post/elm-rock-paper-scissors-beginner/&#34;&gt;Rock Paper Scissors post&lt;/a&gt; where I go into this stuff in a little bit more detail.&lt;/p&gt;
+
+&lt;p&gt;With that out of the way, let&amp;rsquo;s see how we can query data with GraphQL. As you might already know, the query is either encoded in the body or as a query parameter. We&amp;rsquo;ll use the latter as we don&amp;rsquo;t need to mutate anything on the server (that is, we&amp;rsquo;re only reading, not writing) so a simple &lt;code&gt;GET&lt;/code&gt; request is fine.&lt;/p&gt;
+
+&lt;div class=&#34;runelm-wrapper &#34;&gt;
+  &lt;iframe
+    src=&#34;https://runelm.io/c/3xj&#34;
+    width=&#34;100%&#34;
+    height=&#34;500&#34;
+    frameBorder=&#34;0&#34;
+    sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
+  &lt;/iframe&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;Great, so we can get a simple string from the server! What you see are the ids of the top stories on Hacker News right now. But what just happened? Let&amp;rsquo;s get through it (I encourage you to play with the code and run it again if you&amp;rsquo;re not sure what&amp;rsquo;s going on).&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;kr&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;alias&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;response&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;String&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+
+&lt;span class=&#34;kr&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt;
+    &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;FetchHNTopStories&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Result&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Http&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Error&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;String&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;First of all, we declare our &lt;code&gt;Model&lt;/code&gt; and &lt;code&gt;Msg&lt;/code&gt; types. The model is just the raw json we get from the server (we&amp;rsquo;ll decode it in a bit) and &lt;code&gt;FetchHNTopStories&lt;/code&gt; is our only message, that will get dispatched by the runtime when the response comes back from the server.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;hnTopStories&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;String&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;hnTopStories&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;s&#34;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;span class=&#34;s&#34;&gt;    {&lt;/span&gt;
+&lt;span class=&#34;s&#34;&gt;      hn {&lt;/span&gt;
+&lt;span class=&#34;s&#34;&gt;        topStories {&lt;/span&gt;
+&lt;span class=&#34;s&#34;&gt;          id&lt;/span&gt;
+&lt;span class=&#34;s&#34;&gt;        }&lt;/span&gt;
+&lt;span class=&#34;s&#34;&gt;      }&lt;/span&gt;
+&lt;span class=&#34;s&#34;&gt;    }&lt;/span&gt;
+&lt;span class=&#34;s&#34;&gt;    &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This is the GraphQL query that we&amp;rsquo;re sending. Note that it&amp;rsquo;s just a string, far from ideal. We&amp;rsquo;d like to use a DSL or something like that to create our queries, so that they can be type checked and we can be absolutely sure at compile time that they match the schema on the server (that would require knowing the schema in advance, but let&amp;rsquo;s not get ahead of ourselves :P).&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;request&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Http&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Request&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;String&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;request&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;let&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;encoded&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;kt&#34;&gt;Http&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;encodeUri&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;hnTopStories&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;in&lt;/span&gt;
+        &lt;span class=&#34;kt&#34;&gt;Http&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;getString&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;quot;https://www.graphqlhub.com/graphql?query=&amp;quot;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;++&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;encoded&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+
+&lt;span class=&#34;nf&#34;&gt;init&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Model&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Cmd&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;init&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;response&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;Waiting for a response... &amp;quot;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;!&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Http&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;send&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;FetchHNTopStories&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;request&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The actual request is pretty simple. As we said before, the query is sent as a query parameter. Note that it has to be encoded.  Once we create our &lt;code&gt;Request&lt;/code&gt; object, we can create a &lt;code&gt;Cmd&lt;/code&gt; through &lt;code&gt;Http.send&lt;/code&gt; so that the runtime can perform the appropriate side effects (making the request) and give us back the result through the &lt;code&gt;FetchHNTopStories&lt;/code&gt; message.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;update&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Model&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Cmd&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;update&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;msg&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;msg&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;of&lt;/span&gt;
+        &lt;span class=&#34;kt&#34;&gt;FetchHNTopStories&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Ok&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;res&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;response&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;res&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;!&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt;
+
+        &lt;span class=&#34;kt&#34;&gt;FetchHNTopStories&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Err&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;res&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;response&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;toString&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;res&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;!&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt;
+
+
+&lt;span class=&#34;nf&#34;&gt;view&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Html&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;view&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;div&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;text&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;response&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The &lt;code&gt;update&lt;/code&gt; and &lt;code&gt;view&lt;/code&gt; functions are fairly straightforward, nothing ground breaking is happening here.&lt;/p&gt;
+
+&lt;h4 id=&#34;decoding-the-graphql-response-with-elm-decode-pipeline&#34;&gt;Decoding the GraphQL response with elm-decode-pipeline&lt;/h4&gt;
+
+&lt;p&gt;So we&amp;rsquo;re getting back the ids of the top stories on Hacker News right now. But what we&amp;rsquo;re seeing is just a giant string that we need to decode, so let&amp;rsquo;s get a bit more realistic and decode the response into a &lt;code&gt;List Story&lt;/code&gt;. Here&amp;rsquo;s our &lt;code&gt;Story&lt;/code&gt; type.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;kr&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;alias&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Story&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;id&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;String&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;title&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;String&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Right now, we&amp;rsquo;re only interested in &lt;code&gt;id&lt;/code&gt; and &lt;code&gt;title&lt;/code&gt;. There are a lot more fields that we can query, we&amp;rsquo;ll do that later. Let&amp;rsquo;s update our query to match our brand new type.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;hnTopStories&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;String&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;hnTopStories&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;s&#34;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;span class=&#34;s&#34;&gt;    {&lt;/span&gt;
+&lt;span class=&#34;s&#34;&gt;      hn {&lt;/span&gt;
+&lt;span class=&#34;s&#34;&gt;        topStories {&lt;/span&gt;
+&lt;span class=&#34;s&#34;&gt;          id&lt;/span&gt;
+&lt;span class=&#34;s&#34;&gt;          title&lt;/span&gt;
+&lt;span class=&#34;s&#34;&gt;        }&lt;/span&gt;
+&lt;span class=&#34;s&#34;&gt;      }&lt;/span&gt;
+&lt;span class=&#34;s&#34;&gt;    }&lt;/span&gt;
+&lt;span class=&#34;s&#34;&gt;    &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;I briefly touched upon decoders in a &lt;a href=&#34;https://alpacaaa.net/blog/post/elm-rock-paper-scissors-beginner/&#34;&gt;previous tutorial&lt;/a&gt;. That stuff was pretty simple though, when you want to get serious about decoding, you&amp;rsquo;ll want to use a package such as &lt;a href=&#34;http://package.elm-lang.org/packages/NoRedInk/elm-decode-pipeline/latest&#34;&gt;elm-decode-pipeline&lt;/a&gt;. A decoder for our &lt;code&gt;Story&lt;/code&gt; type might look like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;kr&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;Json.Decode&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;as&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Decode&lt;/span&gt;
+&lt;span class=&#34;kr&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;Json.Decode.Pipeline&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;as&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Pipeline&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;-- ...&lt;/span&gt;
+
+&lt;span class=&#34;nf&#34;&gt;storyDecoder&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Decode&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Decoder&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Story&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;storyDecoder&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;Pipeline&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;decode&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Story&lt;/span&gt;
+        &lt;span class=&#34;o&#34;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Pipeline&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;required&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;id&amp;quot;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Decode&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;string&lt;/span&gt;
+        &lt;span class=&#34;o&#34;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Pipeline&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;required&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;title&amp;quot;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Decode&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;string&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;I decided to keep everything explicit (that is, using qualified names for the modules &lt;code&gt;Decode&lt;/code&gt; and &lt;code&gt;Pipeline&lt;/code&gt;) but if you find it easier, you can import the functions you need and drop the module name. I like the clearness of this approach to be onest. This decoder will take a JSON string and decode it to a &lt;code&gt;Story&lt;/code&gt; type (if successful). Next, we&amp;rsquo;ll want to update our &lt;code&gt;request&lt;/code&gt; function so that we don&amp;rsquo;t get back a raw string but a &lt;code&gt;List Story&lt;/code&gt; (note we changed the signature and the function &lt;code&gt;getString&lt;/code&gt; in &lt;code&gt;get&lt;/code&gt;, which allows us to specify a decoder for the response).&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;request&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Http&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Request&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Story&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;request&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;let&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;encoded&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;kt&#34;&gt;Http&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;encodeUri&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;hnTopStories&lt;/span&gt;
+
+        &lt;span class=&#34;n&#34;&gt;decoder&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;kt&#34;&gt;Decode&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;at&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;data&amp;quot;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;hn&amp;quot;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;topStories&amp;quot;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;|&lt;/span&gt;
+                &lt;span class=&#34;kt&#34;&gt;Decode&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;list&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;storyDecoder&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;in&lt;/span&gt;
+        &lt;span class=&#34;kt&#34;&gt;Http&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;get&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;quot;https://www.graphqlhub.com/graphql?query=&amp;quot;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;++&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;encoded&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;decoder&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Now we need to update our &lt;code&gt;Model&lt;/code&gt;, &lt;code&gt;Msg&lt;/code&gt;, &lt;code&gt;update&lt;/code&gt; and &lt;code&gt;view&lt;/code&gt; functions because we&amp;rsquo;re not handling a &lt;code&gt;String&lt;/code&gt; anymore but a &lt;code&gt;List Story&lt;/code&gt;, so let&amp;rsquo;s do that! This is mostly mechanical, should be fairly easy to follow.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;kr&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;alias&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;stories&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Story&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;message&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;String&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+&lt;span class=&#34;kr&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt;
+    &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;FetchHNTopStories&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Result&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Http&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Error&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Story&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+
+
+&lt;span class=&#34;nf&#34;&gt;init&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Model&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Cmd&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;init&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;stories&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;message&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;Waiting for a response... &amp;quot;&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+        &lt;span class=&#34;o&#34;&gt;!&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Http&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;send&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;FetchHNTopStories&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;request&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+
+
+&lt;span class=&#34;nf&#34;&gt;update&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Model&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Cmd&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;update&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;msg&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;msg&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;of&lt;/span&gt;
+        &lt;span class=&#34;kt&#34;&gt;FetchHNTopStories&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Ok&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;stories&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;stories&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;stories&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;message&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;Got stories!&amp;quot;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;!&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt;
+
+        &lt;span class=&#34;kt&#34;&gt;FetchHNTopStories&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Err&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;res&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;message&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;toString&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;res&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;!&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Nice. Up next, the &lt;code&gt;view&lt;/code&gt;! It will show a message according to the request status and will display a list of stories once we get some data back. In my eyes &lt;code&gt;(listItem &amp;lt;&amp;lt; .title)&lt;/code&gt; looks pretty neat. If you&amp;rsquo;re unsure about what that means, the extended version would be something like: &lt;code&gt;\story -&amp;gt; listItem story.title&lt;/code&gt;. We&amp;rsquo;re being fancy and smart here given that we can express ourselves in a better and shorter way in Elm.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;listItem&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;String&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Html&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;listItem&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;str&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;li&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;text&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;str&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+
+
+&lt;span class=&#34;nf&#34;&gt;view&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Html&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;view&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;let&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;items&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;map&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;listItem&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;title&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;stories&lt;/span&gt;
+
+        &lt;span class=&#34;n&#34;&gt;storiesList&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;ul&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;items&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;in&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;div&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;text&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;message&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;storiesList&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;What we&amp;rsquo;ve done so far is embedded below. Try to run it a second time in case you missed the initial message, so you get a good idea of what&amp;rsquo;s going on.&lt;/p&gt;
+
+&lt;div class=&#34;runelm-wrapper &#34;&gt;
+  &lt;iframe
+    src=&#34;https://runelm.io/c/5ys&#34;
+    width=&#34;100%&#34;
+    height=&#34;500&#34;
+    frameBorder=&#34;0&#34;
+    sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
+  &lt;/iframe&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;Now, let&amp;rsquo;s say we want to add more fields to our query. We can keep updating the static string that we have, but I think we can do better because it&amp;rsquo;s getting a little bit unwieldy. So let&amp;rsquo;s think about how to improve it.&lt;/p&gt;
+
+&lt;h3 id=&#34;new-types&#34;&gt;New types&lt;/h3&gt;
+
+&lt;p&gt;We need at least a couple of types to make things nicer. First, we&amp;rsquo;d like to define a type &lt;code&gt;Field&lt;/code&gt; which represents a field inside a query (in GraphQL speech &lt;code&gt;hn&lt;/code&gt;, &lt;code&gt;topstories&lt;/code&gt; and &lt;code&gt;id&lt;/code&gt; are all fields). They can have arguments, but let&amp;rsquo;s start simple and pretend they don&amp;rsquo;t. Here&amp;rsquo;s how I&amp;rsquo;d go about defining the &lt;code&gt;Field&lt;/code&gt; type.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-elm&#34; data-lang=&#34;elm&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;kr&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;alias&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Field&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;name&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;String&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;query&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Query&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Notice that we&amp;rsquo;re introducing a new type, &lt;code&gt;Query&lt;/code&gt;. This time, it won&amp;rsquo;t be a &lt;code&gt;type alias&lt;/code&gt; because that would not make any sense to the compiler, as it&amp;rsquo;s a recursive type (&lt;code&gt;Field&lt;/code&gt; is defined in terms of &lt;code&gt;Query&lt;/code&gt; and vice versa). So it will need to be a concrete type, fair enough.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-elm&#34; data-lang=&#34;elm&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;kr&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Query&lt;/span&gt;
+    &lt;span class=&#34;nf&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Query&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Field&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;A &lt;code&gt;Query&lt;/code&gt; holds the eventual children of a&lt;code&gt;Field&lt;/code&gt;. We&amp;rsquo;ll convert our current query into a &lt;code&gt;Query&lt;/code&gt; in a bit so that what we&amp;rsquo;re trying to do becomes clearer.&lt;/p&gt;
+
+&lt;p&gt;Now, how do we go about putting together a query with our new found types? It&amp;rsquo;s easy, really, let&amp;rsquo;s define an helper function &lt;code&gt;field&lt;/code&gt; to make things more readable.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-elm&#34; data-lang=&#34;elm&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;field&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;String&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Field&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Field&lt;/span&gt;
+&lt;span class=&#34;nv&#34;&gt;field&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;name&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;fields&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;Field&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;name&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Query&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;fields&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;And then use it to create the query we had before.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-elm&#34; data-lang=&#34;elm&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;topStoriesQuery&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Query&lt;/span&gt;
+&lt;span class=&#34;nv&#34;&gt;topStoriesQuery&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;Query&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;field&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;hn&amp;quot;&lt;/span&gt;
+            &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;field&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;topStories&amp;quot;&lt;/span&gt;
+                &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;field&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;id&amp;quot;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[]&lt;/span&gt;
+                &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;field&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;title&amp;quot;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[]&lt;/span&gt;
+                &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+            &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This is kind of the same thing as building an Html tree in Elm – the last argument (the &lt;code&gt;Query&lt;/code&gt; in our case) represents the children of a &lt;code&gt;Field&lt;/code&gt;. Sounds good? Great, let&amp;rsquo;s move on to converting it into a string so that we can actually use it then! How do we convert a &lt;code&gt;Field&lt;/code&gt; into a &lt;code&gt;String&lt;/code&gt;? Not that difficult if you think about it, we just use the field name and append it to its (possibly empty) &lt;code&gt;query&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;fieldToString&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Field&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;String&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;fieldToString&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;query&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;name&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;++&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot; &amp;quot;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;++&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;queryToString&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;query&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The last thing we need is the &lt;code&gt;queryToString&lt;/code&gt; function – it turns a &lt;code&gt;Query&lt;/code&gt; value into a &lt;code&gt;String&lt;/code&gt; that we can send to the server.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;queryToString&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Query&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;String&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;queryToString&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Query&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;query&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;isEmpty&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;query&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;then&lt;/span&gt;
+        &lt;span class=&#34;s&#34;&gt;&amp;quot;&amp;quot;&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;else&lt;/span&gt;
+        &lt;span class=&#34;kr&#34;&gt;let&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;str&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+                &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;map&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;fieldToString&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;query&lt;/span&gt;
+                    &lt;span class=&#34;o&#34;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;foldr&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;++&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;&amp;quot;&lt;/span&gt;
+        &lt;span class=&#34;kr&#34;&gt;in&lt;/span&gt;
+            &lt;span class=&#34;s&#34;&gt;&amp;quot;{ &amp;quot;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;++&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;str&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;++&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot; }&amp;quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;With our brand new functions, we can go on and update the &lt;code&gt;request&lt;/code&gt; function so that it uses the &lt;code&gt;topStoriesQuery&lt;/code&gt; that we just defined.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;request&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Http&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Request&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Story&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;request&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;let&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;encoded&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;queryToString&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;topStoriesQuery&lt;/span&gt;
+                &lt;span class=&#34;o&#34;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Http&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;encodeUri&lt;/span&gt;
+
+        &lt;span class=&#34;n&#34;&gt;decoder&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;kt&#34;&gt;Decode&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;at&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;data&amp;quot;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;hn&amp;quot;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;topStories&amp;quot;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;|&lt;/span&gt;
+                &lt;span class=&#34;kt&#34;&gt;Decode&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;list&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;storyDecoder&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;in&lt;/span&gt;
+        &lt;span class=&#34;kt&#34;&gt;Http&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;get&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;quot;https://www.graphqlhub.com/graphql?query=&amp;quot;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;++&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;encoded&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;decoder&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The result should be the same, but the refactoring we did is instrumental to get to our goal mentioned at the beginning of the post!&lt;/p&gt;
+
+&lt;h4 id=&#34;extending-the-example&#34;&gt;Extending the example&lt;/h4&gt;
+
+&lt;p&gt;Just for the sake of having something a little bit cooler to play with, let&amp;rsquo;s extend the &lt;code&gt;Story&lt;/code&gt; type to include the &lt;code&gt;url&lt;/code&gt;. The api will return &lt;code&gt;null&lt;/code&gt; when the story is a text post (an &lt;code&gt;Ask HN&lt;/code&gt; or &lt;code&gt;Show HN&lt;/code&gt; kind of post) so we&amp;rsquo;ll need to make it optional. We&amp;rsquo;re going to do that by declaring it as a &lt;code&gt;Maybe String&lt;/code&gt; in our model and decoding it with &lt;code&gt;Json.Pipeline.optional&lt;/code&gt; defaulting to &lt;code&gt;Nothing&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;kr&#34;&gt;type&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;alias&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Story&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;id&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;String&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;title&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;String&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;url&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Maybe&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;String&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;-- ...&lt;/span&gt;
+
+&lt;span class=&#34;nf&#34;&gt;topStoriesQuery&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Query&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;topStoriesQuery&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;Query&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;field&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;hn&amp;quot;&lt;/span&gt;
+            &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;field&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;topStories&amp;quot;&lt;/span&gt;
+                &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;field&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;id&amp;quot;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt;
+                &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;field&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;title&amp;quot;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt;
+                &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;field&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;url&amp;quot;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;-- we need the url&lt;/span&gt;
+                &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+            &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;-- ...&lt;/span&gt;
+
+&lt;span class=&#34;nf&#34;&gt;storyDecoder&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Decode&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Decoder&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Story&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;storyDecoder&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;Pipeline&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;decode&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Story&lt;/span&gt;
+        &lt;span class=&#34;o&#34;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Pipeline&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;required&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;id&amp;quot;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Decode&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;string&lt;/span&gt;
+        &lt;span class=&#34;o&#34;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Pipeline&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;required&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;title&amp;quot;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Decode&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;string&lt;/span&gt;
+        &lt;span class=&#34;o&#34;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Pipeline&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;optional&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;url&amp;quot;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Decode&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;nullable&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Decode&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;string&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Nothing&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;-- url might be null&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;With that done, we can change the &lt;code&gt;view&lt;/code&gt; to link to the actual stories, defaulting to the Hacker News link if it&amp;rsquo;s a text post.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;listItem&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Story&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Html&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;listItem&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;title&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;url&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;let&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;url_&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;kt&#34;&gt;Maybe&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;withDefault&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;quot;https://news.ycombinator.com/item?id=&amp;quot;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;++&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;url&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;in&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;li&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt;
+            &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;href&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;url_&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;text&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;title&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+            &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+
+
+&lt;span class=&#34;nf&#34;&gt;view&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Html&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Msg&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;view&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;let&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;items&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;map&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;listItem&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;stories&lt;/span&gt;
+
+        &lt;span class=&#34;n&#34;&gt;storiesList&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;ul&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;items&lt;/span&gt;
+    &lt;span class=&#34;kr&#34;&gt;in&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;div&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;text&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;message&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;storiesList&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Find below the result, you can play with it and edit it as much as you like straight from your browser!&lt;/p&gt;
+
+&lt;h4 id=&#34;wrapping-up&#34;&gt;Wrapping up&lt;/h4&gt;
+
+&lt;p&gt;This was intended to be part one of my journey with Elm + GraphQL. There are some nice libraries out there but I want to see for myself what can be accomplished with these two technologies (my gut says a lot). I have some more stuff ready that I want to share, next time we&amp;rsquo;ll dig deeper into the rabbit hole… until then, if you enjoyed this article you can &lt;a href=&#34;https://twitter.com/_alpacaaa&#34;&gt;follow me&lt;/a&gt; on Twitter ;)&lt;/p&gt;
+
+&lt;div class=&#34;runelm-wrapper &#34;&gt;
+  &lt;iframe
+    src=&#34;https://runelm.io/c/exg&#34;
+    width=&#34;100%&#34;
+    height=&#34;800&#34;
+    frameBorder=&#34;0&#34;
+    sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
+  &lt;/iframe&gt;
+&lt;/div&gt;
+
+</description>
+    </item>
     
     <item>
       <title>Building a Mastermind game in Elm.</title>
