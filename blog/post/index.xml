@@ -29,6 +29,8 @@
 
 &lt;p&gt;With that out of the way, let&amp;rsquo;s see how we can query data with GraphQL. As you might already know, the query is either encoded in the body or as a query parameter. We&amp;rsquo;ll use the latter as we don&amp;rsquo;t need to mutate anything on the server (that is, we&amp;rsquo;re only reading, not writing) so a simple &lt;code&gt;GET&lt;/code&gt; request is fine.&lt;/p&gt;
 
+&lt;p&gt;&lt;em&gt;Try adding the &lt;code&gt;title&lt;/code&gt; field to the &lt;code&gt;hnTopStories&lt;/code&gt; query below and see how the response changes ;)&lt;/em&gt;&lt;/p&gt;
+
 &lt;div class=&#34;runelm-wrapper &#34;&gt;
   &lt;iframe
     src=&#34;https://runelm.io/c/3xj&#34;
