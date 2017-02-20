@@ -6,8 +6,214 @@
     <description>Recent content in Post-rsses on alpacaaa</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 18 Jan 2017 13:00:39 +0100</lastBuildDate>
+    <lastBuildDate>Mon, 20 Feb 2017 11:00:39 +0100</lastBuildDate>
     <atom:link href="https://alpacaaa.net/blog/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>In depth overview of Elm and Purescript. Lessons learned porting a game from Purescript to Elm.</title>
+      <link>https://alpacaaa.net/blog/post/elm-purescript-in-depth-overview/</link>
+      <pubDate>Mon, 20 Feb 2017 11:00:39 +0100</pubDate>
+      
+      <guid>https://alpacaaa.net/blog/post/elm-purescript-in-depth-overview/</guid>
+      <description>
+
+&lt;p&gt;&lt;strong&gt;TL;DR&lt;/strong&gt; I&amp;rsquo;m finally able to read through Purescript/Haskell source code. I ported a game written in Purescript to Elm. You can play with the Elm version of the game right here, what follows are my thoughts on the two languages.&lt;/p&gt;
+
+&lt;div class=&#34;runelm-wrapper no-focus&#34;&gt;
+  &lt;iframe
+    src=&#34;https://runelm.io/c/u4y?pane=preview&#34;
+    width=&#34;100%&#34;
+    height=&#34;620&#34;
+    frameBorder=&#34;0&#34;
+    sandbox=&#34;allow-forms allow-popups allow-scripts allow-same-origin allow-modals&#34;&gt;
+  &lt;/iframe&gt;
+&lt;/div&gt;
+
+
+&lt;h3 id=&#34;how-i-got-here&#34;&gt;How I got here&lt;/h3&gt;
+
+&lt;p&gt;A few months ago, I decided I was going to learn Haskell. The first thing I noticed was that I couldn&amp;rsquo;t read Haskell code. It was so different to anything I had experienced so far. All those strange symbols gave me a very hard time trying to understand what was going on. Maybe I should have started from something simpler. I heard that a language called Purescript existed, that it was purely functional and that it compiled to JS. Sounded like a good deal to me, after all I wanted to experience what it was like to program in a purely functional language, I didn&amp;rsquo;t want to settle on Haskell if that wasn&amp;rsquo;t my thing. Plus, &lt;strong&gt;a language that compiles to JS has to be approachable&lt;/strong&gt;, right? Wrong. Purescript was as much confusing and frustrating as Haskell (in fact, they&amp;rsquo;re very similar languages). So I eventually considered Elm, which turned out to be the perfect language to learn FP.&lt;/p&gt;
+
+&lt;p&gt;I didn&amp;rsquo;t want to give up on Haskell nor Purescript though. Over the coming weeks, I came back multiple times to these seemingly obscure languages. The resources that definitely helped me the most in grokking the concepts behind them are the excellent &lt;a href=&#34;https://leanpub.com/purescript&#34;&gt;Purescript By Example&lt;/a&gt; and the glorious &lt;a href=&#34;http://haskellbook.com/&#34;&gt;Haskell Book&lt;/a&gt;. I remember looking for short and easy to follow examples while still learning, and the simplest I could find was this little game: &lt;a href=&#34;http://paf31.github.io/star-dodge-clone/&#34;&gt;star-dodge-clone&lt;/a&gt; (link to playable demo). Despite being simple, it wasn&amp;rsquo;t at all easy, at least for an uninitiated wanderer like me. I remember going through the ~250 total lines of Purescript code but couldn&amp;rsquo;t figure out pretty much anything.&lt;/p&gt;
+
+&lt;p&gt;So I looked at it again a few days ago, and turns out the code does actually make sense!&lt;/p&gt;
+
+&lt;p&gt;In order to prove to myself that I was in fact understanding things, I decided to port it to Elm. I think it turned out pretty good.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Note 1&lt;/strong&gt; I didn&amp;rsquo;t bother making it look exactly the same – the mechanics are in place though.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Note 2&lt;/strong&gt; The game is pretty old (~1.5 years) but Purescript is pretty much the same language (as far as this game is concerned) and changes to the api are mostly not relevant for the purposes of this post.&lt;/p&gt;
+
+&lt;h3 id=&#34;purescript-has-what-the-haskellers-want&#34;&gt;Purescript has what the Haskellers want&lt;/h3&gt;
+
+&lt;p&gt;When you start learning Elm, one of the first things you&amp;rsquo;ll notice is that some people constantly complain about the lack of type classes. I think they should just look into Purescript and stick with it. The reason being that once you get type classes, there will be some other feature you&amp;rsquo;re missing, and given that Elm doesn&amp;rsquo;t aspire in any way to become Haskell, you won&amp;rsquo;t get that feature. On the other hand, Purescript is very very similar to Haskell, so if that&amp;rsquo;s what you want, just stick with it.&lt;/p&gt;
+
+&lt;p&gt;If you don&amp;rsquo;t know what type classes are, the language for you is definitely Elm. Learn it and then come back to Haskell or Purescript to see for yourself if there&amp;rsquo;s actually something you&amp;rsquo;re missing.&lt;/p&gt;
+
+&lt;h4 id=&#34;language-simplicity&#34;&gt;Language simplicity&lt;/h4&gt;
+
+&lt;p&gt;I find Elm code much easier to reason about and I think that&amp;rsquo;s because of two reasons:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;less features means there&amp;rsquo;s less stuff going on&lt;/li&gt;
+&lt;li&gt;often, there&amp;rsquo;s only a single way of doing something&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;That&amp;rsquo;s not to say that Purescript code is unintelligible (far from it) but there&amp;rsquo;s a lot more to learn and you &lt;strong&gt;must&lt;/strong&gt; develop an intuition for certain things. The type system in Purescript is more advanced and, as a consequence, you&amp;rsquo;ll often see involved type signatures. This is not good or bad per se, it&amp;rsquo;s just something you have to be aware of. On the other hand, the lack of abstractions in Elm is compensated with a ton of boilerplate which you might not like.&lt;/p&gt;
+
+&lt;p&gt;Elm also has quite some magic going on behind the scenes. As an example, the original Purescript game defines this (simple) instance for the &lt;code&gt;Direction&lt;/code&gt; data type.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;kr&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Direction&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Up&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Down&lt;/span&gt;
+&lt;span class=&#34;cm&#34;&gt;{-&lt;/span&gt;
+&lt;span class=&#34;cm&#34;&gt;   The equivalent in Elm is:&lt;/span&gt;
+&lt;span class=&#34;cm&#34;&gt;   type Direction = Up | Down&lt;/span&gt;
+&lt;span class=&#34;cm&#34;&gt; -}&lt;/span&gt;
+
+&lt;span class=&#34;kr&#34;&gt;instance&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;eqDirection&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;::&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Eq&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Direction&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;where&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;eq&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Up&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Up&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;true&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;eq&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Down&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Down&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;true&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;eq&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;_&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;_&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;false&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;There&amp;rsquo;s two things of note here. The most obvious is that &lt;strong&gt;this can&amp;rsquo;t be expressed in Elm&lt;/strong&gt;, as it lacks type classes. And in Purescript, if you don&amp;rsquo;t define the instance, you can&amp;rsquo;t use the &lt;code&gt;eq&lt;/code&gt; operator, meaning that a simple comparison like &lt;code&gt;Up == Down&lt;/code&gt; would result in a compiler error.&lt;/p&gt;
+
+&lt;p&gt;Surprisingly (or not), in Elm type constructors are comparable &lt;strong&gt;by default&lt;/strong&gt;! So no need for type classes in this case, the magic baked into the language takes care of it.&lt;/p&gt;
+
+&lt;h4 id=&#34;application-architecture&#34;&gt;Application architecture&lt;/h4&gt;
+
+&lt;p&gt;There is only one way to architect applications in Elm. That&amp;rsquo;s what made it somewhat famous and what inspired state managers in JS land such as Redux. I find &lt;a href=&#34;https://guide.elm-lang.org/architecture/&#34;&gt;The Elm Architecture&lt;/a&gt; (TEA for short) a very very nice and simple pattern to follow when working on UI code. Being Purescript a much more general purpose language, it doesn&amp;rsquo;t put such constraints on the developer. Of course, there&amp;rsquo;s no shortage of excellent libraries to structure your frontend code – I played a little with &lt;a href=&#34;https://www.purescript-pux.org/&#34;&gt;Pux&lt;/a&gt; which somewhat resembles TEA.&lt;/p&gt;
+
+&lt;p&gt;One of my frustrations in understanding the Purescript code behind the game, was that I couldn&amp;rsquo;t follow it. In Elm I can be 100% sure that changes to the model are happening in the &lt;code&gt;update&lt;/code&gt; function. You develop at a much higher level and you don&amp;rsquo;t even have to think about certain things.&lt;/p&gt;
+
+&lt;p&gt;Contrast this to the first few lines of the &lt;code&gt;main&lt;/code&gt; function in the Purescript version of the game.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;do&lt;/span&gt;
+  &lt;span class=&#34;kt&#34;&gt;Just&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;canvas&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;C&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;getCanvasElementById&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;canvas&amp;quot;&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;ctx&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;C&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;getContext2D&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;canvas&lt;/span&gt;
+
+  &lt;span class=&#34;n&#34;&gt;inputsRef&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;newRef&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;space&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;false&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+  &lt;span class=&#34;n&#34;&gt;onSpaceBar&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;\&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;b&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;modifyRef&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;inputsRef&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kr&#34;&gt;_&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;space&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;b&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;}))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;There are so many things happening here, and I can see why I was so confused when reading it.&lt;/p&gt;
+
+&lt;p&gt;First of all, there&amp;rsquo;s &lt;code&gt;do&lt;/code&gt; notation. Why are things defined with a &lt;code&gt;&amp;lt;-&lt;/code&gt; instead of a &lt;code&gt;=&lt;/code&gt;? This is one of the first questions that beginner haskellers face and you&amp;rsquo;re going to have the same WTF moments in Purescript as well (if you&amp;rsquo;re unexperienced like I was). Turns out &lt;code&gt;do&lt;/code&gt; notation has a very specific purpose and it makes total sense once you figure out how &lt;code&gt;bind&lt;/code&gt; works and how annoying it is to nest sequenced computations. (I&amp;rsquo;ll say it again, if you don&amp;rsquo;t know what the hell you just read, stick with Elm for a while, &lt;strong&gt;you won&amp;rsquo;t regret it&lt;/strong&gt;)&lt;/p&gt;
+
+&lt;p&gt;Another thing that I thought was not available in purely functional programming languages is mutability. With &lt;a href=&#34;https://pursuit.purescript.org/packages/purescript-refs/2.0.0/docs/Control.Monad.Eff.Ref&#34;&gt;references&lt;/a&gt; you get exactly that (&lt;code&gt;newRef&lt;/code&gt; creates a new reference, a variable if you will, which you can update with &lt;code&gt;modifyRef&lt;/code&gt;). Of course mutation is controlled and it&amp;rsquo;s much different than using a mutable variable in an imperative language, but as a beginner it&amp;rsquo;s hard to tell what&amp;rsquo;s happening.&lt;/p&gt;
+
+&lt;p&gt;I&amp;rsquo;m convinced these things are not suited for people approaching functional programming, mostly because it can get confusing pretty quickly. If someone was to explain to me this piece of code without getting into the specifics of the &lt;code&gt;Eff&lt;/code&gt; monad and how it handles side effects, I would think that I&amp;rsquo;m just looking at a more complicated way of doing imperative programming. But that&amp;rsquo;s not it, this code is definitely pure and functional (as is the code you write in Elm), although I think that a beginner has a &lt;strong&gt;better chance to learn through Elm&amp;rsquo;s constraints&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;h4 id=&#34;there-should-be-a-single-way-do-to-things&#34;&gt;There should be a single way do to things?&lt;/h4&gt;
+
+&lt;p&gt;I want to have a look at another piece of code, because it shows how much different can be to program in vanilla Purescript compared to TEA.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;loop&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;::&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Lazy&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Level&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Eff&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;_&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Unit&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;loop&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;levels&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;do&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;clearCanvas&lt;/span&gt;
+  &lt;span class=&#34;kt&#34;&gt;D&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;render&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ctx&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;$&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;scene&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;initialState&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;levels&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;onSpaceBarOnce&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;go&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;newGame&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;levels&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+  &lt;span class=&#34;kr&#34;&gt;where&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;go&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;state&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;do&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;t0&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;nowEpochMilliseconds&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;inputs&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;readRef&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;inputsRef&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;requestAnimationFrame&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;do&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;t1&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;nowEpochMilliseconds&lt;/span&gt;
+      &lt;span class=&#34;kr&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;update&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;inputs&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t1&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;t0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;state&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;of&lt;/span&gt;
+        &lt;span class=&#34;kt&#34;&gt;Right&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;newState&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;do&lt;/span&gt;
+          &lt;span class=&#34;n&#34;&gt;clearCanvas&lt;/span&gt;
+          &lt;span class=&#34;kt&#34;&gt;D&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;render&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ctx&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;$&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;scene&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;newState&lt;/span&gt;
+          &lt;span class=&#34;n&#34;&gt;go&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;newState&lt;/span&gt;
+        &lt;span class=&#34;kt&#34;&gt;Left&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Tuple&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;now&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;next&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;do&lt;/span&gt;
+          &lt;span class=&#34;n&#34;&gt;clearCanvas&lt;/span&gt;
+          &lt;span class=&#34;kt&#34;&gt;D&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;render&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ctx&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;$&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;scene&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;now&lt;/span&gt;
+          &lt;span class=&#34;n&#34;&gt;onSpaceBarOnce&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;go&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;next&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;You wouldn&amp;rsquo;t be able to write something like this in Elm. Again, there&amp;rsquo;s a lot of low level stuff going on like clearing the canvas, listening to keyboard events and even direct access to &lt;code&gt;requestAnimationFrame&lt;/code&gt;. In general, Purescript is much more low level than Elm which means you can do pretty crazy stuff while being very precise and explicit about what you want to do (without losing purity).&lt;/p&gt;
+
+&lt;p&gt;Elm rendering happens &lt;strong&gt;inside&lt;/strong&gt; the &lt;code&gt;requestAnimationFrame&lt;/code&gt; loop and there&amp;rsquo;s no way to escape that. On the other hand, it&amp;rsquo;s something that the developer doesn&amp;rsquo;t have to worry about so maybe it&amp;rsquo;s good. In Elm you listen to events explicitly returning the list of &lt;code&gt;subscriptions&lt;/code&gt; you&amp;rsquo;re interested in, like so:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;subscriptions&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Sub&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;msg&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;subscriptions&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;Sub&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;batch&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;AnimationFrame&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;diffs&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Frame&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Keyboard&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;downs&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;KeyDown&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Keyboard&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ups&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;KeyUp&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This list gets handed to the runtime and you&amp;rsquo;ll only going to hear about those events in the &lt;code&gt;update&lt;/code&gt; function, there&amp;rsquo;s no way around this. Again, Elm often enforces a single way to do things and this could be great or very restrictive depending on your taste and experience.&lt;/p&gt;
+
+&lt;h4 id=&#34;total-and-partial-functions&#34;&gt;Total and partial functions&lt;/h4&gt;
+
+&lt;p&gt;A function can be said to be total when you&amp;rsquo;re handling every possible input. So if you&amp;rsquo;re taking a &lt;code&gt;Maybe&lt;/code&gt; as an input, you must handle both &lt;code&gt;Just a&lt;/code&gt; values as well as &lt;code&gt;Nothing&lt;/code&gt; values for the function to be total. In Elm, you are forced to do that, while Purescript offers escape hatches, meaning that you can effectively have &lt;strong&gt;partial&lt;/strong&gt; functions. This might seem counter intuitive, why would you deliberately lose the guarantees given by the compiler and the type system? The answer is convenience. Honestly, at first I was surprised to see &lt;code&gt;unsafePartial&lt;/code&gt; used that much throughout the Purescript By Example book, because I thought a sane person wouldn&amp;rsquo;t want to give up totality, but of course that&amp;rsquo;s not the case.&lt;/p&gt;
+
+&lt;p&gt;There is a passage in the book that explains this well. The code sample is very similar to what we&amp;rsquo;ve seen in the &lt;code&gt;main&lt;/code&gt; function above, but makes use of &lt;code&gt;unsafePartial&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;$&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;unsafePartial&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;do&lt;/span&gt;
+  &lt;span class=&#34;kt&#34;&gt;Just&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;canvas&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;getCanvasElementById&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;quot;canvas&amp;quot;&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;ctx&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;getContext2D&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;canvas&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Note: the call to unsafePartial here is necessary since the pattern match on the result of getCanvasElementById is partial, matching only the Just constructor. For our purposes, this is fine, but in production code, we would probably want to match the Nothing constructor and provide an appropriate error message.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;As an example, consider when you&amp;rsquo;re sure that you&amp;rsquo;re handling a list with three elements. Surely it would be handy to have a partial version of &lt;code&gt;tail&lt;/code&gt; around that returns &lt;code&gt;List a&lt;/code&gt; instead of &lt;code&gt;Maybe (List a)&lt;/code&gt;. After all &lt;strong&gt;we are 100% sure&lt;/strong&gt; that it&amp;rsquo;s safe to call &lt;code&gt;tail&lt;/code&gt; on that list, however the compiler couldn&amp;rsquo;t prove it at the type level. At times, it can get a bit tedious to handle these situations, for example in Elm you have to write something like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;list&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;result&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Maybe&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;withDefault&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;[]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;|&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;List&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tail&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;list&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;-- [2, 3]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We will never get the empty list back, but it&amp;rsquo;s the only way to make the compiler happy and get rid of the &lt;code&gt;Maybe&lt;/code&gt; context. In Purescript, you have partial versions of functions at your disposal. Consider this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;kr&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;Partial.Unsafe&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;unsafePartial&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;kr&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;Data.Array.Partial&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;head&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;tail&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;span class=&#34;nf&#34;&gt;list&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;result&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;unsafePartial&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;$&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;tail&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;list&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;-- [2, 3]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;You can see a pattern here, Elm strive to be total and prevent you from shooting yourself in the foot in any way, while Purescript gives you more freedom, but you have to understand the consequences of what you&amp;rsquo;re doing. A great write up on partiality can be found in the page &lt;a href=&#34;https://github.com/purescript/purescript/wiki/The-Partial-type-class&#34;&gt;The Partial type class&lt;/a&gt; in the Purescript wiki.&lt;/p&gt;
+
+&lt;h4 id=&#34;unsafe-operations&#34;&gt;Unsafe operations&lt;/h4&gt;
+
+&lt;p&gt;In Purescript you can do &lt;strong&gt;unsafe&lt;/strong&gt; stuff which, quoting the docs, means that computing functions &amp;ldquo;can result in &lt;strong&gt;arbitrary side-effects&lt;/strong&gt;.&amp;rdquo; Let&amp;rsquo;s have a look at an example from the game. There is a function used to generate a level, which obviously needs some sort of random input to work. Yet, it has this type signature:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;unsafeLevel&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;::&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Int&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Level&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;-- Level is just a record&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;How is that possible?! We pass an &lt;code&gt;Int&lt;/code&gt; representing the level to generate and we get out a &lt;code&gt;Level&lt;/code&gt; record without any sort of reference to the effects performed? The function is in fact performing side effecting stuff in the body, for example:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;entry&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;randomRange&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mf&#34;&gt;50.0&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;door&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;mf&#34;&gt;2.0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mf&#34;&gt;450.0&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;door&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;mf&#34;&gt;2.0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nf&#34;&gt;exit&lt;/span&gt;  &lt;span class=&#34;ow&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;randomRange&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mf&#34;&gt;50.0&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;door&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;mf&#34;&gt;2.0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mf&#34;&gt;450.0&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;door&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;mf&#34;&gt;2.0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Where &lt;code&gt;randomRange&lt;/code&gt; has type &lt;code&gt;Eff (&amp;quot;random&amp;quot; :: RANDOM | e) Number&lt;/code&gt;, so it is certainly effectful. How come this is not present in the type signature of &lt;code&gt;unsafeLevel&lt;/code&gt;? Well, with &lt;code&gt;unsafePerformEff&lt;/code&gt; you can &lt;strong&gt;run an effectful computation&lt;/strong&gt;. Look at the type:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;unsafePerformEff&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;::&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;forall&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;eff&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;Eff&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;eff&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;It looks scary, because you should never be able to escape the &lt;code&gt;Eff&lt;/code&gt; context, there shouldn&amp;rsquo;t be any way to go back. The common practice would be to gather of all your effects and hand them to the runtime through the &lt;code&gt;main&lt;/code&gt; function, while here we&amp;rsquo;re effectively &lt;strong&gt;bypassing&lt;/strong&gt; any guarantees about purity and performing undeclared side effects.&lt;/p&gt;
+
+&lt;p&gt;Suffice to say this is impossible in Elm. But is it bad as it might look at first glance? Well, no!&lt;/p&gt;
+
+&lt;p&gt;One of the most important things I learnt about functional programming is that &lt;strong&gt;local and controlled&lt;/strong&gt; side effects are super useful and don&amp;rsquo;t undermine purity in any way, as long as functions are &lt;strong&gt;referentially transparent&lt;/strong&gt;. In this case, &lt;code&gt;unsafeLevel&lt;/code&gt; clearly is not, so this is certainly not the best example to convey my point, so let&amp;rsquo;s make another. (I&amp;rsquo;m sure &lt;code&gt;unsafeLevel&lt;/code&gt; was written out of convenience in the game, just to keep it short and sweet).&lt;/p&gt;
+
+&lt;p&gt;Think about how easy it is to express some algorithms in terms of imperative code. Or how much performance you could squeeze out of a function if only you were able to express it with dirty old imperative code. Wouldn&amp;rsquo;t it be great if we could have a tiny local portion of our code that allows mutability? Wouldn&amp;rsquo;t it be great if a function could use a mutable variable (and maybe even a for loop!) &lt;strong&gt;only within its body&lt;/strong&gt;. After all, if that&amp;rsquo;s a better way to describe our problem, why not? Recursion and immutability, like anything else, are not silver bullets. Food for thought!&lt;/p&gt;
+
+&lt;p&gt;Let&amp;rsquo;s briefly look at the Elm version, because the problem of generating a game level necessarily touches many more parts of the program. For starters, I created a function &lt;code&gt;generateLevel : Int -&amp;gt; Task Never Level&lt;/code&gt; that returns a &lt;code&gt;Task&lt;/code&gt;.  When run, it will give back a &lt;code&gt;Level&lt;/code&gt; record.&lt;/p&gt;
+
+&lt;p&gt;In Elm, the difference between &lt;code&gt;Task&lt;/code&gt; and &lt;code&gt;Cmd&lt;/code&gt; is blurry and it&amp;rsquo;s not completely clear to me why they both exist, but the runtime expects a &lt;code&gt;Cmd&lt;/code&gt; in order to perform effectful computations (getting the current time and use it as a seed for random number generation in this case) so I have to turn my &lt;code&gt;Task&lt;/code&gt; into a &lt;code&gt;Cmd&lt;/code&gt; like so:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre&gt;&lt;code class=&#34;language-haskell&#34; data-lang=&#34;haskell&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;Task&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;perform&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;LevelCreated&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;generateLevel&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;level&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This means that, when the computation is done, the application will receive a &lt;code&gt;LevelCreated Level&lt;/code&gt; message that will carry the freshly generated level. Going back to square one to what I was saying about application architecture, I can be 100% sure that this (and any other) message is consumed in the &lt;code&gt;update&lt;/code&gt; function, so there&amp;rsquo;s not much guessing to do. Once you understand TEA you should be able to understand any Elm application. The counter argument is that this can be tedious, you have to define a new message, create a command and introduce asynchronicity where none is needed.&lt;/p&gt;
+
+&lt;h4 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h4&gt;
+
+&lt;p&gt;This was a very fun and informative experience and I invite everyone to research and learn a bit about these two languages. Both Elm and Purescript are &lt;strong&gt;fantastic&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;All in all, Elm is much more targeted at beginners. Both the way the language has been designed and the tone of the documentation prove this. However, this is not a bad thing, and I wish people weren&amp;rsquo;t so quick at labeling it as a toy language. It certainly is not.&lt;/p&gt;
+
+&lt;p&gt;Purescript is more featured, more advanced and definitely has a different target audience. Things can get very abstract with this language (same can be said about Haskell) and you have to be prepared for that. I&amp;rsquo;m just getting started and will study it more in the near future!&lt;/p&gt;
+
+&lt;p&gt;Thanks to &lt;a href=&#34;https://twitter.com/giuliocanti&#34;&gt;@giuliocanti&lt;/a&gt; and &lt;a href=&#34;https://twitter.com/mfirry&#34;&gt;@mfirry&lt;/a&gt; for proof reading a draft of this post.&lt;/p&gt;
+
+&lt;p&gt;The source code is available at &lt;a href=&#34;https://runelm.io/c/u4y&#34;&gt;https://runelm.io/c/u4y&lt;/a&gt; and on &lt;a href=&#34;https://github.com/alpacaaa/elm-star-dodge&#34;&gt;Github&lt;/a&gt;. You can &lt;a href=&#34;https://twitter.com/_alpacaaa&#34;&gt;reach me on Twitter&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Let&#39;s make a GraphQL client in Elm!</title>
