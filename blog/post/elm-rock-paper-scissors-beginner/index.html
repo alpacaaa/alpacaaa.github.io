@@ -55,7 +55,7 @@ This is based off the pux-rock-paper-scissors game made by @spicydonuts in Pures
       
       
     
-    <meta name="generator" content="Hugo 0.17" />
+    <meta name="generator" content="Hugo 0.30.2" />
 
     <link rel="canonical" href="https://alpacaaa.net/blog/post/elm-rock-paper-scissors-beginner/" />
 
@@ -158,26 +158,20 @@ This is based off the pux-rock-paper-scissors game made by @spicydonuts in Pures
 <h4 id="types-first">Types first</h4>
 
 <p>All right let&rsquo;s get down to it. First of all we&rsquo;ll want to encode all the possible choices, so we&rsquo;ll create a new type <code>Choice</code> for this purpose.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="kt">Choice</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">Choice</span>
     <span class="ow">=</span> <span class="kt">Rock</span>
     <span class="o">|</span> <span class="kt">Paper</span>
     <span class="o">|</span> <span class="kt">Scissors</span>
     <span class="o">|</span> <span class="kt">Lizard</span>
-    <span class="o">|</span> <span class="kt">Spock</span>
-</code></pre></div>
-
+    <span class="o">|</span> <span class="kt">Spock</span></code></pre></div>
 <p>Next up, we want to define the different outcomes of a match. That is, whether the player or the computer won, or it&rsquo;s a tie.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="kt">GameResult</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">GameResult</span>
     <span class="ow">=</span> <span class="kt">PlayerWins</span>
     <span class="o">|</span> <span class="kt">ComputerWins</span>
-    <span class="o">|</span> <span class="kt">Tie</span>
-</code></pre></div>
-
+    <span class="o">|</span> <span class="kt">Tie</span></code></pre></div>
 <p>We&rsquo;re going to keep the player score that it&rsquo;s going to be updated after every match. This is just an <code>Int</code> but to make our code more explicit, let&rsquo;s add a type alias.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="n">alias</span> <span class="kt">Score</span> <span class="ow">=</span>
-    <span class="kt">Int</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="nf">alias</span> <span class="kt">Score</span> <span class="ow">=</span>
+    <span class="kt">Int</span></code></pre></div>
 <p>Our <code>Model</code> defines 3 states:</p>
 
 <ul>
@@ -187,35 +181,29 @@ This is based off the pux-rock-paper-scissors game made by @spicydonuts in Pures
 </ul>
 
 <p>Let&rsquo;s write this down</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="kt">Model</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">Model</span>
     <span class="ow">=</span> <span class="kt">PlayerTurn</span> <span class="kt">Score</span>
     <span class="o">|</span> <span class="kt">ComputerTurn</span> <span class="kt">Score</span> <span class="kt">Choice</span>
-    <span class="o">|</span> <span class="kt">GameOver</span> <span class="kt">Score</span> <span class="kt">Choice</span> <span class="kt">Choice</span> <span class="kt">GameResult</span>
-</code></pre></div>
-
+    <span class="o">|</span> <span class="kt">GameOver</span> <span class="kt">Score</span> <span class="kt">Choice</span> <span class="kt">Choice</span> <span class="kt">GameResult</span></code></pre></div>
 <p>Now to the <code>Msg</code>! It&rsquo;s pretty straightforward.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="kt">Msg</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">Msg</span>
     <span class="ow">=</span> <span class="kt">NoOp</span>
     <span class="o">|</span> <span class="kt">ChoiceClicked</span> <span class="kt">Choice</span>
     <span class="o">|</span> <span class="kt">RandomNumberReceived</span> <span class="p">(</span><span class="kt">Result</span> <span class="kt">Http</span><span class="o">.</span><span class="kt">Error</span> <span class="kt">Int</span><span class="p">)</span>
-    <span class="o">|</span> <span class="kt">Reset</span>
-</code></pre></div>
-
+    <span class="o">|</span> <span class="kt">Reset</span></code></pre></div>
 <p>The reason for the <code>Result Http.Error Int</code> type is pretty straightforward . Given that there&rsquo;s an http request involved (remember, we&rsquo;re grabbing random numbers from an online api) we have to account for errors. If all it&rsquo;s fine we&rsquo;ll get back an <code>Int</code>.</p>
 
 <h5 id="a-little-tour-of-http-requests-and-json-decoding">A little tour of HTTP requests and JSON decoding</h5>
 
 <p>Next up, a function that creates a <code>Task</code> describing the http request we want the Elm runtime to make. Just a reminder, in Elm there&rsquo;s no way to perform side effects inside our code. We can only <em>describe</em> what needs to happen by returning a Command (<code>Cmd</code>) in our <code>update</code> function.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">randomNumberUrl</span> <span class="ow">=</span>
-    <span class="s">&quot;https://www.random.org/integers/?num=1&amp;min=1&amp;max=5&amp;col=1&amp;base=10&amp;format=plain&amp;rnd=new&quot;</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">randomNumberUrl</span> <span class="ow">=</span>
+    <span class="s">&#34;https://www.random.org/integers/?num=1&amp;min=1&amp;max=5&amp;col=1&amp;base=10&amp;format=plain&amp;rnd=new&#34;</span>
 
 
 <span class="nf">grabRandomNumber</span> <span class="kt">:</span> <span class="kt">Cmd</span> <span class="kt">Msg</span>
 <span class="nf">grabRandomNumber</span> <span class="ow">=</span>
-    <span class="kt">Http</span><span class="o">.</span><span class="n">get</span> <span class="n">randomNumberUrl</span> <span class="kt">Json</span><span class="o">.</span><span class="kt">Decode</span><span class="o">.</span><span class="n">int</span>
-        <span class="o">|&gt;</span> <span class="kt">Http</span><span class="o">.</span><span class="n">send</span> <span class="kt">RandomNumberReceived</span>
-</code></pre></div>
-
+    <span class="kt">Http</span><span class="o">.</span><span class="nf">get</span> <span class="nf">randomNumberUrl</span> <span class="kt">Json</span><span class="o">.</span><span class="kt">Decode</span><span class="o">.</span><span class="nf">int</span>
+        <span class="o">|&gt;</span> <span class="kt">Http</span><span class="o">.</span><span class="nf">send</span> <span class="kt">RandomNumberReceived</span></code></pre></div>
 <p>This might not seem like a lot, but it&rsquo;s helpful to go over what&rsquo;s happening. <code>randomNumberUrl</code> is easy, it&rsquo;s just the api endpoint that will return a integer between 1 and 5. <code>Http.get</code> is a function provided by the <code>Http</code> module that given a URL and a <code>Decoder</code>, will return a <code>Request</code>.</p>
 
 <p>Now, JSON encoding and decoding is an hot topic among the Elm community and for a reason. It&rsquo;s not always easy to wrap your head around code that performs these kind of operations.</p>
@@ -235,27 +223,23 @@ This is based off the pux-rock-paper-scissors game made by @spicydonuts in Pures
 <p>Moving on, we&rsquo;re piping our <code>Request</code> into a call to <code>Http.send</code> that will effectively create a <code>Cmd</code> describing the http request we want to make and what <code>Msg</code> will be fed back into the update function once the request completes. Note that the message will have to accept a <code>Result</code> as an argument, because we have to take failure into account and the <code>Result</code> type allows us to do just that (either we get an error or the data we wanted).</p>
 
 <p>Here are a few type signatures in case you&rsquo;re wondering.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kt">Http</span><span class="o">.</span><span class="n">get</span> <span class="kt">:</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Decoder</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Request</span> <span class="n">a</span>
-<span class="kt">Http</span><span class="o">.</span><span class="n">send</span> <span class="kt">:</span> <span class="p">(</span><span class="kt">Result</span> <span class="kt">Error</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">msg</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Request</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Cmd</span> <span class="n">msg</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kt">Http</span><span class="o">.</span><span class="nf">get</span> <span class="kt">:</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Decoder</span> <span class="nf">a</span> <span class="ow">-&gt;</span> <span class="kt">Request</span> <span class="nf">a</span>
+<span class="kt">Http</span><span class="o">.</span><span class="nf">send</span> <span class="kt">:</span> <span class="p">(</span><span class="kt">Result</span> <span class="kt">Error</span> <span class="nf">a</span> <span class="ow">-&gt;</span> <span class="nf">msg</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Request</span> <span class="nf">a</span> <span class="ow">-&gt;</span> <span class="kt">Cmd</span> <span class="nf">msg</span>
 
-<span class="kr">type</span> <span class="kt">Decoder</span> <span class="n">a</span>
-<span class="kt">Json</span><span class="o">.</span><span class="kt">Decode</span><span class="o">.</span><span class="n">int</span> <span class="kt">:</span> <span class="kt">Decoder</span> <span class="kt">Int</span>
-</code></pre></div>
-
+<span class="kr">type</span> <span class="kt">Decoder</span> <span class="nf">a</span>
+<span class="kt">Json</span><span class="o">.</span><span class="kt">Decode</span><span class="o">.</span><span class="nf">int</span> <span class="kt">:</span> <span class="kt">Decoder</span> <span class="kt">Int</span></code></pre></div>
 <h4 id="the-update-function">The Update function</h4>
 
 <p>Let&rsquo;s begin with a simple function that returns the initial state of the game. We simply say that it&rsquo;s the player&rsquo;s turn and that the score is zero.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">createModel</span> <span class="kt">:</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">createModel</span> <span class="kt">:</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
 <span class="nf">createModel</span> <span class="ow">=</span>
     <span class="kr">let</span>
-        <span class="n">model</span> <span class="ow">=</span>
+        <span class="nf">model</span> <span class="ow">=</span>
             <span class="kt">PlayerTurn</span> <span class="mi">0</span>
     <span class="kr">in</span>
-        <span class="p">(</span> <span class="n">model</span><span class="p">,</span> <span class="kt">Cmd</span><span class="o">.</span><span class="n">none</span> <span class="p">)</span>
-</code></pre></div>
-
+        <span class="p">(</span> <span class="nf">model</span><span class="p">,</span> <span class="kt">Cmd</span><span class="o">.</span><span class="nf">none</span> <span class="p">)</span></code></pre></div>
 <p>We also need a <code>List (Choice, Choice)</code> that holds all the possible winning pairs that we will use to determine the winner.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">winConditions</span> <span class="kt">:</span> <span class="kt">List</span> <span class="p">(</span> <span class="kt">Choice</span><span class="p">,</span> <span class="kt">Choice</span> <span class="p">)</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">winConditions</span> <span class="kt">:</span> <span class="kt">List</span> <span class="p">(</span> <span class="kt">Choice</span><span class="p">,</span> <span class="kt">Choice</span> <span class="p">)</span>
 <span class="nf">winConditions</span> <span class="ow">=</span>
     <span class="p">[</span> <span class="p">(</span> <span class="kt">Rock</span><span class="p">,</span> <span class="kt">Scissors</span> <span class="p">)</span>
     <span class="p">,</span> <span class="p">(</span> <span class="kt">Rock</span><span class="p">,</span> <span class="kt">Lizard</span> <span class="p">)</span>
@@ -267,38 +251,32 @@ This is based off the pux-rock-paper-scissors game made by @spicydonuts in Pures
     <span class="p">,</span> <span class="p">(</span> <span class="kt">Lizard</span><span class="p">,</span> <span class="kt">Spock</span> <span class="p">)</span>
     <span class="p">,</span> <span class="p">(</span> <span class="kt">Spock</span><span class="p">,</span> <span class="kt">Rock</span> <span class="p">)</span>
     <span class="p">,</span> <span class="p">(</span> <span class="kt">Spock</span><span class="p">,</span> <span class="kt">Scissors</span> <span class="p">)</span>
-    <span class="p">]</span>
-</code></pre></div>
-
+    <span class="p">]</span></code></pre></div>
 <p>Here&rsquo;s how we do it. Given two values of type <code>Choice</code>, check if the first one wins the game.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">wins</span> <span class="kt">:</span> <span class="kt">Choice</span> <span class="ow">-&gt;</span> <span class="kt">Choice</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
-<span class="nf">wins</span> <span class="n">a</span> <span class="n">b</span> <span class="ow">=</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">wins</span> <span class="kt">:</span> <span class="kt">Choice</span> <span class="ow">-&gt;</span> <span class="kt">Choice</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
+<span class="nf">wins</span> <span class="nf">a</span> <span class="nf">b</span> <span class="ow">=</span>
     <span class="kr">let</span>
-        <span class="n">match</span> <span class="ow">=</span>
-            <span class="p">(</span><span class="o">==</span><span class="p">)</span> <span class="p">(</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="p">)</span>
+        <span class="nf">match</span> <span class="ow">=</span>
+            <span class="p">(</span><span class="o">==</span><span class="p">)</span> <span class="p">(</span> <span class="nf">a</span><span class="p">,</span> <span class="nf">b</span> <span class="p">)</span>
     <span class="kr">in</span>
-        <span class="kt">List</span><span class="o">.</span><span class="n">any</span> <span class="n">match</span> <span class="n">winConditions</span>
-</code></pre></div>
-
+        <span class="kt">List</span><span class="o">.</span><span class="nf">any</span> <span class="nf">match</span> <span class="nf">winConditions</span></code></pre></div>
 <p><code>List.any</code> is pretty cool because it will stop at the first match, so it won&rsquo;t iterate over the full list. We are creating a simple helper function <code>match</code> that uses the <code>==</code> function in prefix position (note the <code>()</code> brackets) and partially applies it with the two choices we got as input (<code>a</code> and <code>b</code>).</p>
 
 <p>We also want to know the result of a game.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">determineResult</span> <span class="kt">:</span> <span class="kt">Choice</span> <span class="ow">-&gt;</span> <span class="kt">Choice</span> <span class="ow">-&gt;</span> <span class="kt">GameResult</span>
-<span class="nf">determineResult</span> <span class="n">player</span> <span class="n">computer</span> <span class="ow">=</span>
-    <span class="kr">if</span> <span class="n">player</span> <span class="o">==</span> <span class="n">computer</span> <span class="kr">then</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">determineResult</span> <span class="kt">:</span> <span class="kt">Choice</span> <span class="ow">-&gt;</span> <span class="kt">Choice</span> <span class="ow">-&gt;</span> <span class="kt">GameResult</span>
+<span class="nf">determineResult</span> <span class="nf">player</span> <span class="nf">computer</span> <span class="ow">=</span>
+    <span class="kr">if</span> <span class="nf">player</span> <span class="o">==</span> <span class="nf">computer</span> <span class="kr">then</span>
         <span class="kt">Tie</span>
-    <span class="kr">else</span> <span class="kr">if</span> <span class="n">wins</span> <span class="n">player</span> <span class="n">computer</span> <span class="kr">then</span>
+    <span class="kr">else</span> <span class="kr">if</span> <span class="nf">wins</span> <span class="nf">player</span> <span class="nf">computer</span> <span class="kr">then</span>
         <span class="kt">PlayerWins</span>
     <span class="kr">else</span>
-        <span class="kt">ComputerWins</span>
-</code></pre></div>
-
+        <span class="kt">ComputerWins</span></code></pre></div>
 <p>Pretty straightforward stuff.</p>
 
 <p>Now we&rsquo;ll need a way to convert the <code>Int</code> we&rsquo;re getting back from our random number generator into a <code>Choice</code>.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">intToChoice</span> <span class="kt">:</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Choice</span>
-<span class="nf">intToChoice</span> <span class="n">n</span> <span class="ow">=</span>
-    <span class="kr">case</span> <span class="n">n</span> <span class="kr">of</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">intToChoice</span> <span class="kt">:</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Choice</span>
+<span class="nf">intToChoice</span> <span class="nf">n</span> <span class="ow">=</span>
+    <span class="kr">case</span> <span class="nf">n</span> <span class="kr">of</span>
         <span class="mi">1</span> <span class="ow">-&gt;</span>
             <span class="kt">Rock</span>
 
@@ -315,213 +293,179 @@ This is based off the pux-rock-paper-scissors game made by @spicydonuts in Pures
             <span class="kt">Spock</span>
 
         <span class="kr">_</span> <span class="ow">-&gt;</span>
-            <span class="n">intToChoice</span> <span class="o">&lt;|</span> <span class="p">(</span><span class="n">rem</span> <span class="n">n</span> <span class="mi">5</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-</code></pre></div>
-
+            <span class="nf">intToChoice</span> <span class="o">&lt;|</span> <span class="p">(</span><span class="nf">rem</span> <span class="nf">n</span> <span class="mi">5</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span></code></pre></div>
 <p>Note the <code>_</code> branch. This is needed because the compiler tells us that there are many more numbers we should account for besides those in the range of our interest (1-5). A very simple and acceptable solution would be to pick a fixed choice and return that for any other integer greater than 5. But we can be a little bit smarter and feed back the unexpected integer we received by making sure that it&rsquo;s between 1 and 5, in order to keep some sort of randomness in place.</p>
 
 <p>Let&rsquo;s create an helper function that updates the current score given a game result.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">updateScore</span> <span class="kt">:</span> <span class="kt">Score</span> <span class="ow">-&gt;</span> <span class="kt">GameResult</span> <span class="ow">-&gt;</span> <span class="kt">Score</span>
-<span class="nf">updateScore</span> <span class="n">score</span> <span class="n">result</span> <span class="ow">=</span>
-    <span class="kr">case</span> <span class="n">result</span> <span class="kr">of</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">updateScore</span> <span class="kt">:</span> <span class="kt">Score</span> <span class="ow">-&gt;</span> <span class="kt">GameResult</span> <span class="ow">-&gt;</span> <span class="kt">Score</span>
+<span class="nf">updateScore</span> <span class="nf">score</span> <span class="nf">result</span> <span class="ow">=</span>
+    <span class="kr">case</span> <span class="nf">result</span> <span class="kr">of</span>
         <span class="kt">Tie</span> <span class="ow">-&gt;</span>
-            <span class="n">score</span>
+            <span class="nf">score</span>
 
         <span class="kt">PlayerWins</span> <span class="ow">-&gt;</span>
-            <span class="n">score</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="nf">score</span> <span class="o">+</span> <span class="mi">1</span>
 
         <span class="kt">ComputerWins</span> <span class="ow">-&gt;</span>
-            <span class="n">score</span> <span class="o">-</span> <span class="mi">1</span>
-</code></pre></div>
-
+            <span class="nf">score</span> <span class="o">-</span> <span class="mi">1</span></code></pre></div>
 <p>Now a function that we will use to update the game state and return the <code>Cmd</code> that generates a random number whenever it&rsquo;s appropriate (after the player&rsquo;s turn). Note that we return the <code>model</code> unchanged if we&rsquo;re in a state where we&rsquo;re not expecting the player to make their choice. Think for example of a slow http request that would allow the player to click on a different choice button. That would dispatch another <code>ChoiceClicked</code> message inside our <code>update</code> function, but given that we know it&rsquo;s the computer&rsquo;s turn, we don&rsquo;t do anything and wait for the random number to arrive.</p>
 
 <p>Also, we could improve our game further by making sure the buttons in the UI are disabled when we are in the <code>ComputerTurn</code> state.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">updatePlayerChoice</span> <span class="kt">:</span> <span class="kt">Choice</span> <span class="ow">-&gt;</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
-<span class="nf">updatePlayerChoice</span> <span class="n">choice</span> <span class="n">model</span> <span class="ow">=</span>
-    <span class="kr">case</span> <span class="n">model</span> <span class="kr">of</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">updatePlayerChoice</span> <span class="kt">:</span> <span class="kt">Choice</span> <span class="ow">-&gt;</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<span class="nf">updatePlayerChoice</span> <span class="nf">choice</span> <span class="nf">model</span> <span class="ow">=</span>
+    <span class="kr">case</span> <span class="nf">model</span> <span class="kr">of</span>
         <span class="kt">ComputerTurn</span> <span class="kr">_</span> <span class="kr">_</span> <span class="ow">-&gt;</span>
-            <span class="n">model</span> <span class="o">!</span> <span class="kt">[]</span>
+            <span class="nf">model</span> <span class="o">!</span> <span class="kt">[]</span>
 
-        <span class="kt">PlayerTurn</span> <span class="n">score</span> <span class="ow">-&gt;</span>
-            <span class="kt">ComputerTurn</span> <span class="n">score</span> <span class="n">choice</span> <span class="o">!</span> <span class="p">[</span> <span class="n">grabRandomNumber</span> <span class="p">]</span>
+        <span class="kt">PlayerTurn</span> <span class="nf">score</span> <span class="ow">-&gt;</span>
+            <span class="kt">ComputerTurn</span> <span class="nf">score</span> <span class="nf">choice</span> <span class="o">!</span> <span class="p">[</span> <span class="nf">grabRandomNumber</span> <span class="p">]</span>
 
-        <span class="kt">GameOver</span> <span class="n">score</span> <span class="kr">_</span> <span class="kr">_</span> <span class="kr">_</span> <span class="ow">-&gt;</span>
-            <span class="kt">ComputerTurn</span> <span class="n">score</span> <span class="n">choice</span> <span class="o">!</span> <span class="p">[</span> <span class="n">grabRandomNumber</span> <span class="p">]</span>
-</code></pre></div>
-
+        <span class="kt">GameOver</span> <span class="nf">score</span> <span class="kr">_</span> <span class="kr">_</span> <span class="kr">_</span> <span class="ow">-&gt;</span>
+            <span class="kt">ComputerTurn</span> <span class="nf">score</span> <span class="nf">choice</span> <span class="o">!</span> <span class="p">[</span> <span class="nf">grabRandomNumber</span> <span class="p">]</span></code></pre></div>
 <p>Here&rsquo;s our helper function to deal with the random number that will be transformed into a valid computer choice.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">updateComputerChoice</span> <span class="kt">:</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
-<span class="nf">updateComputerChoice</span> <span class="n">n</span> <span class="n">model</span> <span class="ow">=</span>
-    <span class="kr">case</span> <span class="n">model</span> <span class="kr">of</span>
-        <span class="kt">ComputerTurn</span> <span class="n">score</span> <span class="n">player</span> <span class="ow">-&gt;</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">updateComputerChoice</span> <span class="kt">:</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<span class="nf">updateComputerChoice</span> <span class="nf">n</span> <span class="nf">model</span> <span class="ow">=</span>
+    <span class="kr">case</span> <span class="nf">model</span> <span class="kr">of</span>
+        <span class="kt">ComputerTurn</span> <span class="nf">score</span> <span class="nf">player</span> <span class="ow">-&gt;</span>
             <span class="kr">let</span>
-                <span class="n">computer</span> <span class="ow">=</span>
-                    <span class="n">intToChoice</span> <span class="n">n</span>
+                <span class="nf">computer</span> <span class="ow">=</span>
+                    <span class="nf">intToChoice</span> <span class="nf">n</span>
 
-                <span class="n">result</span> <span class="ow">=</span>
-                    <span class="n">determineResult</span> <span class="n">player</span> <span class="n">computer</span>
+                <span class="nf">result</span> <span class="ow">=</span>
+                    <span class="nf">determineResult</span> <span class="nf">player</span> <span class="nf">computer</span>
 
-                <span class="n">newScore</span> <span class="ow">=</span>
-                    <span class="n">updateScore</span> <span class="n">score</span> <span class="n">result</span>
+                <span class="nf">newScore</span> <span class="ow">=</span>
+                    <span class="nf">updateScore</span> <span class="nf">score</span> <span class="nf">result</span>
             <span class="kr">in</span>
-                <span class="kt">GameOver</span> <span class="n">newScore</span> <span class="n">player</span> <span class="n">computer</span> <span class="n">result</span> <span class="o">!</span> <span class="kt">[]</span>
+                <span class="kt">GameOver</span> <span class="nf">newScore</span> <span class="nf">player</span> <span class="nf">computer</span> <span class="nf">result</span> <span class="o">!</span> <span class="kt">[]</span>
 
         <span class="kr">_</span> <span class="ow">-&gt;</span>
-            <span class="n">model</span> <span class="o">!</span> <span class="kt">[]</span>
-</code></pre></div>
-
+            <span class="nf">model</span> <span class="o">!</span> <span class="kt">[]</span></code></pre></div>
 <p>After that, we&rsquo;ll transition to the <code>GameOver</code> state. And finally, the <code>update</code> function in all its glory. Simple and to the point thanks to the functions we just wrote.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">update</span> <span class="kt">:</span> <span class="kt">Msg</span> <span class="ow">-&gt;</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
-<span class="nf">update</span> <span class="n">msg</span> <span class="n">model</span> <span class="ow">=</span>
-    <span class="kr">case</span> <span class="n">msg</span> <span class="kr">of</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">update</span> <span class="kt">:</span> <span class="kt">Msg</span> <span class="ow">-&gt;</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<span class="nf">update</span> <span class="nf">msg</span> <span class="nf">model</span> <span class="ow">=</span>
+    <span class="kr">case</span> <span class="nf">msg</span> <span class="kr">of</span>
         <span class="kt">NoOp</span> <span class="ow">-&gt;</span>
-            <span class="n">model</span> <span class="o">!</span> <span class="kt">[]</span>
+            <span class="nf">model</span> <span class="o">!</span> <span class="kt">[]</span>
 
-        <span class="kt">ChoiceClicked</span> <span class="n">choice</span> <span class="ow">-&gt;</span>
-            <span class="n">updatePlayerChoice</span> <span class="n">choice</span> <span class="n">model</span>
+        <span class="kt">ChoiceClicked</span> <span class="nf">choice</span> <span class="ow">-&gt;</span>
+            <span class="nf">updatePlayerChoice</span> <span class="nf">choice</span> <span class="nf">model</span>
 
-        <span class="kt">RandomNumberReceived</span> <span class="p">(</span><span class="kt">Ok</span> <span class="n">n</span><span class="p">)</span> <span class="ow">-&gt;</span>
-            <span class="n">updateComputerChoice</span> <span class="n">n</span> <span class="n">model</span>
+        <span class="kt">RandomNumberReceived</span> <span class="p">(</span><span class="kt">Ok</span> <span class="nf">n</span><span class="p">)</span> <span class="ow">-&gt;</span>
+            <span class="nf">updateComputerChoice</span> <span class="nf">n</span> <span class="nf">model</span>
 
         <span class="kt">RandomNumberReceived</span> <span class="p">(</span><span class="kt">Err</span> <span class="kr">_</span><span class="p">)</span> <span class="ow">-&gt;</span>
-            <span class="n">model</span> <span class="o">!</span> <span class="kt">[]</span>
+            <span class="nf">model</span> <span class="o">!</span> <span class="kt">[]</span>
 
         <span class="kt">Reset</span> <span class="ow">-&gt;</span>
-            <span class="n">createModel</span>
-</code></pre></div>
-
+            <span class="nf">createModel</span></code></pre></div>
 <p>Of course this is a bad example in terms of error handling, because we&rsquo;re just ignoring it! Ideally we&rsquo;ll have some kind of error message in our <code>Model</code> that we can populate appropriately when things explode.</p>
 
 <h4 id="the-view-function">The View function</h4>
 
 <p>Let&rsquo;s begin with a simple function to convert a <code>Choice</code> into a <code>String</code>.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">choiceToString</span> <span class="kt">:</span> <span class="kt">Choice</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
-<span class="nf">choiceToString</span> <span class="n">choice</span> <span class="ow">=</span>
-    <span class="kr">case</span> <span class="n">choice</span> <span class="kr">of</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">choiceToString</span> <span class="kt">:</span> <span class="kt">Choice</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
+<span class="nf">choiceToString</span> <span class="nf">choice</span> <span class="ow">=</span>
+    <span class="kr">case</span> <span class="nf">choice</span> <span class="kr">of</span>
         <span class="kt">Rock</span> <span class="ow">-&gt;</span>
-            <span class="s">&quot;Rock&quot;</span>
+            <span class="s">&#34;Rock&#34;</span>
 
         <span class="kt">Paper</span> <span class="ow">-&gt;</span>
-            <span class="s">&quot;Paper&quot;</span>
+            <span class="s">&#34;Paper&#34;</span>
 
         <span class="kt">Scissors</span> <span class="ow">-&gt;</span>
-            <span class="s">&quot;Scissors&quot;</span>
+            <span class="s">&#34;Scissors&#34;</span>
 
         <span class="kt">Lizard</span> <span class="ow">-&gt;</span>
-            <span class="s">&quot;Lizard&quot;</span>
+            <span class="s">&#34;Lizard&#34;</span>
 
         <span class="kt">Spock</span> <span class="ow">-&gt;</span>
-            <span class="s">&quot;Spock&quot;</span>
-</code></pre></div>
-
+            <span class="s">&#34;Spock&#34;</span></code></pre></div>
 <p>Same stuff when we have a <code>GameResult</code>.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">resultToString</span> <span class="kt">:</span> <span class="kt">GameResult</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
-<span class="nf">resultToString</span> <span class="n">result</span> <span class="ow">=</span>
-    <span class="kr">case</span> <span class="n">result</span> <span class="kr">of</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">resultToString</span> <span class="kt">:</span> <span class="kt">GameResult</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
+<span class="nf">resultToString</span> <span class="nf">result</span> <span class="ow">=</span>
+    <span class="kr">case</span> <span class="nf">result</span> <span class="kr">of</span>
         <span class="kt">Tie</span> <span class="ow">-&gt;</span>
-            <span class="s">&quot;It&#39;s a tie!&quot;</span>
+            <span class="s">&#34;It&#39;s a tie!&#34;</span>
 
         <span class="kt">PlayerWins</span> <span class="ow">-&gt;</span>
-            <span class="s">&quot;Yay, you win!&quot;</span>
+            <span class="s">&#34;Yay, you win!&#34;</span>
 
         <span class="kt">ComputerWins</span> <span class="ow">-&gt;</span>
-            <span class="s">&quot;You lose :(&quot;</span>
-</code></pre></div>
-
+            <span class="s">&#34;You lose :(&#34;</span></code></pre></div>
 <p>We&rsquo;ll need a lower case css class for each <code>Choice</code>, that&rsquo;s easy enough with our <code>choiceToString</code> helper.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">choiceToClass</span> <span class="kt">:</span> <span class="kt">Choice</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">choiceToClass</span> <span class="kt">:</span> <span class="kt">Choice</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
 <span class="nf">choiceToClass</span> <span class="ow">=</span>
-    <span class="kt">String</span><span class="o">.</span><span class="n">toLower</span> <span class="o">&lt;&lt;</span> <span class="n">choiceToString</span>
-</code></pre></div>
-
+    <span class="kt">String</span><span class="o">.</span><span class="nf">toLower</span> <span class="o">&lt;&lt;</span> <span class="nf">choiceToString</span></code></pre></div>
 <p>Remember: <code>&lt;&lt;</code> is function composition. It&rsquo;s equivalent to <code>choiceToClass c = String.toLower (choiceToString c)</code> but cleaner and shorter.</p>
 
 <p>The next one is purely cosmetic, it just creates an <code>&lt;hr /&gt;</code> tag.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">divider</span> <span class="kt">:</span> <span class="kt">Html</span> <span class="n">a</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">divider</span> <span class="kt">:</span> <span class="kt">Html</span> <span class="nf">a</span>
 <span class="nf">divider</span> <span class="ow">=</span>
-    <span class="n">hr</span> <span class="kt">[]</span> <span class="kt">[]</span>
-</code></pre></div>
-
+    <span class="nf">hr</span> <span class="kt">[]</span> <span class="kt">[]</span></code></pre></div>
 <p>Now, we have a <code>Choice</code> and we want to show a corresponding huge image on the screen.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">showChoice</span> <span class="kt">:</span> <span class="kt">Choice</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="n">a</span>
-<span class="nf">showChoice</span> <span class="n">choice</span> <span class="ow">=</span>
-    <span class="n">div</span> <span class="p">[</span> <span class="kr">class</span> <span class="p">(</span><span class="s">&quot;card &quot;</span> <span class="o">++</span> <span class="n">choiceToClass</span> <span class="n">choice</span><span class="p">)</span> <span class="p">]</span> <span class="kt">[]</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">showChoice</span> <span class="kt">:</span> <span class="kt">Choice</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="nf">a</span>
+<span class="nf">showChoice</span> <span class="nf">choice</span> <span class="ow">=</span>
+    <span class="nf">div</span> <span class="p">[</span> <span class="kr">class</span> <span class="p">(</span><span class="s">&#34;card &#34;</span> <span class="o">++</span> <span class="nf">choiceToClass</span> <span class="nf">choice</span><span class="p">)</span> <span class="p">]</span> <span class="kt">[]</span></code></pre></div>
 <p>Same with <code>GameResult</code>.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">showResult</span> <span class="kt">:</span> <span class="kt">GameResult</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="n">a</span>
-<span class="nf">showResult</span> <span class="n">result</span> <span class="ow">=</span>
-    <span class="n">p</span> <span class="kt">[]</span> <span class="p">[</span> <span class="n">text</span> <span class="o">&lt;|</span> <span class="n">resultToString</span> <span class="n">result</span> <span class="p">]</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">showResult</span> <span class="kt">:</span> <span class="kt">GameResult</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="nf">a</span>
+<span class="nf">showResult</span> <span class="nf">result</span> <span class="ow">=</span>
+    <span class="nf">p</span> <span class="kt">[]</span> <span class="p">[</span> <span class="nf">text</span> <span class="o">&lt;|</span> <span class="nf">resultToString</span> <span class="nf">result</span> <span class="p">]</span></code></pre></div>
 <p>And <code>Score</code>.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">showPlayerScore</span> <span class="kt">:</span> <span class="kt">Score</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="n">a</span>
-<span class="nf">showPlayerScore</span> <span class="n">score</span> <span class="ow">=</span>
-    <span class="n">p</span> <span class="kt">[]</span> <span class="p">[</span> <span class="n">text</span> <span class="o">&lt;|</span> <span class="s">&quot;Score: &quot;</span> <span class="o">++</span> <span class="p">(</span><span class="n">toString</span> <span class="n">score</span><span class="p">)</span> <span class="p">]</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">showPlayerScore</span> <span class="kt">:</span> <span class="kt">Score</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="nf">a</span>
+<span class="nf">showPlayerScore</span> <span class="nf">score</span> <span class="ow">=</span>
+    <span class="nf">p</span> <span class="kt">[]</span> <span class="p">[</span> <span class="nf">text</span> <span class="o">&lt;|</span> <span class="s">&#34;Score: &#34;</span> <span class="o">++</span> <span class="p">(</span><span class="nf">toString</span> <span class="nf">score</span><span class="p">)</span> <span class="p">]</span></code></pre></div>
 <p>We want a Reset button that will reset the game state.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">resetButton</span> <span class="kt">:</span> <span class="kt">Html</span> <span class="kt">Msg</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">resetButton</span> <span class="kt">:</span> <span class="kt">Html</span> <span class="kt">Msg</span>
 <span class="nf">resetButton</span> <span class="ow">=</span>
-    <span class="n">button</span> <span class="p">[</span> <span class="n">onClick</span> <span class="kt">Reset</span><span class="p">,</span> <span class="kr">class</span> <span class="s">&quot;reset&quot;</span> <span class="p">]</span> <span class="p">[</span> <span class="n">text</span> <span class="s">&quot;Reset!&quot;</span> <span class="p">]</span>
-</code></pre></div>
-
+    <span class="nf">button</span> <span class="p">[</span> <span class="nf">onClick</span> <span class="kt">Reset</span><span class="p">,</span> <span class="kr">class</span> <span class="s">&#34;reset&#34;</span> <span class="p">]</span> <span class="p">[</span> <span class="nf">text</span> <span class="s">&#34;Reset!&#34;</span> <span class="p">]</span></code></pre></div>
 <p>And also a Choice button so that the player can make a choice.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">choiceButton</span> <span class="kt">:</span> <span class="kt">Choice</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
-<span class="nf">choiceButton</span> <span class="n">choice</span> <span class="ow">=</span>
-    <span class="n">button</span>
-        <span class="p">[</span> <span class="kr">class</span> <span class="o">&lt;|</span> <span class="s">&quot;choice &quot;</span> <span class="o">++</span> <span class="p">(</span><span class="n">choiceToClass</span> <span class="n">choice</span><span class="p">)</span>
-        <span class="p">,</span> <span class="n">onClick</span> <span class="p">(</span><span class="kt">ChoiceClicked</span> <span class="n">choice</span><span class="p">)</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">choiceButton</span> <span class="kt">:</span> <span class="kt">Choice</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
+<span class="nf">choiceButton</span> <span class="nf">choice</span> <span class="ow">=</span>
+    <span class="nf">button</span>
+        <span class="p">[</span> <span class="kr">class</span> <span class="o">&lt;|</span> <span class="s">&#34;choice &#34;</span> <span class="o">++</span> <span class="p">(</span><span class="nf">choiceToClass</span> <span class="nf">choice</span><span class="p">)</span>
+        <span class="p">,</span> <span class="nf">onClick</span> <span class="p">(</span><span class="kt">ChoiceClicked</span> <span class="nf">choice</span><span class="p">)</span>
         <span class="p">]</span>
-        <span class="p">[</span> <span class="n">text</span> <span class="o">&lt;|</span> <span class="n">choiceToString</span> <span class="n">choice</span> <span class="p">]</span>
-</code></pre></div>
-
+        <span class="p">[</span> <span class="nf">text</span> <span class="o">&lt;|</span> <span class="nf">choiceToString</span> <span class="nf">choice</span> <span class="p">]</span></code></pre></div>
 <p>The next is a cool one. Basically, if you look at our <code>Model</code> at any one time we could have a player choice, a computer choice and a result. But we want our UI code to be written in a simple and straightforward way, so instead of making the <code>showChoice</code> and <code>showResult</code> functions more complicated so that they could accept a <code>Maybe</code> and render something appropriately, we&rsquo;ll create another function to do the dirty work and call the appropriate view function only when we have a value.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">maybeRender</span> <span class="kt">:</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Maybe</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
-<span class="nf">maybeRender</span> <span class="n">f</span> <span class="n">a</span> <span class="ow">=</span>
-    <span class="kt">Maybe</span><span class="o">.</span><span class="n">map</span> <span class="n">f</span> <span class="n">a</span>
-        <span class="o">|&gt;</span> <span class="kt">Maybe</span><span class="o">.</span><span class="n">withDefault</span> <span class="p">(</span><span class="n">div</span> <span class="kt">[]</span> <span class="kt">[]</span><span class="p">)</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">maybeRender</span> <span class="kt">:</span> <span class="p">(</span><span class="nf">a</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Maybe</span> <span class="nf">a</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
+<span class="nf">maybeRender</span> <span class="nf">f</span> <span class="nf">a</span> <span class="ow">=</span>
+    <span class="kt">Maybe</span><span class="o">.</span><span class="nf">map</span> <span class="nf">f</span> <span class="nf">a</span>
+        <span class="o">|&gt;</span> <span class="kt">Maybe</span><span class="o">.</span><span class="nf">withDefault</span> <span class="p">(</span><span class="nf">div</span> <span class="kt">[]</span> <span class="kt">[]</span><span class="p">)</span></code></pre></div>
 <p>Let&rsquo;s say we want to render the computer&rsquo;s choice. We don&rsquo;t want to check whether the state is <code>PlayerTurn</code> or <code>ComputerTurn</code> or whatever, we just want to call <code>showChoice</code>. To make it safe, we&rsquo;ll call <code>maybeRender showChoice computerChoice</code> so that an empty <code>div</code> will be rendered if there&rsquo;s nothing to show. This is very important because it allows us to keep our other functions simple and stupid (again, by not having to deal with <code>Maybe</code> directly).</p>
 
 <p>We are almost done, our last helper is <code>gameView</code> which employs the <code>maybeRender</code> function quite a bit so that our UI is simple to read and reason about.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">gameView</span> <span class="kt">:</span> <span class="kt">Score</span> <span class="ow">-&gt;</span> <span class="kt">Maybe</span> <span class="kt">Choice</span> <span class="ow">-&gt;</span> <span class="kt">Maybe</span> <span class="kt">Choice</span> <span class="ow">-&gt;</span> <span class="kt">Maybe</span> <span class="kt">GameResult</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
-<span class="nf">gameView</span> <span class="n">score</span> <span class="n">playerChoice</span> <span class="n">computerChoice</span> <span class="n">gameResult</span> <span class="ow">=</span>
-    <span class="n">div</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">gameView</span> <span class="kt">:</span> <span class="kt">Score</span> <span class="ow">-&gt;</span> <span class="kt">Maybe</span> <span class="kt">Choice</span> <span class="ow">-&gt;</span> <span class="kt">Maybe</span> <span class="kt">Choice</span> <span class="ow">-&gt;</span> <span class="kt">Maybe</span> <span class="kt">GameResult</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
+<span class="nf">gameView</span> <span class="nf">score</span> <span class="nf">playerChoice</span> <span class="nf">computerChoice</span> <span class="nf">gameResult</span> <span class="ow">=</span>
+    <span class="nf">div</span>
         <span class="kt">[]</span>
-        <span class="p">[</span> <span class="n">choiceButton</span> <span class="kt">Rock</span>
-        <span class="p">,</span> <span class="n">choiceButton</span> <span class="kt">Paper</span>
-        <span class="p">,</span> <span class="n">choiceButton</span> <span class="kt">Scissors</span>
-        <span class="p">,</span> <span class="n">choiceButton</span> <span class="kt">Lizard</span>
-        <span class="p">,</span> <span class="n">choiceButton</span> <span class="kt">Spock</span>
-        <span class="p">,</span> <span class="n">divider</span>
-        <span class="p">,</span> <span class="n">maybeRender</span> <span class="n">showChoice</span> <span class="n">playerChoice</span>
-        <span class="p">,</span> <span class="n">maybeRender</span> <span class="n">showChoice</span> <span class="n">computerChoice</span>
-        <span class="p">,</span> <span class="n">maybeRender</span> <span class="n">showResult</span> <span class="n">gameResult</span>
-        <span class="p">,</span> <span class="n">showPlayerScore</span> <span class="n">score</span>
-        <span class="p">,</span> <span class="n">maybeRender</span> <span class="p">(</span><span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span> <span class="n">resetButton</span><span class="p">)</span> <span class="n">gameResult</span>
-        <span class="p">]</span>
-</code></pre></div>
-
+        <span class="p">[</span> <span class="nf">choiceButton</span> <span class="kt">Rock</span>
+        <span class="p">,</span> <span class="nf">choiceButton</span> <span class="kt">Paper</span>
+        <span class="p">,</span> <span class="nf">choiceButton</span> <span class="kt">Scissors</span>
+        <span class="p">,</span> <span class="nf">choiceButton</span> <span class="kt">Lizard</span>
+        <span class="p">,</span> <span class="nf">choiceButton</span> <span class="kt">Spock</span>
+        <span class="p">,</span> <span class="nf">divider</span>
+        <span class="p">,</span> <span class="nf">maybeRender</span> <span class="nf">showChoice</span> <span class="nf">playerChoice</span>
+        <span class="p">,</span> <span class="nf">maybeRender</span> <span class="nf">showChoice</span> <span class="nf">computerChoice</span>
+        <span class="p">,</span> <span class="nf">maybeRender</span> <span class="nf">showResult</span> <span class="nf">gameResult</span>
+        <span class="p">,</span> <span class="nf">showPlayerScore</span> <span class="nf">score</span>
+        <span class="p">,</span> <span class="nf">maybeRender</span> <span class="p">(</span><span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span> <span class="nf">resetButton</span><span class="p">)</span> <span class="nf">gameResult</span>
+        <span class="p">]</span></code></pre></div>
 <p>This function will be called by the main <code>view</code> function with different parameters depending on the state. I can&rsquo;t stress enough how useful it is to restrict the use of <code>Maybe</code> to a couple of functions (<code>maybeRender</code> and <code>gameView</code>). All the other functions are as simple as they can be and this greatly improves the quality of our program in my opinion.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">view</span> <span class="kt">:</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
-<span class="nf">view</span> <span class="n">model</span> <span class="ow">=</span>
-    <span class="kr">case</span> <span class="n">model</span> <span class="kr">of</span>
-        <span class="kt">PlayerTurn</span> <span class="n">score</span> <span class="ow">-&gt;</span>
-            <span class="n">div</span> <span class="kt">[]</span>
-                <span class="p">[</span> <span class="n">gameView</span> <span class="n">score</span> <span class="kt">Nothing</span> <span class="kt">Nothing</span> <span class="kt">Nothing</span>
-                <span class="p">,</span> <span class="n">h3</span> <span class="kt">[]</span> <span class="p">[</span> <span class="n">text</span> <span class="s">&quot;Make your move!&quot;</span> <span class="p">]</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">view</span> <span class="kt">:</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
+<span class="nf">view</span> <span class="nf">model</span> <span class="ow">=</span>
+    <span class="kr">case</span> <span class="nf">model</span> <span class="kr">of</span>
+        <span class="kt">PlayerTurn</span> <span class="nf">score</span> <span class="ow">-&gt;</span>
+            <span class="nf">div</span> <span class="kt">[]</span>
+                <span class="p">[</span> <span class="nf">gameView</span> <span class="nf">score</span> <span class="kt">Nothing</span> <span class="kt">Nothing</span> <span class="kt">Nothing</span>
+                <span class="p">,</span> <span class="nf">h3</span> <span class="kt">[]</span> <span class="p">[</span> <span class="nf">text</span> <span class="s">&#34;Make your move!&#34;</span> <span class="p">]</span>
                 <span class="p">]</span>
 
-        <span class="kt">ComputerTurn</span> <span class="n">score</span> <span class="n">player</span> <span class="ow">-&gt;</span>
-            <span class="n">gameView</span> <span class="n">score</span> <span class="p">(</span><span class="kt">Just</span> <span class="n">player</span><span class="p">)</span> <span class="kt">Nothing</span> <span class="kt">Nothing</span>
+        <span class="kt">ComputerTurn</span> <span class="nf">score</span> <span class="nf">player</span> <span class="ow">-&gt;</span>
+            <span class="nf">gameView</span> <span class="nf">score</span> <span class="p">(</span><span class="kt">Just</span> <span class="nf">player</span><span class="p">)</span> <span class="kt">Nothing</span> <span class="kt">Nothing</span>
 
-        <span class="kt">GameOver</span> <span class="n">score</span> <span class="n">player</span> <span class="n">computer</span> <span class="n">result</span> <span class="ow">-&gt;</span>
-            <span class="n">gameView</span> <span class="n">score</span> <span class="p">(</span><span class="kt">Just</span> <span class="n">player</span><span class="p">)</span> <span class="p">(</span><span class="kt">Just</span> <span class="n">computer</span><span class="p">)</span> <span class="p">(</span><span class="kt">Just</span> <span class="n">result</span><span class="p">)</span>
-</code></pre></div>
-
+        <span class="kt">GameOver</span> <span class="nf">score</span> <span class="nf">player</span> <span class="nf">computer</span> <span class="nf">result</span> <span class="ow">-&gt;</span>
+            <span class="nf">gameView</span> <span class="nf">score</span> <span class="p">(</span><span class="kt">Just</span> <span class="nf">player</span><span class="p">)</span> <span class="p">(</span><span class="kt">Just</span> <span class="nf">computer</span><span class="p">)</span> <span class="p">(</span><span class="kt">Just</span> <span class="nf">result</span><span class="p">)</span></code></pre></div>
 <p>With <code>gameView</code>, the main <code>view</code> function is extremely nice and I really dig how it is laid out.</p>
 
 <p>This is it! You can play with this code directly in your browser here or on <a href="https://runelm.io/c/9cr">runelm.io</a>. The source code is also available on <a href="https://github.com/alpacaaa/elm-rock-paper-scissors">Github</a>.</p>

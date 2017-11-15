@@ -55,7 +55,7 @@
       
       
     
-    <meta name="generator" content="Hugo 0.17" />
+    <meta name="generator" content="Hugo 0.30.2" />
 
     <link rel="canonical" href="https://alpacaaa.net/blog/post/elm-purescript-in-depth-overview/" />
 
@@ -173,18 +173,16 @@
 <p>That&rsquo;s not to say that Purescript code is unintelligible (far from it) but there&rsquo;s a lot more to learn and you <strong>must</strong> develop an intuition for certain things. The type system in Purescript is more advanced and, as a consequence, you&rsquo;ll often see involved type signatures. This is not good or bad per se, it&rsquo;s just something you have to be aware of. On the other hand, the lack of abstractions in Elm is compensated with a ton of boilerplate which you might not like.</p>
 
 <p>Elm also has quite some magic going on behind the scenes. As an example, the original Purescript game defines this (simple) instance for the <code>Direction</code> data type.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">data</span> <span class="kt">Direction</span> <span class="ow">=</span> <span class="kt">Up</span> <span class="o">|</span> <span class="kt">Down</span>
-<span class="cm">{-</span>
-<span class="cm">   The equivalent in Elm is:</span>
-<span class="cm">   type Direction = Up | Down</span>
-<span class="cm"> -}</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">data</span> <span class="kt">Direction</span> <span class="ow">=</span> <span class="kt">Up</span> <span class="o">|</span> <span class="kt">Down</span>
+<span class="cm">{-
+</span><span class="cm">   The equivalent in Elm is:
+</span><span class="cm">   type Direction = Up | Down
+</span><span class="cm"> -}</span>
 
-<span class="kr">instance</span> <span class="n">eqDirection</span> <span class="ow">::</span> <span class="kt">Eq</span> <span class="kt">Direction</span> <span class="kr">where</span>
-  <span class="n">eq</span> <span class="kt">Up</span> <span class="kt">Up</span> <span class="ow">=</span> <span class="n">true</span>
-  <span class="n">eq</span> <span class="kt">Down</span> <span class="kt">Down</span> <span class="ow">=</span> <span class="n">true</span>
-  <span class="n">eq</span> <span class="kr">_</span> <span class="kr">_</span> <span class="ow">=</span> <span class="n">false</span>
-</code></pre></div>
-
+<span class="kr">instance</span> <span class="nf">eqDirection</span> <span class="ow">::</span> <span class="kt">Eq</span> <span class="kt">Direction</span> <span class="kr">where</span>
+  <span class="nf">eq</span> <span class="kt">Up</span> <span class="kt">Up</span> <span class="ow">=</span> <span class="nf">true</span>
+  <span class="nf">eq</span> <span class="kt">Down</span> <span class="kt">Down</span> <span class="ow">=</span> <span class="nf">true</span>
+  <span class="nf">eq</span> <span class="kr">_</span> <span class="kr">_</span> <span class="ow">=</span> <span class="nf">false</span></code></pre></div>
 <p>There&rsquo;s two things of note here. The most obvious is that <strong>this can&rsquo;t be expressed in Elm</strong>, as it lacks type classes. And in Purescript, if you don&rsquo;t define the instance, you can&rsquo;t use the <code>eq</code> operator, meaning that a simple comparison like <code>Up == Down</code> would result in a compiler error.</p>
 
 <p>Surprisingly (or not), in Elm type constructors are comparable <strong>by default</strong>! So no need for type classes in this case, the magic baked into the language takes care of it.</p>
@@ -196,15 +194,13 @@
 <p>One of my frustrations in understanding the Purescript code behind the game, was that I couldn&rsquo;t follow it. In Elm I can be 100% sure that changes to the model are happening in the <code>update</code> function. You develop at a much higher level and you don&rsquo;t even have to think about certain things.</p>
 
 <p>Contrast this to the first few lines of the <code>main</code> function in the Purescript version of the game.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
-  <span class="kt">Just</span> <span class="n">canvas</span> <span class="ow">&lt;-</span> <span class="kt">C</span><span class="o">.</span><span class="n">getCanvasElementById</span> <span class="s">&quot;canvas&quot;</span>
-  <span class="n">ctx</span> <span class="ow">&lt;-</span> <span class="kt">C</span><span class="o">.</span><span class="n">getContext2D</span> <span class="n">canvas</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="kt">Just</span> <span class="nf">canvas</span> <span class="ow">&lt;-</span> <span class="kt">C</span><span class="o">.</span><span class="nf">getCanvasElementById</span> <span class="s">&#34;canvas&#34;</span>
+  <span class="nf">ctx</span> <span class="ow">&lt;-</span> <span class="kt">C</span><span class="o">.</span><span class="nf">getContext2D</span> <span class="nf">canvas</span>
 
-  <span class="n">inputsRef</span> <span class="ow">&lt;-</span> <span class="n">newRef</span> <span class="p">{</span> <span class="n">space</span><span class="kt">:</span> <span class="n">false</span> <span class="p">}</span>
+  <span class="nf">inputsRef</span> <span class="ow">&lt;-</span> <span class="nf">newRef</span> <span class="p">{</span> <span class="nf">space</span><span class="kt">:</span> <span class="nf">false</span> <span class="p">}</span>
 
-  <span class="n">onSpaceBar</span> <span class="p">(</span><span class="nf">\</span><span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">modifyRef</span> <span class="n">inputsRef</span> <span class="p">(</span><span class="kr">_</span> <span class="p">{</span> <span class="n">space</span> <span class="ow">=</span> <span class="n">b</span> <span class="p">}))</span>
-</code></pre></div>
-
+  <span class="nf">onSpaceBar</span> <span class="p">(</span><span class="nf">\b</span> <span class="ow">-&gt;</span> <span class="nf">modifyRef</span> <span class="nf">inputsRef</span> <span class="p">(</span><span class="kr">_</span> <span class="p">{</span> <span class="nf">space</span> <span class="ow">=</span> <span class="nf">b</span> <span class="p">}))</span></code></pre></div>
 <p>There are so many things happening here, and I can see why I was so confused when reading it.</p>
 
 <p>First of all, there&rsquo;s <code>do</code> notation. Why are things defined with a <code>&lt;-</code> instead of a <code>=</code>? This is one of the first questions that beginner haskellers face and you&rsquo;re going to have the same WTF moments in Purescript as well (if you&rsquo;re unexperienced like I was). Turns out <code>do</code> notation has a very specific purpose and it makes total sense once you figure out how <code>bind</code> works and how annoying it is to nest sequenced computations. (I&rsquo;ll say it again, if you don&rsquo;t know what the hell you just read, stick with Elm for a while, <strong>you won&rsquo;t regret it</strong>)</p>
@@ -216,40 +212,36 @@
 <h4 id="there-should-be-a-single-way-do-to-things">There should be a single way do to things?</h4>
 
 <p>I want to have a look at another piece of code, because it shows how much different can be to program in vanilla Purescript compared to TEA.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">loop</span> <span class="ow">::</span> <span class="kt">Lazy</span><span class="o">.</span><span class="kt">List</span> <span class="kt">Level</span> <span class="ow">-&gt;</span> <span class="kt">Eff</span> <span class="kr">_</span> <span class="kt">Unit</span>
-<span class="nf">loop</span> <span class="n">levels</span> <span class="ow">=</span> <span class="kr">do</span>
-  <span class="n">clearCanvas</span>
-  <span class="kt">D</span><span class="o">.</span><span class="n">render</span> <span class="n">ctx</span> <span class="o">$</span> <span class="n">scene</span> <span class="p">(</span><span class="n">initialState</span> <span class="n">levels</span><span class="p">)</span>
-  <span class="n">onSpaceBarOnce</span> <span class="p">(</span><span class="n">go</span> <span class="p">(</span><span class="n">newGame</span> <span class="n">levels</span><span class="p">))</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">loop</span> <span class="ow">::</span> <span class="kt">Lazy</span><span class="o">.</span><span class="kt">List</span> <span class="kt">Level</span> <span class="ow">-&gt;</span> <span class="kt">Eff</span> <span class="kr">_</span> <span class="kt">Unit</span>
+<span class="nf">loop</span> <span class="nf">levels</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="nf">clearCanvas</span>
+  <span class="kt">D</span><span class="o">.</span><span class="nf">render</span> <span class="nf">ctx</span> <span class="o">$</span> <span class="nf">scene</span> <span class="p">(</span><span class="nf">initialState</span> <span class="nf">levels</span><span class="p">)</span>
+  <span class="nf">onSpaceBarOnce</span> <span class="p">(</span><span class="nf">go</span> <span class="p">(</span><span class="nf">newGame</span> <span class="nf">levels</span><span class="p">))</span>
   <span class="kr">where</span>
-  <span class="n">go</span> <span class="n">state</span> <span class="ow">=</span> <span class="kr">do</span>
-    <span class="n">t0</span> <span class="ow">&lt;-</span> <span class="n">nowEpochMilliseconds</span>
-    <span class="n">inputs</span> <span class="ow">&lt;-</span> <span class="n">readRef</span> <span class="n">inputsRef</span>
-    <span class="n">requestAnimationFrame</span> <span class="kr">do</span>
-      <span class="n">t1</span> <span class="ow">&lt;-</span> <span class="n">nowEpochMilliseconds</span>
-      <span class="kr">case</span> <span class="n">update</span> <span class="n">inputs</span> <span class="p">(</span><span class="n">t1</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span> <span class="n">state</span> <span class="kr">of</span>
-        <span class="kt">Right</span> <span class="n">newState</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
-          <span class="n">clearCanvas</span>
-          <span class="kt">D</span><span class="o">.</span><span class="n">render</span> <span class="n">ctx</span> <span class="o">$</span> <span class="n">scene</span> <span class="n">newState</span>
-          <span class="n">go</span> <span class="n">newState</span>
-        <span class="kt">Left</span> <span class="p">(</span><span class="kt">Tuple</span> <span class="n">now</span> <span class="n">next</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
-          <span class="n">clearCanvas</span>
-          <span class="kt">D</span><span class="o">.</span><span class="n">render</span> <span class="n">ctx</span> <span class="o">$</span> <span class="n">scene</span> <span class="n">now</span>
-          <span class="n">onSpaceBarOnce</span> <span class="p">(</span><span class="n">go</span> <span class="n">next</span><span class="p">)</span>
-</code></pre></div>
-
+  <span class="nf">go</span> <span class="nf">state</span> <span class="ow">=</span> <span class="kr">do</span>
+    <span class="nf">t0</span> <span class="ow">&lt;-</span> <span class="nf">nowEpochMilliseconds</span>
+    <span class="nf">inputs</span> <span class="ow">&lt;-</span> <span class="nf">readRef</span> <span class="nf">inputsRef</span>
+    <span class="nf">requestAnimationFrame</span> <span class="kr">do</span>
+      <span class="nf">t1</span> <span class="ow">&lt;-</span> <span class="nf">nowEpochMilliseconds</span>
+      <span class="kr">case</span> <span class="nf">update</span> <span class="nf">inputs</span> <span class="p">(</span><span class="nf">t1</span> <span class="o">-</span> <span class="nf">t0</span><span class="p">)</span> <span class="nf">state</span> <span class="kr">of</span>
+        <span class="kt">Right</span> <span class="nf">newState</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
+          <span class="nf">clearCanvas</span>
+          <span class="kt">D</span><span class="o">.</span><span class="nf">render</span> <span class="nf">ctx</span> <span class="o">$</span> <span class="nf">scene</span> <span class="nf">newState</span>
+          <span class="nf">go</span> <span class="nf">newState</span>
+        <span class="kt">Left</span> <span class="p">(</span><span class="kt">Tuple</span> <span class="nf">now</span> <span class="nf">next</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
+          <span class="nf">clearCanvas</span>
+          <span class="kt">D</span><span class="o">.</span><span class="nf">render</span> <span class="nf">ctx</span> <span class="o">$</span> <span class="nf">scene</span> <span class="nf">now</span>
+          <span class="nf">onSpaceBarOnce</span> <span class="p">(</span><span class="nf">go</span> <span class="nf">next</span><span class="p">)</span></code></pre></div>
 <p>You wouldn&rsquo;t be able to write something like this in Elm. Again, there&rsquo;s a lot of low level stuff going on like clearing the canvas, listening to keyboard events and even direct access to <code>requestAnimationFrame</code>. In general, Purescript is much more low level than Elm which means you can do pretty crazy stuff while being very precise and explicit about what you want to do (without losing purity).</p>
 
 <p>Elm rendering happens <strong>inside</strong> the <code>requestAnimationFrame</code> loop and there&rsquo;s no way to escape that. On the other hand, it&rsquo;s something that the developer doesn&rsquo;t have to worry about so maybe it&rsquo;s good. In Elm you listen to events explicitly returning the list of <code>subscriptions</code> you&rsquo;re interested in, like so:</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">subscriptions</span> <span class="kt">:</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="kt">Sub</span> <span class="n">msg</span>
-<span class="nf">subscriptions</span> <span class="n">model</span> <span class="ow">=</span>
-    <span class="kt">Sub</span><span class="o">.</span><span class="n">batch</span>
-        <span class="p">[</span> <span class="kt">AnimationFrame</span><span class="o">.</span><span class="n">diffs</span> <span class="kt">Frame</span>
-        <span class="p">,</span> <span class="kt">Keyboard</span><span class="o">.</span><span class="n">downs</span> <span class="kt">KeyDown</span>
-        <span class="p">,</span> <span class="kt">Keyboard</span><span class="o">.</span><span class="n">ups</span> <span class="kt">KeyUp</span>
-        <span class="p">]</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">subscriptions</span> <span class="kt">:</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="kt">Sub</span> <span class="nf">msg</span>
+<span class="nf">subscriptions</span> <span class="nf">model</span> <span class="ow">=</span>
+    <span class="kt">Sub</span><span class="o">.</span><span class="nf">batch</span>
+        <span class="p">[</span> <span class="kt">AnimationFrame</span><span class="o">.</span><span class="nf">diffs</span> <span class="kt">Frame</span>
+        <span class="p">,</span> <span class="kt">Keyboard</span><span class="o">.</span><span class="nf">downs</span> <span class="kt">KeyDown</span>
+        <span class="p">,</span> <span class="kt">Keyboard</span><span class="o">.</span><span class="nf">ups</span> <span class="kt">KeyUp</span>
+        <span class="p">]</span></code></pre></div>
 <p>This list gets handed to the runtime and you&rsquo;ll only going to hear about those events in the <code>update</code> function, there&rsquo;s no way around this. Again, Elm often enforces a single way to do things and this could be great or very restrictive depending on your taste and experience.</p>
 
 <h4 id="total-and-partial-functions">Total and partial functions</h4>
@@ -257,45 +249,33 @@
 <p>A function can be said to be total when you&rsquo;re handling every possible input. So if you&rsquo;re taking a <code>Maybe</code> as an input, you must handle both <code>Just a</code> values as well as <code>Nothing</code> values for the function to be total. In Elm, you are forced to do that, while Purescript offers escape hatches, meaning that you can effectively have <strong>partial</strong> functions. This might seem counter intuitive, why would you deliberately lose the guarantees given by the compiler and the type system? The answer is convenience. Honestly, at first I was surprised to see <code>unsafePartial</code> used that much throughout the Purescript By Example book, because I thought a sane person wouldn&rsquo;t want to give up totality, but of course that&rsquo;s not the case.</p>
 
 <p>There is a passage in the book that explains this well. The code sample is very similar to what we&rsquo;ve seen in the <code>main</code> function above, but makes use of <code>unsafePartial</code>.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">main</span> <span class="ow">=</span> <span class="n">void</span> <span class="o">$</span> <span class="n">unsafePartial</span> <span class="kr">do</span>
-  <span class="kt">Just</span> <span class="n">canvas</span> <span class="ow">&lt;-</span> <span class="n">getCanvasElementById</span> <span class="s">&quot;canvas&quot;</span>
-  <span class="n">ctx</span> <span class="ow">&lt;-</span> <span class="n">getContext2D</span> <span class="n">canvas</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">main</span> <span class="ow">=</span> <span class="nf">void</span> <span class="o">$</span> <span class="nf">unsafePartial</span> <span class="kr">do</span>
+  <span class="kt">Just</span> <span class="nf">canvas</span> <span class="ow">&lt;-</span> <span class="nf">getCanvasElementById</span> <span class="s">&#34;canvas&#34;</span>
+  <span class="nf">ctx</span> <span class="ow">&lt;-</span> <span class="nf">getContext2D</span> <span class="nf">canvas</span></code></pre></div>
 <blockquote>
 <p>Note: the call to unsafePartial here is necessary since the pattern match on the result of getCanvasElementById is partial, matching only the Just constructor. For our purposes, this is fine, but in production code, we would probably want to match the Nothing constructor and provide an appropriate error message.</p>
 </blockquote>
 
 <p>As an example, consider when you&rsquo;re sure that you&rsquo;re handling a list with three elements. Surely it would be handy to have a partial version of <code>tail</code> around that returns <code>List a</code> instead of <code>Maybe (List a)</code>. After all <strong>we are 100% sure</strong> that it&rsquo;s safe to call <code>tail</code> on that list, however the compiler couldn&rsquo;t prove it at the type level. At times, it can get a bit tedious to handle these situations, for example in Elm you have to write something like this:</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">list</span> <span class="ow">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
-<span class="nf">result</span> <span class="ow">=</span> <span class="kt">Maybe</span><span class="o">.</span><span class="n">withDefault</span> <span class="kt">[]</span> <span class="o">&lt;|</span> <span class="kt">List</span><span class="o">.</span><span class="n">tail</span> <span class="n">list</span> <span class="c1">-- [2, 3]</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">list</span> <span class="ow">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="nf">result</span> <span class="ow">=</span> <span class="kt">Maybe</span><span class="o">.</span><span class="nf">withDefault</span> <span class="kt">[]</span> <span class="o">&lt;|</span> <span class="kt">List</span><span class="o">.</span><span class="nf">tail</span> <span class="nf">list</span> <span class="c1">-- [2, 3]</span></code></pre></div>
 <p>We will never get the empty list back, but it&rsquo;s the only way to make the compiler happy and get rid of the <code>Maybe</code> context. In Purescript, you have partial versions of functions at your disposal. Consider this:</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">import</span> <span class="nn">Partial.Unsafe</span> <span class="p">(</span><span class="nf">unsafePartial</span><span class="p">)</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Partial.Unsafe</span> <span class="p">(</span><span class="nf">unsafePartial</span><span class="p">)</span>
 <span class="kr">import</span> <span class="nn">Data.Array.Partial</span> <span class="p">(</span><span class="nf">head</span><span class="p">,</span> <span class="nf">tail</span><span class="p">)</span>
 
 <span class="nf">list</span> <span class="ow">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
-<span class="nf">result</span> <span class="ow">=</span> <span class="n">unsafePartial</span> <span class="o">$</span> <span class="n">tail</span> <span class="n">list</span> <span class="c1">-- [2, 3]</span>
-</code></pre></div>
-
+<span class="nf">result</span> <span class="ow">=</span> <span class="nf">unsafePartial</span> <span class="o">$</span> <span class="nf">tail</span> <span class="nf">list</span> <span class="c1">-- [2, 3]</span></code></pre></div>
 <p>You can see a pattern here, Elm strive to be total and prevent you from shooting yourself in the foot in any way, while Purescript gives you more freedom, but you have to understand the consequences of what you&rsquo;re doing. A great write up on partiality can be found in the page <a href="https://github.com/purescript/purescript/wiki/The-Partial-type-class">The Partial type class</a> in the Purescript wiki.</p>
 
 <h4 id="unsafe-operations">Unsafe operations</h4>
 
 <p>In Purescript you can do <strong>unsafe</strong> stuff which, quoting the docs, means that computing functions &ldquo;can result in <strong>arbitrary side-effects</strong>.&rdquo; Let&rsquo;s have a look at an example from the game. There is a function used to generate a level, which obviously needs some sort of random input to work. Yet, it has this type signature:</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">unsafeLevel</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Level</span> <span class="c1">-- Level is just a record</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">unsafeLevel</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Level</span> <span class="c1">-- Level is just a record</span></code></pre></div>
 <p>How is that possible?! We pass an <code>Int</code> representing the level to generate and we get out a <code>Level</code> record without any sort of reference to the effects performed? The function is in fact performing side effecting stuff in the body, for example:</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">entry</span> <span class="ow">&lt;-</span> <span class="n">randomRange</span> <span class="p">(</span><span class="mf">50.0</span> <span class="o">+</span> <span class="n">door</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span> <span class="p">(</span><span class="mf">450.0</span> <span class="o">-</span> <span class="n">door</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
-<span class="nf">exit</span>  <span class="ow">&lt;-</span> <span class="n">randomRange</span> <span class="p">(</span><span class="mf">50.0</span> <span class="o">+</span> <span class="n">door</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span> <span class="p">(</span><span class="mf">450.0</span> <span class="o">-</span> <span class="n">door</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">entry</span> <span class="ow">&lt;-</span> <span class="nf">randomRange</span> <span class="p">(</span><span class="mf">50.0</span> <span class="o">+</span> <span class="nf">door</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span> <span class="p">(</span><span class="mf">450.0</span> <span class="o">-</span> <span class="nf">door</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
+<span class="nf">exit</span>  <span class="ow">&lt;-</span> <span class="nf">randomRange</span> <span class="p">(</span><span class="mf">50.0</span> <span class="o">+</span> <span class="nf">door</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span> <span class="p">(</span><span class="mf">450.0</span> <span class="o">-</span> <span class="nf">door</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span></code></pre></div>
 <p>Where <code>randomRange</code> has type <code>Eff (&quot;random&quot; :: RANDOM | e) Number</code>, so it is certainly effectful. How come this is not present in the type signature of <code>unsafeLevel</code>? Well, with <code>unsafePerformEff</code> you can <strong>run an effectful computation</strong>. Look at the type:</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">unsafePerformEff</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">eff</span> <span class="n">a</span><span class="o">.</span> <span class="kt">Eff</span> <span class="n">eff</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">a</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">unsafePerformEff</span> <span class="ow">::</span> <span class="nf">forall</span> <span class="nf">eff</span> <span class="nf">a</span><span class="o">.</span> <span class="kt">Eff</span> <span class="nf">eff</span> <span class="nf">a</span> <span class="ow">-&gt;</span> <span class="nf">a</span></code></pre></div>
 <p>It looks scary, because you should never be able to escape the <code>Eff</code> context, there shouldn&rsquo;t be any way to go back. The common practice would be to gather of all your effects and hand them to the runtime through the <code>main</code> function, while here we&rsquo;re effectively <strong>bypassing</strong> any guarantees about purity and performing undeclared side effects.</p>
 
 <p>Suffice to say this is impossible in Elm. But is it bad as it might look at first glance? Well, no!</p>
@@ -307,9 +287,7 @@
 <p>Let&rsquo;s briefly look at the Elm version, because the problem of generating a game level necessarily touches many more parts of the program. For starters, I created a function <code>generateLevel : Int -&gt; Task Never Level</code> that returns a <code>Task</code>.  When run, it will give back a <code>Level</code> record.</p>
 
 <p>In Elm, the difference between <code>Task</code> and <code>Cmd</code> is blurry and it&rsquo;s not completely clear to me why they both exist, but the runtime expects a <code>Cmd</code> in order to perform effectful computations (getting the current time and use it as a seed for random number generation in this case) so I have to turn my <code>Task</code> into a <code>Cmd</code> like so:</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kt">Task</span><span class="o">.</span><span class="n">perform</span> <span class="kt">LevelCreated</span> <span class="p">(</span><span class="n">generateLevel</span> <span class="n">level</span><span class="p">)</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kt">Task</span><span class="o">.</span><span class="nf">perform</span> <span class="kt">LevelCreated</span> <span class="p">(</span><span class="nf">generateLevel</span> <span class="nf">level</span><span class="p">)</span></code></pre></div>
 <p>This means that, when the computation is done, the application will receive a <code>LevelCreated Level</code> message that will carry the freshly generated level. Going back to square one to what I was saying about application architecture, I can be 100% sure that this (and any other) message is consumed in the <code>update</code> function, so there&rsquo;s not much guessing to do. Once you understand TEA you should be able to understand any Elm application. The counter argument is that this can be tedious, you have to define a new message, create a command and introduce asynchronicity where none is needed.</p>
 
 <h4 id="conclusion">Conclusion</h4>
