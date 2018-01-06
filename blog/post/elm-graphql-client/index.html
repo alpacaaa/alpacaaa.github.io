@@ -55,7 +55,7 @@ I&rsquo;m going to use a service called graphqlhub which exposes some famous RES
       
       
     
-    <meta name="generator" content="Hugo 0.30.2" />
+    <meta name="generator" content="Hugo 0.17" />
 
     <link rel="canonical" href="https://alpacaaa.net/blog/post/elm-graphql-client/" />
 
@@ -154,101 +154,117 @@ I&rsquo;m going to use a service called graphqlhub which exposes some famous RES
 
 
 <p>Great, so we can get a simple string from the server! What you see are the ids of the top stories on Hacker News right now. But what just happened? Let&rsquo;s get through it (I encourage you to play with the code and run it again if you&rsquo;re not sure what&rsquo;s going on).</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="nf">alias</span> <span class="kt">Model</span> <span class="ow">=</span>
-    <span class="p">{</span> <span class="nf">response</span> <span class="kt">:</span> <span class="kt">String</span>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="n">alias</span> <span class="kt">Model</span> <span class="ow">=</span>
+    <span class="p">{</span> <span class="n">response</span> <span class="kt">:</span> <span class="kt">String</span>
     <span class="p">}</span>
 
 
 <span class="kr">type</span> <span class="kt">Msg</span>
-    <span class="ow">=</span> <span class="kt">FetchHNTopStories</span> <span class="p">(</span><span class="kt">Result</span> <span class="kt">Http</span><span class="o">.</span><span class="kt">Error</span> <span class="kt">String</span><span class="p">)</span></code></pre></div>
+    <span class="ow">=</span> <span class="kt">FetchHNTopStories</span> <span class="p">(</span><span class="kt">Result</span> <span class="kt">Http</span><span class="o">.</span><span class="kt">Error</span> <span class="kt">String</span><span class="p">)</span>
+</code></pre></div>
+
 <p>First of all, we declare our <code>Model</code> and <code>Msg</code> types. The model is just the raw json we get from the server (we&rsquo;ll decode it in a bit) and <code>FetchHNTopStories</code> is our only message, that will get dispatched by the runtime when the response comes back from the server.</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">hnTopStories</span> <span class="kt">:</span> <span class="kt">String</span>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">hnTopStories</span> <span class="kt">:</span> <span class="kt">String</span>
 <span class="nf">hnTopStories</span> <span class="ow">=</span>
-    <span class="s">&#34;&#34;&#34;
-</span><span class="s">    {
-</span><span class="s">      hn {
-</span><span class="s">        topStories {
-</span><span class="s">          id
-</span><span class="s">        }
-</span><span class="s">      }
-</span><span class="s">    }
-</span><span class="s">    &#34;&#34;&#34;</span></code></pre></div>
+    <span class="s">&quot;&quot;&quot;</span>
+<span class="s">    {</span>
+<span class="s">      hn {</span>
+<span class="s">        topStories {</span>
+<span class="s">          id</span>
+<span class="s">        }</span>
+<span class="s">      }</span>
+<span class="s">    }</span>
+<span class="s">    &quot;&quot;&quot;</span>
+</code></pre></div>
+
 <p>This is the GraphQL query that we&rsquo;re sending. Note that it&rsquo;s just a string, far from ideal. We&rsquo;d like to use a DSL or something like that to create our queries, so that they can be type checked and we can be absolutely sure at compile time that they match the schema on the server (that would require knowing the schema in advance, but let&rsquo;s not get ahead of ourselves :P).</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">request</span> <span class="kt">:</span> <span class="kt">Http</span><span class="o">.</span><span class="kt">Request</span> <span class="kt">String</span>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">request</span> <span class="kt">:</span> <span class="kt">Http</span><span class="o">.</span><span class="kt">Request</span> <span class="kt">String</span>
 <span class="nf">request</span> <span class="ow">=</span>
     <span class="kr">let</span>
-        <span class="nf">encoded</span> <span class="ow">=</span>
-            <span class="kt">Http</span><span class="o">.</span><span class="nf">encodeUri</span> <span class="nf">hnTopStories</span>
+        <span class="n">encoded</span> <span class="ow">=</span>
+            <span class="kt">Http</span><span class="o">.</span><span class="n">encodeUri</span> <span class="n">hnTopStories</span>
     <span class="kr">in</span>
-        <span class="kt">Http</span><span class="o">.</span><span class="nf">getString</span> <span class="p">(</span><span class="s">&#34;https://www.graphqlhub.com/graphql?query=&#34;</span> <span class="o">++</span> <span class="nf">encoded</span><span class="p">)</span>
+        <span class="kt">Http</span><span class="o">.</span><span class="n">getString</span> <span class="p">(</span><span class="s">&quot;https://www.graphqlhub.com/graphql?query=&quot;</span> <span class="o">++</span> <span class="n">encoded</span><span class="p">)</span>
 
 
 <span class="nf">init</span> <span class="kt">:</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
 <span class="nf">init</span> <span class="ow">=</span>
-    <span class="p">{</span> <span class="nf">response</span> <span class="ow">=</span> <span class="s">&#34;Waiting for a response... &#34;</span> <span class="p">}</span> <span class="o">!</span> <span class="p">[</span> <span class="kt">Http</span><span class="o">.</span><span class="nf">send</span> <span class="kt">FetchHNTopStories</span> <span class="nf">request</span> <span class="p">]</span></code></pre></div>
-<p>The actual request is pretty simple. As we said before, the query is sent as a query parameter. Note that it has to be encoded.  Once we create our <code>Request</code> object, we can create a <code>Cmd</code> through <code>Http.send</code> so that the runtime can perform the appropriate side effects (making the request) and give us back the result through the <code>FetchHNTopStories</code> message.</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">update</span> <span class="kt">:</span> <span class="kt">Msg</span> <span class="ow">-&gt;</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
-<span class="nf">update</span> <span class="nf">msg</span> <span class="nf">model</span> <span class="ow">=</span>
-    <span class="kr">case</span> <span class="nf">msg</span> <span class="kr">of</span>
-        <span class="kt">FetchHNTopStories</span> <span class="p">(</span><span class="kt">Ok</span> <span class="nf">res</span><span class="p">)</span> <span class="ow">-&gt;</span>
-            <span class="p">{</span> <span class="nf">response</span> <span class="ow">=</span> <span class="nf">res</span> <span class="p">}</span> <span class="o">!</span> <span class="kt">[]</span>
+    <span class="p">{</span> <span class="n">response</span> <span class="ow">=</span> <span class="s">&quot;Waiting for a response... &quot;</span> <span class="p">}</span> <span class="o">!</span> <span class="p">[</span> <span class="kt">Http</span><span class="o">.</span><span class="n">send</span> <span class="kt">FetchHNTopStories</span> <span class="n">request</span> <span class="p">]</span>
+</code></pre></div>
 
-        <span class="kt">FetchHNTopStories</span> <span class="p">(</span><span class="kt">Err</span> <span class="nf">res</span><span class="p">)</span> <span class="ow">-&gt;</span>
-            <span class="p">{</span> <span class="nf">response</span> <span class="ow">=</span> <span class="nf">toString</span> <span class="nf">res</span> <span class="p">}</span> <span class="o">!</span> <span class="kt">[]</span>
+<p>The actual request is pretty simple. As we said before, the query is sent as a query parameter. Note that it has to be encoded.  Once we create our <code>Request</code> object, we can create a <code>Cmd</code> through <code>Http.send</code> so that the runtime can perform the appropriate side effects (making the request) and give us back the result through the <code>FetchHNTopStories</code> message.</p>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">update</span> <span class="kt">:</span> <span class="kt">Msg</span> <span class="ow">-&gt;</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<span class="nf">update</span> <span class="n">msg</span> <span class="n">model</span> <span class="ow">=</span>
+    <span class="kr">case</span> <span class="n">msg</span> <span class="kr">of</span>
+        <span class="kt">FetchHNTopStories</span> <span class="p">(</span><span class="kt">Ok</span> <span class="n">res</span><span class="p">)</span> <span class="ow">-&gt;</span>
+            <span class="p">{</span> <span class="n">response</span> <span class="ow">=</span> <span class="n">res</span> <span class="p">}</span> <span class="o">!</span> <span class="kt">[]</span>
+
+        <span class="kt">FetchHNTopStories</span> <span class="p">(</span><span class="kt">Err</span> <span class="n">res</span><span class="p">)</span> <span class="ow">-&gt;</span>
+            <span class="p">{</span> <span class="n">response</span> <span class="ow">=</span> <span class="n">toString</span> <span class="n">res</span> <span class="p">}</span> <span class="o">!</span> <span class="kt">[]</span>
 
 
 <span class="nf">view</span> <span class="kt">:</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
-<span class="nf">view</span> <span class="nf">model</span> <span class="ow">=</span>
-    <span class="nf">div</span> <span class="kt">[]</span> <span class="p">[</span> <span class="nf">text</span> <span class="nf">model</span><span class="o">.</span><span class="nf">response</span> <span class="p">]</span></code></pre></div>
+<span class="nf">view</span> <span class="n">model</span> <span class="ow">=</span>
+    <span class="n">div</span> <span class="kt">[]</span> <span class="p">[</span> <span class="n">text</span> <span class="n">model</span><span class="o">.</span><span class="n">response</span> <span class="p">]</span>
+</code></pre></div>
+
 <p>The <code>update</code> and <code>view</code> functions are fairly straightforward, nothing ground breaking is happening here.</p>
 
 <h4 id="decoding-the-graphql-response-with-elm-decode-pipeline">Decoding the GraphQL response with elm-decode-pipeline</h4>
 
 <p>So we&rsquo;re getting back the ids of the top stories on Hacker News right now. But what we&rsquo;re seeing is just a giant string that we need to decode, so let&rsquo;s get a bit more realistic and decode the response into a <code>List Story</code>. Here&rsquo;s our <code>Story</code> type.</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="nf">alias</span> <span class="kt">Story</span> <span class="ow">=</span>
-    <span class="p">{</span> <span class="nf">id</span> <span class="kt">:</span> <span class="kt">String</span>
-    <span class="p">,</span> <span class="nf">title</span> <span class="kt">:</span> <span class="kt">String</span>
-    <span class="p">}</span></code></pre></div>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="n">alias</span> <span class="kt">Story</span> <span class="ow">=</span>
+    <span class="p">{</span> <span class="n">id</span> <span class="kt">:</span> <span class="kt">String</span>
+    <span class="p">,</span> <span class="n">title</span> <span class="kt">:</span> <span class="kt">String</span>
+    <span class="p">}</span>
+</code></pre></div>
+
 <p>Right now, we&rsquo;re only interested in <code>id</code> and <code>title</code>. There are a lot more fields that we can query, we&rsquo;ll do that later. Let&rsquo;s update our query to match our brand new type.</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">hnTopStories</span> <span class="kt">:</span> <span class="kt">String</span>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">hnTopStories</span> <span class="kt">:</span> <span class="kt">String</span>
 <span class="nf">hnTopStories</span> <span class="ow">=</span>
-    <span class="s">&#34;&#34;&#34;
-</span><span class="s">    {
-</span><span class="s">      hn {
-</span><span class="s">        topStories {
-</span><span class="s">          id
-</span><span class="s">          title
-</span><span class="s">        }
-</span><span class="s">      }
-</span><span class="s">    }
-</span><span class="s">    &#34;&#34;&#34;</span></code></pre></div>
+    <span class="s">&quot;&quot;&quot;</span>
+<span class="s">    {</span>
+<span class="s">      hn {</span>
+<span class="s">        topStories {</span>
+<span class="s">          id</span>
+<span class="s">          title</span>
+<span class="s">        }</span>
+<span class="s">      }</span>
+<span class="s">    }</span>
+<span class="s">    &quot;&quot;&quot;</span>
+</code></pre></div>
+
 <p>I briefly touched upon decoders in a <a href="https://alpacaaa.net/blog/post/elm-rock-paper-scissors-beginner/">previous tutorial</a>. That stuff was pretty simple though, when you want to get serious about decoding, you&rsquo;ll want to use a package such as <a href="http://package.elm-lang.org/packages/NoRedInk/elm-decode-pipeline/latest">elm-decode-pipeline</a>. A decoder for our <code>Story</code> type might look like this:</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Json.Decode</span> <span class="k">as</span> <span class="n">Decode</span>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">import</span> <span class="nn">Json.Decode</span> <span class="k">as</span> <span class="n">Decode</span>
 <span class="kr">import</span> <span class="nn">Json.Decode.Pipeline</span> <span class="k">as</span> <span class="n">Pipeline</span>
 
 <span class="c1">-- ...</span>
 
 <span class="nf">storyDecoder</span> <span class="kt">:</span> <span class="kt">Decode</span><span class="o">.</span><span class="kt">Decoder</span> <span class="kt">Story</span>
 <span class="nf">storyDecoder</span> <span class="ow">=</span>
-    <span class="kt">Pipeline</span><span class="o">.</span><span class="nf">decode</span> <span class="kt">Story</span>
-        <span class="o">|&gt;</span> <span class="kt">Pipeline</span><span class="o">.</span><span class="nf">required</span> <span class="s">&#34;id&#34;</span> <span class="kt">Decode</span><span class="o">.</span><span class="nf">string</span>
-        <span class="o">|&gt;</span> <span class="kt">Pipeline</span><span class="o">.</span><span class="nf">required</span> <span class="s">&#34;title&#34;</span> <span class="kt">Decode</span><span class="o">.</span><span class="nf">string</span></code></pre></div>
+    <span class="kt">Pipeline</span><span class="o">.</span><span class="n">decode</span> <span class="kt">Story</span>
+        <span class="o">|&gt;</span> <span class="kt">Pipeline</span><span class="o">.</span><span class="n">required</span> <span class="s">&quot;id&quot;</span> <span class="kt">Decode</span><span class="o">.</span><span class="n">string</span>
+        <span class="o">|&gt;</span> <span class="kt">Pipeline</span><span class="o">.</span><span class="n">required</span> <span class="s">&quot;title&quot;</span> <span class="kt">Decode</span><span class="o">.</span><span class="n">string</span>
+</code></pre></div>
+
 <p>I decided to keep everything explicit (that is, using qualified names for the modules <code>Decode</code> and <code>Pipeline</code>) but if you find it easier, you can import the functions you need and drop the module name. I like the clearness of this approach to be onest. This decoder will take a JSON string and decode it to a <code>Story</code> type (if successful). Next, we&rsquo;ll want to update our <code>request</code> function so that we don&rsquo;t get back a raw string but a <code>List Story</code> (note we changed the signature and the function <code>getString</code> in <code>get</code>, which allows us to specify a decoder for the response).</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">request</span> <span class="kt">:</span> <span class="kt">Http</span><span class="o">.</span><span class="kt">Request</span> <span class="p">(</span><span class="kt">List</span> <span class="kt">Story</span><span class="p">)</span>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">request</span> <span class="kt">:</span> <span class="kt">Http</span><span class="o">.</span><span class="kt">Request</span> <span class="p">(</span><span class="kt">List</span> <span class="kt">Story</span><span class="p">)</span>
 <span class="nf">request</span> <span class="ow">=</span>
     <span class="kr">let</span>
-        <span class="nf">encoded</span> <span class="ow">=</span>
-            <span class="kt">Http</span><span class="o">.</span><span class="nf">encodeUri</span> <span class="nf">hnTopStories</span>
+        <span class="n">encoded</span> <span class="ow">=</span>
+            <span class="kt">Http</span><span class="o">.</span><span class="n">encodeUri</span> <span class="n">hnTopStories</span>
 
-        <span class="nf">decoder</span> <span class="ow">=</span>
-            <span class="kt">Decode</span><span class="o">.</span><span class="nf">at</span> <span class="p">[</span> <span class="s">&#34;data&#34;</span><span class="p">,</span> <span class="s">&#34;hn&#34;</span><span class="p">,</span> <span class="s">&#34;topStories&#34;</span> <span class="p">]</span> <span class="o">&lt;|</span>
-                <span class="kt">Decode</span><span class="o">.</span><span class="nf">list</span> <span class="nf">storyDecoder</span>
+        <span class="n">decoder</span> <span class="ow">=</span>
+            <span class="kt">Decode</span><span class="o">.</span><span class="n">at</span> <span class="p">[</span> <span class="s">&quot;data&quot;</span><span class="p">,</span> <span class="s">&quot;hn&quot;</span><span class="p">,</span> <span class="s">&quot;topStories&quot;</span> <span class="p">]</span> <span class="o">&lt;|</span>
+                <span class="kt">Decode</span><span class="o">.</span><span class="n">list</span> <span class="n">storyDecoder</span>
     <span class="kr">in</span>
-        <span class="kt">Http</span><span class="o">.</span><span class="nf">get</span> <span class="p">(</span><span class="s">&#34;https://www.graphqlhub.com/graphql?query=&#34;</span> <span class="o">++</span> <span class="nf">encoded</span><span class="p">)</span> <span class="nf">decoder</span></code></pre></div>
+        <span class="kt">Http</span><span class="o">.</span><span class="n">get</span> <span class="p">(</span><span class="s">&quot;https://www.graphqlhub.com/graphql?query=&quot;</span> <span class="o">++</span> <span class="n">encoded</span><span class="p">)</span> <span class="n">decoder</span>
+</code></pre></div>
+
 <p>Now we need to update our <code>Model</code>, <code>Msg</code>, <code>update</code> and <code>view</code> functions because we&rsquo;re not handling a <code>String</code> anymore but a <code>List Story</code>, so let&rsquo;s do that! This is mostly mechanical, should be fairly easy to follow.</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="nf">alias</span> <span class="kt">Model</span> <span class="ow">=</span>
-    <span class="p">{</span> <span class="nf">stories</span> <span class="kt">:</span> <span class="kt">List</span> <span class="kt">Story</span>
-    <span class="p">,</span> <span class="nf">message</span> <span class="kt">:</span> <span class="kt">String</span>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="n">alias</span> <span class="kt">Model</span> <span class="ow">=</span>
+    <span class="p">{</span> <span class="n">stories</span> <span class="kt">:</span> <span class="kt">List</span> <span class="kt">Story</span>
+    <span class="p">,</span> <span class="n">message</span> <span class="kt">:</span> <span class="kt">String</span>
     <span class="p">}</span>
 
 <span class="kr">type</span> <span class="kt">Msg</span>
@@ -257,36 +273,40 @@ I&rsquo;m going to use a service called graphqlhub which exposes some famous RES
 
 <span class="nf">init</span> <span class="kt">:</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
 <span class="nf">init</span> <span class="ow">=</span>
-    <span class="p">{</span> <span class="nf">stories</span> <span class="ow">=</span> <span class="kt">[]</span>
-    <span class="p">,</span> <span class="nf">message</span> <span class="ow">=</span> <span class="s">&#34;Waiting for a response... &#34;</span>
+    <span class="p">{</span> <span class="n">stories</span> <span class="ow">=</span> <span class="kt">[]</span>
+    <span class="p">,</span> <span class="n">message</span> <span class="ow">=</span> <span class="s">&quot;Waiting for a response... &quot;</span>
     <span class="p">}</span>
-        <span class="o">!</span> <span class="p">[</span> <span class="kt">Http</span><span class="o">.</span><span class="nf">send</span> <span class="kt">FetchHNTopStories</span> <span class="nf">request</span> <span class="p">]</span>
+        <span class="o">!</span> <span class="p">[</span> <span class="kt">Http</span><span class="o">.</span><span class="n">send</span> <span class="kt">FetchHNTopStories</span> <span class="n">request</span> <span class="p">]</span>
 
 
 <span class="nf">update</span> <span class="kt">:</span> <span class="kt">Msg</span> <span class="ow">-&gt;</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
-<span class="nf">update</span> <span class="nf">msg</span> <span class="nf">model</span> <span class="ow">=</span>
-    <span class="kr">case</span> <span class="nf">msg</span> <span class="kr">of</span>
-        <span class="kt">FetchHNTopStories</span> <span class="p">(</span><span class="kt">Ok</span> <span class="nf">stories</span><span class="p">)</span> <span class="ow">-&gt;</span>
-            <span class="p">{</span> <span class="nf">model</span> <span class="o">|</span> <span class="nf">stories</span> <span class="ow">=</span> <span class="nf">stories</span><span class="p">,</span> <span class="nf">message</span> <span class="ow">=</span> <span class="s">&#34;Got stories!&#34;</span> <span class="p">}</span> <span class="o">!</span> <span class="kt">[]</span>
+<span class="nf">update</span> <span class="n">msg</span> <span class="n">model</span> <span class="ow">=</span>
+    <span class="kr">case</span> <span class="n">msg</span> <span class="kr">of</span>
+        <span class="kt">FetchHNTopStories</span> <span class="p">(</span><span class="kt">Ok</span> <span class="n">stories</span><span class="p">)</span> <span class="ow">-&gt;</span>
+            <span class="p">{</span> <span class="n">model</span> <span class="o">|</span> <span class="n">stories</span> <span class="ow">=</span> <span class="n">stories</span><span class="p">,</span> <span class="n">message</span> <span class="ow">=</span> <span class="s">&quot;Got stories!&quot;</span> <span class="p">}</span> <span class="o">!</span> <span class="kt">[]</span>
 
-        <span class="kt">FetchHNTopStories</span> <span class="p">(</span><span class="kt">Err</span> <span class="nf">res</span><span class="p">)</span> <span class="ow">-&gt;</span>
-            <span class="p">{</span> <span class="nf">model</span> <span class="o">|</span> <span class="nf">message</span> <span class="ow">=</span> <span class="nf">toString</span> <span class="nf">res</span> <span class="p">}</span> <span class="o">!</span> <span class="kt">[]</span></code></pre></div>
+        <span class="kt">FetchHNTopStories</span> <span class="p">(</span><span class="kt">Err</span> <span class="n">res</span><span class="p">)</span> <span class="ow">-&gt;</span>
+            <span class="p">{</span> <span class="n">model</span> <span class="o">|</span> <span class="n">message</span> <span class="ow">=</span> <span class="n">toString</span> <span class="n">res</span> <span class="p">}</span> <span class="o">!</span> <span class="kt">[]</span>
+</code></pre></div>
+
 <p>Nice. Up next, the <code>view</code>! It will show a message according to the request status and will display a list of stories once we get some data back. In my eyes <code>(listItem &lt;&lt; .title)</code> looks pretty neat. If you&rsquo;re unsure about what that means, the extended version would be something like: <code>\story -&gt; listItem story.title</code>. We&rsquo;re being fancy and smart here given that we can express ourselves in a better and shorter way in Elm.</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">listItem</span> <span class="kt">:</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
-<span class="nf">listItem</span> <span class="nf">str</span> <span class="ow">=</span>
-    <span class="nf">li</span> <span class="kt">[]</span> <span class="p">[</span> <span class="nf">text</span> <span class="nf">str</span> <span class="p">]</span>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">listItem</span> <span class="kt">:</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
+<span class="nf">listItem</span> <span class="n">str</span> <span class="ow">=</span>
+    <span class="n">li</span> <span class="kt">[]</span> <span class="p">[</span> <span class="n">text</span> <span class="n">str</span> <span class="p">]</span>
 
 
 <span class="nf">view</span> <span class="kt">:</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
-<span class="nf">view</span> <span class="nf">model</span> <span class="ow">=</span>
+<span class="nf">view</span> <span class="n">model</span> <span class="ow">=</span>
     <span class="kr">let</span>
-        <span class="nf">items</span> <span class="ow">=</span>
-            <span class="kt">List</span><span class="o">.</span><span class="nf">map</span> <span class="p">(</span><span class="nf">listItem</span> <span class="o">&lt;&lt;</span> <span class="o">.</span><span class="nf">title</span><span class="p">)</span> <span class="nf">model</span><span class="o">.</span><span class="nf">stories</span>
+        <span class="n">items</span> <span class="ow">=</span>
+            <span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="p">(</span><span class="n">listItem</span> <span class="o">&lt;&lt;</span> <span class="o">.</span><span class="n">title</span><span class="p">)</span> <span class="n">model</span><span class="o">.</span><span class="n">stories</span>
 
-        <span class="nf">storiesList</span> <span class="ow">=</span>
-            <span class="nf">ul</span> <span class="kt">[]</span> <span class="nf">items</span>
+        <span class="n">storiesList</span> <span class="ow">=</span>
+            <span class="n">ul</span> <span class="kt">[]</span> <span class="n">items</span>
     <span class="kr">in</span>
-        <span class="nf">div</span> <span class="kt">[]</span> <span class="p">[</span> <span class="nf">text</span> <span class="nf">model</span><span class="o">.</span><span class="nf">message</span><span class="p">,</span> <span class="nf">storiesList</span> <span class="p">]</span></code></pre></div>
+        <span class="n">div</span> <span class="kt">[]</span> <span class="p">[</span> <span class="n">text</span> <span class="n">model</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">storiesList</span> <span class="p">]</span>
+</code></pre></div>
+
 <p>What we&rsquo;ve done so far is embedded below. Try to run it a second time in case you missed the initial message, so you get a good idea of what&rsquo;s going on.</p>
 
 <div class="runelm-wrapper ">
@@ -305,68 +325,82 @@ I&rsquo;m going to use a service called graphqlhub which exposes some famous RES
 <h3 id="new-types">New types</h3>
 
 <p>We need at least a couple of types to make things nicer. First, we&rsquo;d like to define a type <code>Field</code> which represents a field inside a query (in GraphQL speech <code>hn</code>, <code>topstories</code> and <code>id</code> are all fields). They can have arguments, but let&rsquo;s start simple and pretend they don&rsquo;t. Here&rsquo;s how I&rsquo;d go about defining the <code>Field</code> type.</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kr">alias</span> <span class="kt">Field</span> <span class="nf">=</span>
+<div class="highlight"><pre><code class="language-elm" data-lang="elm"><span></span><span class="kr">type</span> <span class="kr">alias</span> <span class="kt">Field</span> <span class="nf">=</span>
     <span class="p">{</span> <span class="nv">name</span> <span class="nf">:</span> <span class="kt">String</span>
     <span class="p">,</span> <span class="nv">query</span> <span class="nf">:</span> <span class="kt">Query</span>
-    <span class="p">}</span></code></pre></div>
+    <span class="p">}</span>
+</code></pre></div>
+
 <p>Notice that we&rsquo;re introducing a new type, <code>Query</code>. This time, it won&rsquo;t be a <code>type alias</code> because that would not make any sense to the compiler, as it&rsquo;s a recursive type (<code>Field</code> is defined in terms of <code>Query</code> and vice versa). So it will need to be a concrete type, fair enough.</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="kr">type</span> <span class="kt">Query</span>
-    <span class="nf">=</span> <span class="kt">Query</span> <span class="p">(</span><span class="kt">List</span> <span class="kt">Field</span><span class="p">)</span></code></pre></div>
+<div class="highlight"><pre><code class="language-elm" data-lang="elm"><span></span><span class="kr">type</span> <span class="kt">Query</span>
+    <span class="nf">=</span> <span class="kt">Query</span> <span class="p">(</span><span class="kt">List</span> <span class="kt">Field</span><span class="p">)</span>
+</code></pre></div>
+
 <p>A <code>Query</code> holds the eventual children of a<code>Field</code>. We&rsquo;ll convert our current query into a <code>Query</code> in a bit so that what we&rsquo;re trying to do becomes clearer.</p>
 
 <p>Now, how do we go about putting together a query with our new found types? It&rsquo;s easy, really, let&rsquo;s define an helper function <code>field</code> to make things more readable.</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">field</span> <span class="nf">:</span> <span class="kt">String</span> <span class="nf">-&gt;</span> <span class="kt">List</span> <span class="kt">Field</span> <span class="nf">-&gt;</span> <span class="kt">Field</span>
+<div class="highlight"><pre><code class="language-elm" data-lang="elm"><span></span><span class="nv">field</span> <span class="nf">:</span> <span class="kt">String</span> <span class="nf">-&gt;</span> <span class="kt">List</span> <span class="kt">Field</span> <span class="nf">-&gt;</span> <span class="kt">Field</span>
 <span class="nv">field</span> <span class="nv">name</span> <span class="nv">fields</span> <span class="nf">=</span>
-    <span class="kt">Field</span> <span class="nv">name</span> <span class="p">(</span><span class="kt">Query</span> <span class="nv">fields</span><span class="p">)</span></code></pre></div>
+    <span class="kt">Field</span> <span class="nv">name</span> <span class="p">(</span><span class="kt">Query</span> <span class="nv">fields</span><span class="p">)</span>
+</code></pre></div>
+
 <p>And then use it to create the query we had before.</p>
-<div class="highlight"><pre class="chroma"><code class="language-elm" data-lang="elm"><span class="nv">topStoriesQuery</span> <span class="nf">:</span> <span class="kt">Query</span>
+<div class="highlight"><pre><code class="language-elm" data-lang="elm"><span></span><span class="nv">topStoriesQuery</span> <span class="nf">:</span> <span class="kt">Query</span>
 <span class="nv">topStoriesQuery</span> <span class="nf">=</span>
     <span class="kt">Query</span>
-        <span class="p">[</span> <span class="nv">field</span> <span class="s">&#34;hn&#34;</span>
-            <span class="p">[</span> <span class="nv">field</span> <span class="s">&#34;topStories&#34;</span>
-                <span class="p">[</span> <span class="nv">field</span> <span class="s">&#34;id&#34;</span> <span class="p">[]</span>
-                <span class="p">,</span> <span class="nv">field</span> <span class="s">&#34;title&#34;</span> <span class="p">[]</span>
+        <span class="p">[</span> <span class="nv">field</span> <span class="s">&quot;hn&quot;</span>
+            <span class="p">[</span> <span class="nv">field</span> <span class="s">&quot;topStories&quot;</span>
+                <span class="p">[</span> <span class="nv">field</span> <span class="s">&quot;id&quot;</span> <span class="p">[]</span>
+                <span class="p">,</span> <span class="nv">field</span> <span class="s">&quot;title&quot;</span> <span class="p">[]</span>
                 <span class="p">]</span>
             <span class="p">]</span>
-        <span class="p">]</span></code></pre></div>
+        <span class="p">]</span>
+</code></pre></div>
+
 <p>This is kind of the same thing as building an Html tree in Elm – the last argument (the <code>Query</code> in our case) represents the children of a <code>Field</code>. Sounds good? Great, let&rsquo;s move on to converting it into a string so that we can actually use it then! How do we convert a <code>Field</code> into a <code>String</code>? Not that difficult if you think about it, we just use the field name and append it to its (possibly empty) <code>query</code>.</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">fieldToString</span> <span class="kt">:</span> <span class="kt">Field</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
-<span class="nf">fieldToString</span> <span class="p">{</span> <span class="nf">name</span><span class="p">,</span> <span class="nf">query</span> <span class="p">}</span> <span class="ow">=</span>
-    <span class="nf">name</span> <span class="o">++</span> <span class="s">&#34; &#34;</span> <span class="o">++</span> <span class="nf">queryToString</span> <span class="nf">query</span></code></pre></div>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">fieldToString</span> <span class="kt">:</span> <span class="kt">Field</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
+<span class="nf">fieldToString</span> <span class="p">{</span> <span class="n">name</span><span class="p">,</span> <span class="n">query</span> <span class="p">}</span> <span class="ow">=</span>
+    <span class="n">name</span> <span class="o">++</span> <span class="s">&quot; &quot;</span> <span class="o">++</span> <span class="n">queryToString</span> <span class="n">query</span>
+</code></pre></div>
+
 <p>The last thing we need is the <code>queryToString</code> function – it turns a <code>Query</code> value into a <code>String</code> that we can send to the server.</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">queryToString</span> <span class="kt">:</span> <span class="kt">Query</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
-<span class="nf">queryToString</span> <span class="p">(</span><span class="kt">Query</span> <span class="nf">query</span><span class="p">)</span> <span class="ow">=</span>
-    <span class="kr">if</span> <span class="kt">List</span><span class="o">.</span><span class="nf">isEmpty</span> <span class="nf">query</span> <span class="kr">then</span>
-        <span class="s">&#34;&#34;</span>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">queryToString</span> <span class="kt">:</span> <span class="kt">Query</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
+<span class="nf">queryToString</span> <span class="p">(</span><span class="kt">Query</span> <span class="n">query</span><span class="p">)</span> <span class="ow">=</span>
+    <span class="kr">if</span> <span class="kt">List</span><span class="o">.</span><span class="n">isEmpty</span> <span class="n">query</span> <span class="kr">then</span>
+        <span class="s">&quot;&quot;</span>
     <span class="kr">else</span>
         <span class="kr">let</span>
-            <span class="nf">str</span> <span class="ow">=</span>
-                <span class="kt">List</span><span class="o">.</span><span class="nf">map</span> <span class="nf">fieldToString</span> <span class="nf">query</span>
-                    <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="nf">foldr</span> <span class="p">(</span><span class="o">++</span><span class="p">)</span> <span class="s">&#34;&#34;</span>
+            <span class="n">str</span> <span class="ow">=</span>
+                <span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="n">fieldToString</span> <span class="n">query</span>
+                    <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="n">foldr</span> <span class="p">(</span><span class="o">++</span><span class="p">)</span> <span class="s">&quot;&quot;</span>
         <span class="kr">in</span>
-            <span class="s">&#34;{ &#34;</span> <span class="o">++</span> <span class="nf">str</span> <span class="o">++</span> <span class="s">&#34; }&#34;</span></code></pre></div>
+            <span class="s">&quot;{ &quot;</span> <span class="o">++</span> <span class="n">str</span> <span class="o">++</span> <span class="s">&quot; }&quot;</span>
+</code></pre></div>
+
 <p>With our brand new functions, we can go on and update the <code>request</code> function so that it uses the <code>topStoriesQuery</code> that we just defined.</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">request</span> <span class="kt">:</span> <span class="kt">Http</span><span class="o">.</span><span class="kt">Request</span> <span class="p">(</span><span class="kt">List</span> <span class="kt">Story</span><span class="p">)</span>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">request</span> <span class="kt">:</span> <span class="kt">Http</span><span class="o">.</span><span class="kt">Request</span> <span class="p">(</span><span class="kt">List</span> <span class="kt">Story</span><span class="p">)</span>
 <span class="nf">request</span> <span class="ow">=</span>
     <span class="kr">let</span>
-        <span class="nf">encoded</span> <span class="ow">=</span>
-            <span class="nf">queryToString</span> <span class="nf">topStoriesQuery</span>
-                <span class="o">|&gt;</span> <span class="kt">Http</span><span class="o">.</span><span class="nf">encodeUri</span>
+        <span class="n">encoded</span> <span class="ow">=</span>
+            <span class="n">queryToString</span> <span class="n">topStoriesQuery</span>
+                <span class="o">|&gt;</span> <span class="kt">Http</span><span class="o">.</span><span class="n">encodeUri</span>
 
-        <span class="nf">decoder</span> <span class="ow">=</span>
-            <span class="kt">Decode</span><span class="o">.</span><span class="nf">at</span> <span class="p">[</span> <span class="s">&#34;data&#34;</span><span class="p">,</span> <span class="s">&#34;hn&#34;</span><span class="p">,</span> <span class="s">&#34;topStories&#34;</span> <span class="p">]</span> <span class="o">&lt;|</span>
-                <span class="kt">Decode</span><span class="o">.</span><span class="nf">list</span> <span class="nf">storyDecoder</span>
+        <span class="n">decoder</span> <span class="ow">=</span>
+            <span class="kt">Decode</span><span class="o">.</span><span class="n">at</span> <span class="p">[</span> <span class="s">&quot;data&quot;</span><span class="p">,</span> <span class="s">&quot;hn&quot;</span><span class="p">,</span> <span class="s">&quot;topStories&quot;</span> <span class="p">]</span> <span class="o">&lt;|</span>
+                <span class="kt">Decode</span><span class="o">.</span><span class="n">list</span> <span class="n">storyDecoder</span>
     <span class="kr">in</span>
-        <span class="kt">Http</span><span class="o">.</span><span class="nf">get</span> <span class="p">(</span><span class="s">&#34;https://www.graphqlhub.com/graphql?query=&#34;</span> <span class="o">++</span> <span class="nf">encoded</span><span class="p">)</span> <span class="nf">decoder</span></code></pre></div>
+        <span class="kt">Http</span><span class="o">.</span><span class="n">get</span> <span class="p">(</span><span class="s">&quot;https://www.graphqlhub.com/graphql?query=&quot;</span> <span class="o">++</span> <span class="n">encoded</span><span class="p">)</span> <span class="n">decoder</span>
+</code></pre></div>
+
 <p>The result should be the same, but the refactoring we did is instrumental to get to our goal mentioned at the beginning of the post!</p>
 
 <h4 id="extending-the-example">Extending the example</h4>
 
 <p>Just for the sake of having something a little bit cooler to play with, let&rsquo;s extend the <code>Story</code> type to include the <code>url</code>. The api will return <code>null</code> when the story is a text post (an <code>Ask HN</code> or <code>Show HN</code> kind of post) so we&rsquo;ll need to make it optional. We&rsquo;re going to do that by declaring it as a <code>Maybe String</code> in our model and decoding it with <code>Json.Pipeline.optional</code> defaulting to <code>Nothing</code>.</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="nf">alias</span> <span class="kt">Story</span> <span class="ow">=</span>
-    <span class="p">{</span> <span class="nf">id</span> <span class="kt">:</span> <span class="kt">String</span>
-    <span class="p">,</span> <span class="nf">title</span> <span class="kt">:</span> <span class="kt">String</span>
-    <span class="p">,</span> <span class="nf">url</span> <span class="kt">:</span> <span class="kt">Maybe</span> <span class="kt">String</span>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="n">alias</span> <span class="kt">Story</span> <span class="ow">=</span>
+    <span class="p">{</span> <span class="n">id</span> <span class="kt">:</span> <span class="kt">String</span>
+    <span class="p">,</span> <span class="n">title</span> <span class="kt">:</span> <span class="kt">String</span>
+    <span class="p">,</span> <span class="n">url</span> <span class="kt">:</span> <span class="kt">Maybe</span> <span class="kt">String</span>
     <span class="p">}</span>
 
 <span class="c1">-- ...</span>
@@ -374,11 +408,11 @@ I&rsquo;m going to use a service called graphqlhub which exposes some famous RES
 <span class="nf">topStoriesQuery</span> <span class="kt">:</span> <span class="kt">Query</span>
 <span class="nf">topStoriesQuery</span> <span class="ow">=</span>
     <span class="kt">Query</span>
-        <span class="p">[</span> <span class="nf">field</span> <span class="s">&#34;hn&#34;</span>
-            <span class="p">[</span> <span class="nf">field</span> <span class="s">&#34;topStories&#34;</span>
-                <span class="p">[</span> <span class="nf">field</span> <span class="s">&#34;id&#34;</span> <span class="kt">[]</span>
-                <span class="p">,</span> <span class="nf">field</span> <span class="s">&#34;title&#34;</span> <span class="kt">[]</span>
-                <span class="p">,</span> <span class="nf">field</span> <span class="s">&#34;url&#34;</span> <span class="kt">[]</span> <span class="c1">-- we need the url</span>
+        <span class="p">[</span> <span class="n">field</span> <span class="s">&quot;hn&quot;</span>
+            <span class="p">[</span> <span class="n">field</span> <span class="s">&quot;topStories&quot;</span>
+                <span class="p">[</span> <span class="n">field</span> <span class="s">&quot;id&quot;</span> <span class="kt">[]</span>
+                <span class="p">,</span> <span class="n">field</span> <span class="s">&quot;title&quot;</span> <span class="kt">[]</span>
+                <span class="p">,</span> <span class="n">field</span> <span class="s">&quot;url&quot;</span> <span class="kt">[]</span> <span class="c1">-- we need the url</span>
                 <span class="p">]</span>
             <span class="p">]</span>
         <span class="p">]</span>
@@ -387,32 +421,36 @@ I&rsquo;m going to use a service called graphqlhub which exposes some famous RES
 
 <span class="nf">storyDecoder</span> <span class="kt">:</span> <span class="kt">Decode</span><span class="o">.</span><span class="kt">Decoder</span> <span class="kt">Story</span>
 <span class="nf">storyDecoder</span> <span class="ow">=</span>
-    <span class="kt">Pipeline</span><span class="o">.</span><span class="nf">decode</span> <span class="kt">Story</span>
-        <span class="o">|&gt;</span> <span class="kt">Pipeline</span><span class="o">.</span><span class="nf">required</span> <span class="s">&#34;id&#34;</span> <span class="kt">Decode</span><span class="o">.</span><span class="nf">string</span>
-        <span class="o">|&gt;</span> <span class="kt">Pipeline</span><span class="o">.</span><span class="nf">required</span> <span class="s">&#34;title&#34;</span> <span class="kt">Decode</span><span class="o">.</span><span class="nf">string</span>
-        <span class="o">|&gt;</span> <span class="kt">Pipeline</span><span class="o">.</span><span class="nf">optional</span> <span class="s">&#34;url&#34;</span> <span class="p">(</span><span class="kt">Decode</span><span class="o">.</span><span class="nf">nullable</span> <span class="kt">Decode</span><span class="o">.</span><span class="nf">string</span><span class="p">)</span> <span class="kt">Nothing</span> <span class="c1">-- url might be null</span></code></pre></div>
+    <span class="kt">Pipeline</span><span class="o">.</span><span class="n">decode</span> <span class="kt">Story</span>
+        <span class="o">|&gt;</span> <span class="kt">Pipeline</span><span class="o">.</span><span class="n">required</span> <span class="s">&quot;id&quot;</span> <span class="kt">Decode</span><span class="o">.</span><span class="n">string</span>
+        <span class="o">|&gt;</span> <span class="kt">Pipeline</span><span class="o">.</span><span class="n">required</span> <span class="s">&quot;title&quot;</span> <span class="kt">Decode</span><span class="o">.</span><span class="n">string</span>
+        <span class="o">|&gt;</span> <span class="kt">Pipeline</span><span class="o">.</span><span class="n">optional</span> <span class="s">&quot;url&quot;</span> <span class="p">(</span><span class="kt">Decode</span><span class="o">.</span><span class="n">nullable</span> <span class="kt">Decode</span><span class="o">.</span><span class="n">string</span><span class="p">)</span> <span class="kt">Nothing</span> <span class="c1">-- url might be null</span>
+</code></pre></div>
+
 <p>With that done, we can change the <code>view</code> to link to the actual stories, defaulting to the Hacker News link if it&rsquo;s a text post.</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">listItem</span> <span class="kt">:</span> <span class="kt">Story</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
-<span class="nf">listItem</span> <span class="p">{</span> <span class="nf">id</span><span class="p">,</span> <span class="nf">title</span><span class="p">,</span> <span class="nf">url</span> <span class="p">}</span> <span class="ow">=</span>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">listItem</span> <span class="kt">:</span> <span class="kt">Story</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
+<span class="nf">listItem</span> <span class="p">{</span> <span class="n">id</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">url</span> <span class="p">}</span> <span class="ow">=</span>
     <span class="kr">let</span>
-        <span class="nf">url_</span> <span class="ow">=</span>
-            <span class="kt">Maybe</span><span class="o">.</span><span class="nf">withDefault</span> <span class="p">(</span><span class="s">&#34;https://news.ycombinator.com/item?id=&#34;</span> <span class="o">++</span> <span class="nf">id</span><span class="p">)</span> <span class="nf">url</span>
+        <span class="n">url_</span> <span class="ow">=</span>
+            <span class="kt">Maybe</span><span class="o">.</span><span class="n">withDefault</span> <span class="p">(</span><span class="s">&quot;https://news.ycombinator.com/item?id=&quot;</span> <span class="o">++</span> <span class="n">id</span><span class="p">)</span> <span class="n">url</span>
     <span class="kr">in</span>
-        <span class="nf">li</span> <span class="kt">[]</span>
-            <span class="p">[</span> <span class="nf">a</span> <span class="p">[</span> <span class="nf">href</span> <span class="nf">url_</span> <span class="p">]</span> <span class="p">[</span> <span class="nf">text</span> <span class="nf">title</span> <span class="p">]</span>
+        <span class="n">li</span> <span class="kt">[]</span>
+            <span class="p">[</span> <span class="n">a</span> <span class="p">[</span> <span class="n">href</span> <span class="n">url_</span> <span class="p">]</span> <span class="p">[</span> <span class="n">text</span> <span class="n">title</span> <span class="p">]</span>
             <span class="p">]</span>
 
 
 <span class="nf">view</span> <span class="kt">:</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
-<span class="nf">view</span> <span class="nf">model</span> <span class="ow">=</span>
+<span class="nf">view</span> <span class="n">model</span> <span class="ow">=</span>
     <span class="kr">let</span>
-        <span class="nf">items</span> <span class="ow">=</span>
-            <span class="kt">List</span><span class="o">.</span><span class="nf">map</span> <span class="nf">listItem</span> <span class="nf">model</span><span class="o">.</span><span class="nf">stories</span>
+        <span class="n">items</span> <span class="ow">=</span>
+            <span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="n">listItem</span> <span class="n">model</span><span class="o">.</span><span class="n">stories</span>
 
-        <span class="nf">storiesList</span> <span class="ow">=</span>
-            <span class="nf">ul</span> <span class="kt">[]</span> <span class="nf">items</span>
+        <span class="n">storiesList</span> <span class="ow">=</span>
+            <span class="n">ul</span> <span class="kt">[]</span> <span class="n">items</span>
     <span class="kr">in</span>
-        <span class="nf">div</span> <span class="kt">[]</span> <span class="p">[</span> <span class="nf">text</span> <span class="nf">model</span><span class="o">.</span><span class="nf">message</span><span class="p">,</span> <span class="nf">storiesList</span> <span class="p">]</span></code></pre></div>
+        <span class="n">div</span> <span class="kt">[]</span> <span class="p">[</span> <span class="n">text</span> <span class="n">model</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">storiesList</span> <span class="p">]</span>
+</code></pre></div>
+
 <p>Find below the result, you can play with it and edit it as much as you like straight from your browser!</p>
 
 <h4 id="wrapping-up">Wrapping up</h4>

@@ -55,7 +55,7 @@
       
       
     
-    <meta name="generator" content="Hugo 0.30.2" />
+    <meta name="generator" content="Hugo 0.17" />
 
     <link rel="canonical" href="https://alpacaaa.net/blog/post/elm-mastermind-game/" />
 
@@ -157,31 +157,37 @@
 <h4 id="types">Types</h4>
 
 <p>We&rsquo;ll need some colors to play with:</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">Color</span>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="kt">Color</span>
     <span class="ow">=</span> <span class="kt">Red</span>
     <span class="o">|</span> <span class="kt">Green</span>
     <span class="o">|</span> <span class="kt">Blue</span>
     <span class="o">|</span> <span class="kt">Cyan</span>
     <span class="o">|</span> <span class="kt">Yellow</span>
-    <span class="o">|</span> <span class="kt">Empty</span></code></pre></div>
+    <span class="o">|</span> <span class="kt">Empty</span>
+</code></pre></div>
+
 <p>Notice the <code>Empty</code> constructor. It has essentially the same meaning as <code>Nothing</code> in <code>Maybe</code> and should make the code much easier to write and understand.</p>
 
 <p>A <code>Combination</code> is just a list of colors.</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="nf">alias</span> <span class="kt">Combination</span> <span class="ow">=</span>
-    <span class="kt">List</span> <span class="kt">Color</span></code></pre></div>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="n">alias</span> <span class="kt">Combination</span> <span class="ow">=</span>
+    <span class="kt">List</span> <span class="kt">Color</span>
+</code></pre></div>
+
 <p>When the user makes a guess, we&rsquo;ll encode it with the <code>Guess</code> type. We also need to give back some hints to the user (the black and white pegs).</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">Hint</span>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="kt">Hint</span>
     <span class="ow">=</span> <span class="kt">CorrectPosition</span>
     <span class="o">|</span> <span class="kt">WrongPosition</span>
 
-<span class="kr">type</span> <span class="nf">alias</span> <span class="kt">Guess</span> <span class="ow">=</span>
-    <span class="p">(</span> <span class="kt">Combination</span><span class="p">,</span> <span class="kt">List</span> <span class="kt">Hint</span> <span class="p">)</span></code></pre></div>
+<span class="kr">type</span> <span class="n">alias</span> <span class="kt">Guess</span> <span class="ow">=</span>
+    <span class="p">(</span> <span class="kt">Combination</span><span class="p">,</span> <span class="kt">List</span> <span class="kt">Hint</span> <span class="p">)</span>
+</code></pre></div>
+
 <p>Our model is pretty simple. We have a <code>correct</code> field which is the <code>Combination</code> that the user has to guess. <code>guesses</code> is the list of <code>Guess</code> that the user has made so far and <code>state</code> indicates if we&rsquo;re still playing or else.</p>
 
 <p>The <code>Playing</code> state holds the current guess (<code>Combination</code>). Notice that, thanks to <code>Empty</code> as a <code>Color</code> constructor, we can have a combination that looks like this <code>[Red, Empty, Cyan, Cyan]</code>.</p>
 
 <p><code>Index</code> is only needed for the UI, it indicates which color in the current combination the user is choosing.</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="nf">alias</span> <span class="kt">Index</span> <span class="ow">=</span>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="n">alias</span> <span class="kt">Index</span> <span class="ow">=</span>
     <span class="kt">Int</span>
 
 <span class="kr">type</span> <span class="kt">GameState</span>
@@ -189,35 +195,39 @@
     <span class="o">|</span> <span class="kt">GameOver</span>
     <span class="o">|</span> <span class="kt">Surrender</span>
 
-<span class="kr">type</span> <span class="nf">alias</span> <span class="kt">Model</span> <span class="ow">=</span>
-    <span class="p">{</span> <span class="nf">correct</span> <span class="kt">:</span> <span class="kt">Combination</span>
-    <span class="p">,</span> <span class="nf">guesses</span> <span class="kt">:</span> <span class="kt">List</span> <span class="kt">Guess</span>
-    <span class="p">,</span> <span class="nf">state</span> <span class="kt">:</span> <span class="kt">GameState</span>
-    <span class="p">}</span></code></pre></div>
+<span class="kr">type</span> <span class="n">alias</span> <span class="kt">Model</span> <span class="ow">=</span>
+    <span class="p">{</span> <span class="n">correct</span> <span class="kt">:</span> <span class="kt">Combination</span>
+    <span class="p">,</span> <span class="n">guesses</span> <span class="kt">:</span> <span class="kt">List</span> <span class="kt">Guess</span>
+    <span class="p">,</span> <span class="n">state</span> <span class="kt">:</span> <span class="kt">GameState</span>
+    <span class="p">}</span>
+</code></pre></div>
+
 <h4 id="update">Update</h4>
 
 <p>Let&rsquo;s write some helper functions to generate a list of random colors that we&rsquo;ll use to create the <code>Combination</code> the user has to guess.</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">randomList</span> <span class="kt">:</span> <span class="p">(</span><span class="kt">List</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Msg</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Cmd</span> <span class="kt">Msg</span>
-<span class="nf">randomList</span> <span class="nf">msg</span> <span class="nf">len</span> <span class="ow">=</span>
-    <span class="kt">Random</span><span class="o">.</span><span class="nf">int</span> <span class="mi">0</span> <span class="mi">100</span>
-        <span class="o">|&gt;</span> <span class="kt">Random</span><span class="o">.</span><span class="nf">list</span> <span class="nf">len</span>
-        <span class="o">|&gt;</span> <span class="kt">Random</span><span class="o">.</span><span class="nf">generate</span> <span class="nf">msg</span>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">randomList</span> <span class="kt">:</span> <span class="p">(</span><span class="kt">List</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Msg</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Cmd</span> <span class="kt">Msg</span>
+<span class="nf">randomList</span> <span class="n">msg</span> <span class="n">len</span> <span class="ow">=</span>
+    <span class="kt">Random</span><span class="o">.</span><span class="n">int</span> <span class="mi">0</span> <span class="mi">100</span>
+        <span class="o">|&gt;</span> <span class="kt">Random</span><span class="o">.</span><span class="n">list</span> <span class="n">len</span>
+        <span class="o">|&gt;</span> <span class="kt">Random</span><span class="o">.</span><span class="n">generate</span> <span class="n">msg</span>
 
 
-<span class="nf">shuffle</span> <span class="kt">:</span> <span class="kt">List</span> <span class="nf">comparable</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="nf">a</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="nf">a</span>
-<span class="nf">shuffle</span> <span class="nf">random</span> <span class="nf">list</span> <span class="ow">=</span>
-    <span class="kt">List</span><span class="o">.</span><span class="nf">map2</span> <span class="p">(,)</span> <span class="nf">list</span> <span class="nf">random</span>
-        <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="nf">sortBy</span> <span class="kt">Tuple</span><span class="o">.</span><span class="nf">second</span>
-        <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="nf">unzip</span>
-        <span class="o">|&gt;</span> <span class="kt">Tuple</span><span class="o">.</span><span class="nf">first</span>
+<span class="nf">shuffle</span> <span class="kt">:</span> <span class="kt">List</span> <span class="n">comparable</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="n">a</span>
+<span class="nf">shuffle</span> <span class="n">random</span> <span class="n">list</span> <span class="ow">=</span>
+    <span class="kt">List</span><span class="o">.</span><span class="n">map2</span> <span class="p">(,)</span> <span class="n">list</span> <span class="n">random</span>
+        <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="n">sortBy</span> <span class="kt">Tuple</span><span class="o">.</span><span class="n">second</span>
+        <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="n">unzip</span>
+        <span class="o">|&gt;</span> <span class="kt">Tuple</span><span class="o">.</span><span class="n">first</span>
 
 
-<span class="nf">randomCombination</span> <span class="kt">:</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="nf">a</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="nf">comparable</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="nf">a</span>
-<span class="nf">randomCombination</span> <span class="nf">size</span> <span class="nf">xs</span> <span class="nf">random</span> <span class="ow">=</span>
-    <span class="kt">List</span><span class="o">.</span><span class="nf">map</span> <span class="p">(</span><span class="kt">List</span><span class="o">.</span><span class="nf">repeat</span> <span class="nf">size</span><span class="p">)</span> <span class="nf">xs</span>
-        <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="nf">concat</span>
-        <span class="o">|&gt;</span> <span class="nf">shuffle</span> <span class="nf">random</span>
-        <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="nf">take</span> <span class="nf">size</span></code></pre></div>
+<span class="nf">randomCombination</span> <span class="kt">:</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="n">comparable</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="n">a</span>
+<span class="nf">randomCombination</span> <span class="n">size</span> <span class="n">xs</span> <span class="n">random</span> <span class="ow">=</span>
+    <span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="p">(</span><span class="kt">List</span><span class="o">.</span><span class="n">repeat</span> <span class="n">size</span><span class="p">)</span> <span class="n">xs</span>
+        <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="n">concat</span>
+        <span class="o">|&gt;</span> <span class="n">shuffle</span> <span class="n">random</span>
+        <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="n">take</span> <span class="n">size</span>
+</code></pre></div>
+
 <p>This is very similar to the random number generation we&rsquo;ve seen in the <a href="https://alpacaaa.net/blog/post/elm-memory-game-from-scratch/">Memory Game</a>. I suggest you read that post if you don&rsquo;t understand what&rsquo;s going on and/or you&rsquo;re still struggling with commands and the Elm architecture.</p>
 
 <p>I think <code>randomCombination</code> is pretty cool because it first creates a list of lists in this form <code>[ [ Red, Red, Red ], [Cyan, Cyan, Cyan], …]</code>, it concatenates them so we get a flat list and then uses  the other list we get as input (<code>random</code>) to generate a shuffled version, of which we&rsquo;re only interested in the first <code>size</code> elements.</p>
@@ -238,99 +248,111 @@
 <h5 id="1-make-two-arrays-ans-and-guess-with-a-slot-for-each-color">1. Make two arrays, <code>ans</code> and <code>guess</code>, with a slot for each color.</h5>
 
 <p>This one is easy, we&rsquo;ll just create a fixed <code>List</code> with all of our colors.</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">colors</span> <span class="kt">:</span> <span class="kt">List</span> <span class="kt">Color</span>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">colors</span> <span class="kt">:</span> <span class="kt">List</span> <span class="kt">Color</span>
 <span class="nf">colors</span> <span class="ow">=</span>
-    <span class="p">[</span> <span class="kt">Red</span><span class="p">,</span> <span class="kt">Green</span><span class="p">,</span> <span class="kt">Blue</span><span class="p">,</span> <span class="kt">Cyan</span><span class="p">,</span> <span class="kt">Yellow</span> <span class="p">]</span></code></pre></div>
+    <span class="p">[</span> <span class="kt">Red</span><span class="p">,</span> <span class="kt">Green</span><span class="p">,</span> <span class="kt">Blue</span><span class="p">,</span> <span class="kt">Cyan</span><span class="p">,</span> <span class="kt">Yellow</span> <span class="p">]</span>
+</code></pre></div>
+
 <h5 id="2-for-each-color-populate-ans-with-the-number-of-pegs-of-that-color-similarly-for-guess">2. For each color, populate <code>ans</code> with the number of pegs of that color. Similarly for <code>guess</code>.</h5>
 
 <p>Let&rsquo;s make a function <code>populate</code> that does exactly that. It takes a <code>Combination</code> (either <code>ans</code> or <code>guess</code>) and returns a list of tuples in the form <code>( Color, Int )</code>. The second value (<code>Int</code>) is obviously the number of occurencies of that color in the <code>Combination</code>.</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">populate</span> <span class="kt">:</span> <span class="kt">Combination</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="p">(</span> <span class="kt">Color</span><span class="p">,</span> <span class="kt">Int</span> <span class="p">)</span>
-<span class="nf">populate</span> <span class="nf">combination</span> <span class="ow">=</span>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">populate</span> <span class="kt">:</span> <span class="kt">Combination</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="p">(</span> <span class="kt">Color</span><span class="p">,</span> <span class="kt">Int</span> <span class="p">)</span>
+<span class="nf">populate</span> <span class="n">combination</span> <span class="ow">=</span>
     <span class="kr">let</span>
-        <span class="nf">countOccurrencies</span> <span class="nf">c</span> <span class="ow">=</span>
-            <span class="kt">List</span><span class="o">.</span><span class="nf">filter</span> <span class="p">((</span><span class="o">==</span><span class="p">)</span> <span class="nf">c</span><span class="p">)</span> <span class="nf">combination</span>
-                <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="nf">length</span>
+        <span class="n">countOccurrencies</span> <span class="n">c</span> <span class="ow">=</span>
+            <span class="kt">List</span><span class="o">.</span><span class="n">filter</span> <span class="p">((</span><span class="o">==</span><span class="p">)</span> <span class="n">c</span><span class="p">)</span> <span class="n">combination</span>
+                <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="n">length</span>
     <span class="kr">in</span>
-        <span class="kt">List</span><span class="o">.</span><span class="nf">map</span> <span class="p">(</span><span class="nf">\c</span> <span class="ow">-&gt;</span> <span class="p">(</span> <span class="nf">c</span><span class="p">,</span> <span class="nf">countOccurrencies</span> <span class="nf">c</span> <span class="p">))</span> <span class="nf">colors</span></code></pre></div>
+        <span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">c</span> <span class="ow">-&gt;</span> <span class="p">(</span> <span class="n">c</span><span class="p">,</span> <span class="n">countOccurrencies</span> <span class="n">c</span> <span class="p">))</span> <span class="n">colors</span>
+</code></pre></div>
+
 <h5 id="3-add-up-min-ans-i-guess-i-for-each-i-this-is-whites-plus-blacks">3. Add up <code>min(ans[i], guess[i])</code> for each <code>i</code>. This is whites plus blacks.</h5>
 
 <p>We&rsquo;ll create a function <code>processGuess</code> that takes two <code>Combination</code> (the guess and the correct one). We&rsquo;ll employ the <code>populate</code> function we just created.</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">processGuess</span> <span class="kt">:</span> <span class="kt">Combination</span> <span class="ow">-&gt;</span> <span class="kt">Combination</span> <span class="ow">-&gt;</span> <span class="kt">Guess</span>
-<span class="nf">processGuess</span> <span class="nf">guess</span> <span class="nf">correct</span> <span class="ow">=</span>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">processGuess</span> <span class="kt">:</span> <span class="kt">Combination</span> <span class="ow">-&gt;</span> <span class="kt">Combination</span> <span class="ow">-&gt;</span> <span class="kt">Guess</span>
+<span class="nf">processGuess</span> <span class="n">guess</span> <span class="n">correct</span> <span class="ow">=</span>
     <span class="kr">let</span>
-        <span class="nf">ans</span> <span class="ow">=</span>
-            <span class="nf">populate</span> <span class="nf">correct</span>
+        <span class="n">ans</span> <span class="ow">=</span>
+            <span class="n">populate</span> <span class="n">correct</span>
 
-        <span class="nf">gus</span> <span class="ow">=</span>
-            <span class="nf">populate</span> <span class="nf">guess</span>
+        <span class="n">gus</span> <span class="ow">=</span>
+            <span class="n">populate</span> <span class="n">guess</span>
 
-        <span class="nf">p</span> <span class="p">(</span> <span class="kr">_</span><span class="p">,</span> <span class="nf">count1</span> <span class="p">)</span> <span class="p">(</span> <span class="kr">_</span><span class="p">,</span> <span class="nf">count2</span> <span class="p">)</span> <span class="ow">=</span>
-            <span class="nf">min</span> <span class="nf">count1</span> <span class="nf">count2</span>
+        <span class="n">p</span> <span class="p">(</span> <span class="kr">_</span><span class="p">,</span> <span class="n">count1</span> <span class="p">)</span> <span class="p">(</span> <span class="kr">_</span><span class="p">,</span> <span class="n">count2</span> <span class="p">)</span> <span class="ow">=</span>
+            <span class="n">min</span> <span class="n">count1</span> <span class="n">count2</span>
 
-        <span class="nf">whiteBlacks</span> <span class="ow">=</span>
-            <span class="kt">List</span><span class="o">.</span><span class="nf">sum</span> <span class="o">&lt;|</span> <span class="kt">List</span><span class="o">.</span><span class="nf">map2</span> <span class="nf">p</span> <span class="nf">ans</span> <span class="nf">gus</span>
+        <span class="n">whiteBlacks</span> <span class="ow">=</span>
+            <span class="kt">List</span><span class="o">.</span><span class="n">sum</span> <span class="o">&lt;|</span> <span class="kt">List</span><span class="o">.</span><span class="n">map2</span> <span class="n">p</span> <span class="n">ans</span> <span class="n">gus</span>
     <span class="kr">in</span>
-      <span class="c1">-- TODO...  </span></code></pre></div>
+      <span class="c1">-- TODO...  </span>
+</code></pre></div>
+
 <p><code>p</code> is a helper function that takes two tuples in the form <code>( Color, Int )</code> and returns the minimum value between the two integers. <code>whiteBlacks</code> is clearly the sum of the blacks and whites.</p>
 
 <h5 id="4-add-up-max-ans-i-guess-i-0-for-each-i-this-is-the-number-of-whites">4. Add up <code>max(ans[i] - guess[i], 0)</code> for each <code>i</code>. This is the number of whites.</h5>
 
 <p>I found this to be very much unnecessary. Instead of counting the number of whites, it is much easier to count the number of blacks and then derive the whites by just subtracting the blacks from the total. Finding out the number of blacks is fairly straightforward:</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">blacks</span> <span class="ow">=</span>
-    <span class="kt">List</span><span class="o">.</span><span class="nf">map2</span> <span class="p">(</span><span class="o">==</span><span class="p">)</span> <span class="nf">guess</span> <span class="nf">correct</span>
-        <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="nf">filter</span> <span class="nf">identity</span>
-        <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="nf">length</span>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">blacks</span> <span class="ow">=</span>
+    <span class="kt">List</span><span class="o">.</span><span class="n">map2</span> <span class="p">(</span><span class="o">==</span><span class="p">)</span> <span class="n">guess</span> <span class="n">correct</span>
+        <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="n">filter</span> <span class="n">identity</span>
+        <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="n">length</span>
 
 <span class="nf">whites</span> <span class="ow">=</span>
-    <span class="nf">whiteBlacks</span> <span class="o">-</span> <span class="nf">blacks</span></code></pre></div>
+    <span class="n">whiteBlacks</span> <span class="o">-</span> <span class="n">blacks</span>
+</code></pre></div>
+
 <p>We&rsquo;re essentially creating a new list with the result of comparing the two colors at the same index. This will be a list like <code>[True, False, False, False]</code>. All is left to do is to count the <code>True</code> values, so we&rsquo;ll filter on <code>identity</code> (recall that <code>List.filter</code> expects a <code>Bool</code> so we&rsquo;re already good) and take the length of the resulting list.</p>
 
 <p>Here&rsquo;s the function in full:</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">tag</span> <span class="kt">:</span> <span class="nf">a</span> <span class="ow">-&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="nf">a</span>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">tag</span> <span class="kt">:</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="n">a</span>
 <span class="nf">tag</span> <span class="ow">=</span>
-    <span class="nf">flip</span> <span class="kt">List</span><span class="o">.</span><span class="nf">repeat</span>
+    <span class="n">flip</span> <span class="kt">List</span><span class="o">.</span><span class="n">repeat</span>
 
 <span class="nf">processGuess</span> <span class="kt">:</span> <span class="kt">Combination</span> <span class="ow">-&gt;</span> <span class="kt">Combination</span> <span class="ow">-&gt;</span> <span class="kt">Guess</span>
-<span class="nf">processGuess</span> <span class="nf">guess</span> <span class="nf">correct</span> <span class="ow">=</span>
+<span class="nf">processGuess</span> <span class="n">guess</span> <span class="n">correct</span> <span class="ow">=</span>
     <span class="kr">let</span>
-        <span class="nf">ans</span> <span class="ow">=</span>
-            <span class="nf">populate</span> <span class="nf">correct</span>
+        <span class="n">ans</span> <span class="ow">=</span>
+            <span class="n">populate</span> <span class="n">correct</span>
 
-        <span class="nf">gus</span> <span class="ow">=</span>
-            <span class="nf">populate</span> <span class="nf">guess</span>
+        <span class="n">gus</span> <span class="ow">=</span>
+            <span class="n">populate</span> <span class="n">guess</span>
 
-        <span class="nf">p</span> <span class="p">(</span> <span class="kr">_</span><span class="p">,</span> <span class="nf">count1</span> <span class="p">)</span> <span class="p">(</span> <span class="kr">_</span><span class="p">,</span> <span class="nf">count2</span> <span class="p">)</span> <span class="ow">=</span>
-            <span class="nf">min</span> <span class="nf">count1</span> <span class="nf">count2</span>
+        <span class="n">p</span> <span class="p">(</span> <span class="kr">_</span><span class="p">,</span> <span class="n">count1</span> <span class="p">)</span> <span class="p">(</span> <span class="kr">_</span><span class="p">,</span> <span class="n">count2</span> <span class="p">)</span> <span class="ow">=</span>
+            <span class="n">min</span> <span class="n">count1</span> <span class="n">count2</span>
 
-        <span class="nf">whiteBlacks</span> <span class="ow">=</span>
-            <span class="kt">List</span><span class="o">.</span><span class="nf">sum</span> <span class="o">&lt;|</span> <span class="kt">List</span><span class="o">.</span><span class="nf">map2</span> <span class="nf">p</span> <span class="nf">ans</span> <span class="nf">gus</span>
+        <span class="n">whiteBlacks</span> <span class="ow">=</span>
+            <span class="kt">List</span><span class="o">.</span><span class="n">sum</span> <span class="o">&lt;|</span> <span class="kt">List</span><span class="o">.</span><span class="n">map2</span> <span class="n">p</span> <span class="n">ans</span> <span class="n">gus</span>
 
-        <span class="nf">blacks</span> <span class="ow">=</span>
-            <span class="kt">List</span><span class="o">.</span><span class="nf">map2</span> <span class="p">(</span><span class="o">==</span><span class="p">)</span> <span class="nf">guess</span> <span class="nf">correct</span>
-                <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="nf">filter</span> <span class="nf">identity</span>
-                <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="nf">length</span>
+        <span class="n">blacks</span> <span class="ow">=</span>
+            <span class="kt">List</span><span class="o">.</span><span class="n">map2</span> <span class="p">(</span><span class="o">==</span><span class="p">)</span> <span class="n">guess</span> <span class="n">correct</span>
+                <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="n">filter</span> <span class="n">identity</span>
+                <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="n">length</span>
 
-        <span class="nf">whites</span> <span class="ow">=</span>
-            <span class="nf">whiteBlacks</span> <span class="o">-</span> <span class="nf">blacks</span>
+        <span class="n">whites</span> <span class="ow">=</span>
+            <span class="n">whiteBlacks</span> <span class="o">-</span> <span class="n">blacks</span>
     <span class="kr">in</span>
-        <span class="p">(</span> <span class="nf">guess</span><span class="p">,</span> <span class="p">(</span><span class="nf">tag</span> <span class="kt">CorrectPosition</span> <span class="nf">blacks</span><span class="p">)</span> <span class="o">++</span> <span class="p">(</span><span class="nf">tag</span> <span class="kt">WrongPosition</span> <span class="nf">whites</span><span class="p">)</span> <span class="p">)</span></code></pre></div>
+        <span class="p">(</span> <span class="n">guess</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span> <span class="kt">CorrectPosition</span> <span class="n">blacks</span><span class="p">)</span> <span class="o">++</span> <span class="p">(</span><span class="n">tag</span> <span class="kt">WrongPosition</span> <span class="n">whites</span><span class="p">)</span> <span class="p">)</span>
+</code></pre></div>
+
 <p>Just for reference, we can use it in the <code>update</code> function like this:</p>
-<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">case</span> <span class="nf">model</span><span class="o">.</span><span class="nf">state</span> <span class="kr">of</span>
-    <span class="kt">Playing</span> <span class="nf">combination</span> <span class="kr">_</span> <span class="ow">-&gt;</span>
+<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">case</span> <span class="n">model</span><span class="o">.</span><span class="n">state</span> <span class="kr">of</span>
+    <span class="kt">Playing</span> <span class="n">combination</span> <span class="kr">_</span> <span class="ow">-&gt;</span>
         <span class="kr">let</span>
-            <span class="nf">isOver</span> <span class="ow">=</span>
-                <span class="nf">combination</span> <span class="o">==</span> <span class="nf">model</span><span class="o">.</span><span class="nf">correct</span>
+            <span class="n">isOver</span> <span class="ow">=</span>
+                <span class="n">combination</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">correct</span>
 
-            <span class="nf">guess</span> <span class="ow">=</span>
-                <span class="nf">processGuess</span> <span class="nf">combination</span> <span class="nf">model</span><span class="o">.</span><span class="nf">correct</span>
+            <span class="n">guess</span> <span class="ow">=</span>
+                <span class="n">processGuess</span> <span class="n">combination</span> <span class="n">model</span><span class="o">.</span><span class="n">correct</span>
 
-            <span class="nf">newModel</span> <span class="ow">=</span>
-                <span class="p">{</span> <span class="nf">model</span> <span class="o">|</span> <span class="nf">guesses</span> <span class="ow">=</span> <span class="nf">model</span><span class="o">.</span><span class="nf">guesses</span> <span class="o">++</span> <span class="p">[</span> <span class="nf">guess</span> <span class="p">]</span> <span class="p">}</span>
+            <span class="n">newModel</span> <span class="ow">=</span>
+                <span class="p">{</span> <span class="n">model</span> <span class="o">|</span> <span class="n">guesses</span> <span class="ow">=</span> <span class="n">model</span><span class="o">.</span><span class="n">guesses</span> <span class="o">++</span> <span class="p">[</span> <span class="n">guess</span> <span class="p">]</span> <span class="p">}</span>
         <span class="kr">in</span>
-            <span class="kr">if</span> <span class="nf">isOver</span> <span class="kr">then</span>
-                <span class="p">{</span> <span class="nf">newModel</span> <span class="o">|</span> <span class="nf">state</span> <span class="ow">=</span> <span class="kt">GameOver</span> <span class="p">}</span>
+            <span class="kr">if</span> <span class="n">isOver</span> <span class="kr">then</span>
+                <span class="p">{</span> <span class="n">newModel</span> <span class="o">|</span> <span class="n">state</span> <span class="ow">=</span> <span class="kt">GameOver</span> <span class="p">}</span>
             <span class="kr">else</span>
-                <span class="p">{</span> <span class="nf">newModel</span> <span class="o">|</span> <span class="nf">state</span> <span class="ow">=</span> <span class="kt">Playing</span> <span class="nf">emptyCombination</span> <span class="kt">Nothing</span> <span class="p">}</span></code></pre></div>
+                <span class="p">{</span> <span class="n">newModel</span> <span class="o">|</span> <span class="n">state</span> <span class="ow">=</span> <span class="kt">Playing</span> <span class="n">emptyCombination</span> <span class="kt">Nothing</span> <span class="p">}</span>
+</code></pre></div>
+
 <p>Super cool!</p>
 
 <h4 id="wrapping-up">Wrapping up</h4>
