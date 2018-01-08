@@ -15,9 +15,8 @@
 
 
 <meta name="twitter:title" content="Beginning Purescript: Dropping effect rows"/>
-<meta name="twitter:description" content="Effect rows in Eff (and Aff) are pretty annoying and they&rsquo;re something I wanted to get around since I started learning Purescript. On the one hand, they look pretty useful because you can tell immediately what kind of effects are involved in a specific function, but you quickly realize that unifying effects is extremely cumbersome.
-Consider this function
-randomNumber :: forall eff. Int -&gt; Int -&gt; Eff { random :: RANDOM | eff } Int  The effect row would be { random :: RANDOM | eff }."/>
+<meta name="twitter:description" content="Effect rows in Eff (and Aff) are a quite interesting feature when it comes to effectful code in Purescript. On the one hand, they look pretty useful because you can tell immediately what kind of effects are involved in a specific function but, depending on your level of experience and the size and scope of the app you&rsquo;re writing, they can be a bit cumbersome to work with.
+Consider this function"/>
 
 
 
@@ -56,7 +55,7 @@ randomNumber :: forall eff. Int -&gt; Int -&gt; Eff { random :: RANDOM | eff } I
       
       
     
-    <meta name="generator" content="Hugo 0.17" />
+    <meta name="generator" content="Hugo 0.30.2" />
 
     <link rel="canonical" href="https://alpacaaa.net/blog/post/purescript-drop-effect-rows/" />
 
@@ -129,97 +128,78 @@ randomNumber :: forall eff. Int -&gt; Int -&gt; Eff { random :: RANDOM | eff } I
     <section class="post-content">
       
 
-<p>Effect rows in <code>Eff</code> (and <code>Aff</code>) are pretty annoying and they&rsquo;re something I wanted to get around since I started learning Purescript. On the one hand, they look pretty useful because you can tell immediately what kind of effects are involved in a specific function, but you quickly realize that unifying effects is extremely cumbersome.</p>
+<p>Effect rows in <code>Eff</code> (and <code>Aff</code>) are a quite interesting feature when it comes to effectful code in Purescript. On the one hand, they look pretty useful because you can tell immediately what kind of effects are involved in a specific function but, depending on your level of experience and the size and scope of the app you&rsquo;re writing, they can be a bit cumbersome to work with.</p>
 
 <p>Consider this function</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">randomNumber</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">eff</span><span class="o">.</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Eff</span> <span class="p">{</span> <span class="n">random</span> <span class="ow">::</span> <span class="kt">RANDOM</span> <span class="o">|</span> <span class="n">eff</span> <span class="p">}</span> <span class="kt">Int</span>
-</code></pre></div>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">randomNumber</span> <span class="ow">::</span> <span class="nf">forall</span> <span class="nf">eff</span><span class="o">.</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Eff</span> <span class="p">(</span> <span class="nf">random</span> <span class="ow">::</span> <span class="kt">RANDOM</span> <span class="o">|</span> <span class="nf">eff</span> <span class="p">)</span> <span class="kt">Int</span></code></pre></div>
+<p>The effect row would be <code>( random :: RANDOM | eff )</code>.</p>
 
-<p>The effect row would be <code>{ random :: RANDOM | eff }</code>.</p>
+<p>This type signature is saying that the function will make use of the <code>RANDOM</code> effect and that it will work in any effectful program that is <strong>at least</strong> capable of handling it. If you&rsquo;re familiar with how records work in Purescript (<a href="https://github.com/purescript/documentation/blob/master/language/Records.md">read this document</a> for a refresher), then rows will look familiar.</p>
 
-<p>I assume you&rsquo;re already familiar with how records work in Purescript, if not <a href="https://github.com/purescript/documentation/blob/master/language/Records.md">read this document</a>. This type signature is saying that it will make use of the <code>RANDOM</code> effect and that it will work in any effectful program that is <strong>at least</strong> capable of handling it.</p>
-
-<p>Now, consider this program:</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">program</span> <span class="ow">::</span> <span class="kt">Eff</span> <span class="p">{</span> <span class="n">random</span> <span class="ow">::</span> <span class="kt">RANDOM</span><span class="p">,</span> <span class="n">console</span> <span class="ow">::</span> <span class="kt">CONSOLE</span> <span class="p">}</span> <span class="kt">Unit</span>
+<p>In the previous example, the row is said to be <strong>open</strong>. Now consider this program:</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">program</span> <span class="ow">::</span> <span class="kt">Eff</span> <span class="p">(</span> <span class="nf">random</span> <span class="ow">::</span> <span class="kt">RANDOM</span><span class="p">,</span> <span class="nf">console</span> <span class="ow">::</span> <span class="kt">CONSOLE</span> <span class="p">)</span> <span class="kt">Unit</span>
 <span class="nf">program</span> <span class="ow">=</span> <span class="kr">do</span>
-	<span class="n">n</span> <span class="ow">&lt;-</span> <span class="n">randomNumber</span> <span class="mi">0</span> <span class="mi">10</span>
-	<span class="kt">Console</span><span class="o">.</span><span class="n">log</span> <span class="o">$</span> <span class="s">&quot;Random number: &quot;</span> <span class="o">&lt;&gt;</span> <span class="p">(</span><span class="n">show</span> <span class="n">n</span><span class="p">)</span>
-</code></pre></div>
-
-<p>This compiles just fine because all the effects involved in <code>program</code> are correctly tracked in its effect row. An important thing to note is that <code>program</code> will <strong>only</strong> run in a larger program if it provides exactly the <code>RANDOM</code> and <code>CONSOLE</code> effects. That&rsquo;s because we&rsquo;re not leaving the row open as we previously did with <code>randomNumber</code>.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">main</span> <span class="ow">::</span> <span class="kt">Eff</span> <span class="p">{</span> <span class="n">random</span> <span class="ow">::</span> <span class="kt">RANDOM</span><span class="p">,</span> <span class="n">console</span> <span class="ow">::</span> <span class="kt">CONSOLE</span><span class="p">,</span> <span class="n">http</span> <span class="ow">::</span> <span class="kt">HTTP</span> <span class="p">}</span> <span class="kt">Unit</span>
+	<span class="nf">n</span> <span class="ow">&lt;-</span> <span class="nf">randomNumber</span> <span class="mi">0</span> <span class="mi">10</span>
+	<span class="kt">Console</span><span class="o">.</span><span class="nf">log</span> <span class="o">$</span> <span class="s">&#34;Random number: &#34;</span> <span class="o">&lt;&gt;</span> <span class="p">(</span><span class="nf">show</span> <span class="nf">n</span><span class="p">)</span></code></pre></div>
+<p>The row here is <strong>closed</strong>.
+This compiles just fine because all the effects involved in <code>program</code> are correctly tracked in its effect row. An important thing to note is that <code>program</code> will <strong>only</strong> run in a larger program if it provides exactly the <code>RANDOM</code> and <code>CONSOLE</code> effects. That&rsquo;s because we&rsquo;re not leaving the row open as we previously did with <code>randomNumber</code>.</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">main</span> <span class="ow">::</span> <span class="kt">Eff</span> <span class="p">(</span> <span class="nf">random</span> <span class="ow">::</span> <span class="kt">RANDOM</span><span class="p">,</span> <span class="nf">console</span> <span class="ow">::</span> <span class="kt">CONSOLE</span><span class="p">,</span> <span class="nf">http</span> <span class="ow">::</span> <span class="kt">HTTP</span> <span class="p">)</span> <span class="kt">Unit</span>
 <span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
-	<span class="kt">Console</span><span class="o">.</span><span class="n">log</span> <span class="s">&quot;Let&#39;s generate a random number&quot;</span>
-	<span class="n">program</span>
-</code></pre></div>
-
+	<span class="kt">Console</span><span class="o">.</span><span class="nf">log</span> <span class="s">&#34;Let&#39;s generate a random number&#34;</span>
+	<span class="nf">program</span></code></pre></div>
 <p>This <strong>will not</strong> compile. The effect rows of <code>main</code> and <code>program</code> do not match and thus we&rsquo;re not allowed to call <code>program</code> from <code>main</code> (let alone the opposite).</p>
 
-<p>The effect rows we used so far aren&rsquo;t any more or less interesting than what you would use with other records, so the same rules apply.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="kt">User</span> <span class="ow">=</span>
-	<span class="p">{</span> <span class="n">name</span> <span class="ow">::</span> <span class="kt">String</span><span class="p">,</span> <span class="n">age</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="p">}</span>
+<p>The effect rows we used so far aren&rsquo;t any more or less interesting than what you would use with records, so the same rules apply.</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">User</span> <span class="ow">=</span>
+	<span class="p">{</span> <span class="nf">name</span> <span class="ow">::</span> <span class="kt">String</span><span class="p">,</span> <span class="nf">age</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="p">}</span>
 
 <span class="kr">type</span> <span class="kt">Person</span> <span class="ow">=</span>
-	<span class="p">{</span> <span class="n">name</span> <span class="ow">::</span> <span class="kt">String</span><span class="p">,</span> <span class="n">age</span> <span class="ow">::</span> <span class="kt">Int</span><span class="p">,</span> <span class="n">country</span> <span class="ow">::</span> <span class="kt">Country</span> <span class="p">}</span>
+	<span class="p">{</span> <span class="nf">name</span> <span class="ow">::</span> <span class="kt">String</span><span class="p">,</span> <span class="nf">age</span> <span class="ow">::</span> <span class="kt">Int</span><span class="p">,</span> <span class="nf">country</span> <span class="ow">::</span> <span class="kt">Country</span> <span class="p">}</span>
 
-<span class="nf">greet</span> <span class="ow">::</span> <span class="n">forall</span> <span class="n">r</span><span class="o">.</span> <span class="p">{</span> <span class="n">name</span> <span class="ow">::</span> <span class="kt">String</span> <span class="o">|</span> <span class="n">r</span> <span class="p">}</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
-<span class="nf">greet</span> <span class="p">{</span> <span class="n">name</span> <span class="p">}</span> <span class="ow">=</span> <span class="s">&quot;Hello &quot;</span> <span class="o">&lt;&gt;</span> <span class="n">name</span> <span class="o">&lt;&gt;</span> <span class="s">&quot;!&quot;</span>
-</code></pre></div>
-
+<span class="nf">greet</span> <span class="ow">::</span> <span class="nf">forall</span> <span class="nf">r</span><span class="o">.</span> <span class="p">{</span> <span class="nf">name</span> <span class="ow">::</span> <span class="kt">String</span> <span class="o">|</span> <span class="nf">r</span> <span class="p">}</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
+<span class="nf">greet</span> <span class="p">{</span> <span class="nf">name</span> <span class="p">}</span> <span class="ow">=</span> <span class="s">&#34;Hello &#34;</span> <span class="o">&lt;&gt;</span> <span class="nf">name</span> <span class="o">&lt;&gt;</span> <span class="s">&#34;!&#34;</span></code></pre></div>
 <p>The <code>greet</code> function works with any record that has at least a <code>name</code> property of type <code>String</code>. Again, that&rsquo;s because we&rsquo;re leaving the row open, so it works with values of type <code>User</code> and <code>Person</code> seamlessly.</p>
 
 <h4 id="is-it-worth-it">Is it worth it?</h4>
 
 <p>You now have a better understanding of how effect rows work and what problem they&rsquo;re trying to solve. We wouldn&rsquo;t want to have a function making an http request in a context where we&rsquo;re only expecting text to be written to the console.</p>
 
-<p>All things considered, this isn&rsquo;t that useful in practice.</p>
+<p>A <a href="https://twitter.com/paf31/status/908760073303764993">recent survey</a> asked the Purescript community whether a less restrictive (and less powerful) way of dealing with side effects could be a good idea for the language. We&rsquo;d basically get the <code>IO a</code> type from Haskell, which is exactly like <code>Eff eff a</code> minus the effect row.</p>
 
-<p>The good news is that Purescript 0.12 will drop the effect row from <code>Eff</code> (as of the time of writing, it&rsquo;s still not clear how). We&rsquo;ll basically get the <code>IO a</code> type from Haskell, which is exactly like <code>Eff eff a</code> minus the effect row.</p>
+<p>Most people agreed with this, so Purescript 0.12 will drop the effect row from <code>Eff</code> (as of the time of writing, it&rsquo;s still not clear how).</p>
 
-<p>Until then, the best way I found to workaround effect rows is to drop them.</p>
+<p>I think it&rsquo;s good to be aware effect rows exist. At the same time, it&rsquo;s probably best hold off employing them if you&rsquo;re a beginner, if anything because they give you a level of type safety you likely don&rsquo;t need while playing around or writing small apps.</p>
 
 <h4 id="just-drop-the-effect-row">Just drop the effect row</h4>
 
-<p>When I first approached Purescript, I got bitten pretty often by errors related to effect rows not unifying. I was so annoyed that I removed type signatures all together from functions in <code>Eff</code> and let the compiler figure out everything by itself.</p>
-
-<p>However, that was far from ideal.</p>
-
-<p>A much better solution is to keep the type signatures and use the wildcard pattern <code>_</code> which gives us a pretty close approximation of <code>IO</code>.</p>
+<p>So how do we get a close approximation of <code>IO</code> with the current version of Purescript? You guessed it, by dropping the effect row! We can use the wildcard pattern <code>_</code> to keep our signatures nice and tidy and not worry about effect tracking.</p>
 
 <p>Essentially, I would write the <code>randomNumber</code> function from before with this type signature:</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">randomNumber</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Eff</span> <span class="kr">_</span> <span class="kt">Int</span>
-</code></pre></div>
-
-<p>This is much more smooth and concise – much better.</p>
-
-<p>If we rewrite <code>program</code> and <code>main</code> to follow the same pattern, the code we previously wrote will now compile because any effect row will unify with all functions!</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">program</span> <span class="ow">::</span> <span class="kt">Eff</span> <span class="kr">_</span> <span class="kt">Unit</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">randomNumber</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Eff</span> <span class="kr">_</span> <span class="kt">Int</span></code></pre></div>
+<p>If we rewrite <code>program</code> and <code>main</code> to follow the same pattern, the code we previously wrote will now compile because any effect row will unify with all the functions involved.</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">program</span> <span class="ow">::</span> <span class="kt">Eff</span> <span class="kr">_</span> <span class="kt">Unit</span>
 <span class="nf">program</span> <span class="ow">=</span> <span class="kr">do</span>
-	<span class="n">n</span> <span class="ow">&lt;-</span> <span class="n">randomNumber</span> <span class="mi">0</span> <span class="mi">10</span>
-	<span class="kt">Console</span><span class="o">.</span><span class="n">log</span> <span class="o">$</span> <span class="s">&quot;Random number: &quot;</span> <span class="o">&lt;&gt;</span> <span class="p">(</span><span class="n">show</span> <span class="n">n</span><span class="p">)</span>
+	<span class="nf">n</span> <span class="ow">&lt;-</span> <span class="nf">randomNumber</span> <span class="mi">0</span> <span class="mi">10</span>
+	<span class="kt">Console</span><span class="o">.</span><span class="nf">log</span> <span class="o">$</span> <span class="s">&#34;Random number: &#34;</span> <span class="o">&lt;&gt;</span> <span class="p">(</span><span class="nf">show</span> <span class="nf">n</span><span class="p">)</span>
 
 <span class="nf">main</span> <span class="ow">::</span> <span class="kt">Eff</span> <span class="kr">_</span> <span class="kt">Unit</span>
 <span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
-	<span class="kt">Console</span><span class="o">.</span><span class="n">log</span> <span class="s">&quot;Let&#39;s generate a random number&quot;</span>
-	<span class="n">program</span> <span class="c1">-- this will now compile</span>
-</code></pre></div>
-
-<p>One thing that is still a bit annoying about this is when you&rsquo;re using type synonyms.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="kt">RandomNumberEff</span> <span class="n">eff</span> <span class="ow">=</span>
-	<span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Eff</span> <span class="n">eff</span> <span class="kt">Int</span>
-</code></pre></div>
-
-<p>We can&rsquo;t drop the effect row here, because we can&rsquo;t use wildcard patterns in type definitions. But this is easily fixed when defining a function with the <code>RandomNumberEff</code> type.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">randomNumber</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">RandomNumberEff</span> <span class="kr">_</span>
-</code></pre></div>
-
+	<span class="kt">Console</span><span class="o">.</span><span class="nf">log</span> <span class="s">&#34;Let&#39;s generate a random number&#34;</span>
+	<span class="nf">program</span> <span class="c1">-- this will now compile</span></code></pre></div>
+<p>Note that when you&rsquo;re using type synonyms, you cannot drop the row directly.</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">RandomNumberEff</span> <span class="nf">eff</span> <span class="ow">=</span>
+	<span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Eff</span> <span class="nf">eff</span> <span class="kt">Int</span></code></pre></div>
+<p>Wildcard patterns cannot be used in type definitions. But this is easily fixed when defining a function with the <code>RandomNumberEff</code> type.</p>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">randomNumber</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">RandomNumberEff</span> <span class="kr">_</span></code></pre></div>
 <h4 id="conclusion">Conclusion</h4>
 
-<p>Purescript 0.12 will introduce <code>IO a</code> so most of this post will not apply anymore. But if you want to get started in Purescript right now and found effects tracking to be uncomfortable and annoying, you now have a little trick up your sleeve to workaround the current effect system.</p>
+<p>In general, effect rows give you a level of type safety that is difficult to achieve in other languages. For example, the library <a href="https://pursuit.purescript.org/packages/purescript-react/">purescript-react</a> makes good use of them — I suggest you take a look at the <a href="https://pursuit.purescript.org/packages/purescript-react/5.1.0/docs/React#t:Render">render</a> function, which is not allowed to mutate the state of the component. This is a big win in terms of type safety.</p>
+
+<p>Purescript 0.12 will introduce <code>IO a</code> so most of this post will not apply anymore. But if you want to get started in Purescript right now and don&rsquo;t want to worry about effect tracking, you now have a little trick up your sleeve to workaround the current effect system.</p>
 
 <p>You can <a href="https://twitter.com/_alpacaaa">reach me on Twitter</a>.</p>
 
-<p>Thanks to <a href="https://twitter.com/giuliocanti">@giuliocanti</a> for reviewing this post.</p>
+<p>Thanks to <a href="https://twitter.com/giuliocanti">@giuliocanti</a> and <a href="https://twitter.com/natefaubion">@natefaubion</a> for reviewing this post.</p>
 
     </section>
 

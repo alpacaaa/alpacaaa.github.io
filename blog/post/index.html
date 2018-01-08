@@ -51,7 +51,7 @@
         <link href="https://alpacaaa.net/blog/post/index.xml" rel="alternate" type="application/rss+xml" title="Posts &middot; alpacaaa" />
       
     
-    <meta name="generator" content="Hugo 0.17" />
+    <meta name="generator" content="Hugo 0.30.2" />
 
     <link rel="canonical" href="https://alpacaaa.net/blog/post/" />
 
@@ -127,9 +127,8 @@
         <h2 class="post-title"><a href="/blog/post/purescript-drop-effect-rows/">Beginning Purescript: Dropping effect rows</a></h2>
     </header>
     <section class="post-excerpt">
-        <p>Effect rows in Eff (and Aff) are pretty annoying and they&rsquo;re something I wanted to get around since I started learning Purescript. On the one hand, they look pretty useful because you can tell immediately what kind of effects are involved in a specific function, but you quickly realize that unifying effects is extremely cumbersome.
-Consider this function
-randomNumber :: forall eff. Int -&gt; Int -&gt; Eff { random :: RANDOM | eff } Int  The effect row would be { random :: RANDOM | eff }. <a class="read-more" href="/blog/post/purescript-drop-effect-rows/">&raquo;</a></p>
+        <p>Effect rows in Eff (and Aff) are a quite interesting feature when it comes to effectful code in Purescript. On the one hand, they look pretty useful because you can tell immediately what kind of effects are involved in a specific function but, depending on your level of experience and the size and scope of the app you&rsquo;re writing, they can be a bit cumbersome to work with.
+Consider this function <a class="read-more" href="/blog/post/purescript-drop-effect-rows/">&raquo;</a></p>
     </section>
     <footer class="post-meta">
         

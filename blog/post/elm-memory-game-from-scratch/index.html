@@ -56,7 +56,7 @@ What are we going to build Here&rsquo;s a working demo of the finished project:
       
       
     
-    <meta name="generator" content="Hugo 0.17" />
+    <meta name="generator" content="Hugo 0.30.2" />
 
     <link rel="canonical" href="https://alpacaaa.net/blog/post/elm-memory-game-from-scratch/" />
 
@@ -151,23 +151,23 @@ What are we going to build Here&rsquo;s a working demo of the finished project:
 <h4 id="step-1-draw-the-grid">Step 1 – Draw the grid</h4>
 
 <p>We want to get some static markup going, so let&rsquo;s begin with something very simple.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">module</span> <span class="nn">Main</span> <span class="n">exposing</span> <span class="p">(</span><span class="o">..</span><span class="p">)</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">module</span> <span class="nn">Main</span> <span class="nf">exposing</span> <span class="p">(</span><span class="o">..</span><span class="p">)</span>
 
-<span class="kr">import</span> <span class="nn">Html</span> <span class="n">exposing</span> <span class="p">(</span><span class="o">..</span><span class="p">)</span>
-<span class="kr">import</span> <span class="nn">Html.Attributes</span> <span class="n">exposing</span> <span class="p">(</span><span class="o">..</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Html</span> <span class="nf">exposing</span> <span class="p">(</span><span class="o">..</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Html.Attributes</span> <span class="nf">exposing</span> <span class="p">(</span><span class="o">..</span><span class="p">)</span>
 
 
 <span class="nf">main</span> <span class="kt">:</span> <span class="kt">Program</span> <span class="kt">Never</span> <span class="kt">Model</span> <span class="kt">Msg</span>
 <span class="nf">main</span> <span class="ow">=</span>
-    <span class="kt">Html</span><span class="o">.</span><span class="n">program</span>
-        <span class="p">{</span> <span class="n">init</span> <span class="ow">=</span> <span class="n">createModel</span>
-        <span class="p">,</span> <span class="n">view</span> <span class="ow">=</span> <span class="n">view</span>
-        <span class="p">,</span> <span class="n">update</span> <span class="ow">=</span> <span class="n">update</span>
-        <span class="p">,</span> <span class="n">subscriptions</span> <span class="ow">=</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span> <span class="kt">Sub</span><span class="o">.</span><span class="n">none</span>
+    <span class="kt">Html</span><span class="o">.</span><span class="nf">program</span>
+        <span class="p">{</span> <span class="nf">init</span> <span class="ow">=</span> <span class="nf">createModel</span>
+        <span class="p">,</span> <span class="nf">view</span> <span class="ow">=</span> <span class="nf">view</span>
+        <span class="p">,</span> <span class="nf">update</span> <span class="ow">=</span> <span class="nf">update</span>
+        <span class="p">,</span> <span class="nf">subscriptions</span> <span class="ow">=</span> <span class="nf">\</span><span class="kr">_</span> <span class="ow">-&gt;</span> <span class="kt">Sub</span><span class="o">.</span><span class="nf">none</span>
         <span class="p">}</span>
 
 
-<span class="kr">type</span> <span class="n">alias</span> <span class="kt">Model</span> <span class="ow">=</span>
+<span class="kr">type</span> <span class="nf">alias</span> <span class="kt">Model</span> <span class="ow">=</span>
     <span class="p">{}</span>
 
 
@@ -177,47 +177,41 @@ What are we going to build Here&rsquo;s a working demo of the finished project:
 
 <span class="nf">createModel</span> <span class="kt">:</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
 <span class="nf">createModel</span> <span class="ow">=</span>
-    <span class="p">(</span> <span class="p">{},</span> <span class="kt">Cmd</span><span class="o">.</span><span class="n">none</span> <span class="p">)</span>
+    <span class="p">(</span> <span class="p">{},</span> <span class="kt">Cmd</span><span class="o">.</span><span class="nf">none</span> <span class="p">)</span>
 
 
 <span class="nf">update</span> <span class="kt">:</span> <span class="kt">Msg</span> <span class="ow">-&gt;</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
-<span class="nf">update</span> <span class="n">msg</span> <span class="n">model</span> <span class="ow">=</span>
-    <span class="p">(</span> <span class="n">model</span><span class="p">,</span> <span class="kt">Cmd</span><span class="o">.</span><span class="n">none</span> <span class="p">)</span>
+<span class="nf">update</span> <span class="nf">msg</span> <span class="nf">model</span> <span class="ow">=</span>
+    <span class="p">(</span> <span class="nf">model</span><span class="p">,</span> <span class="kt">Cmd</span><span class="o">.</span><span class="nf">none</span> <span class="p">)</span>
 
 
 <span class="nf">view</span> <span class="kt">:</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
-<span class="nf">view</span> <span class="n">model</span> <span class="ow">=</span>
-    <span class="n">h1</span> <span class="kt">[]</span> <span class="p">[</span> <span class="n">text</span> <span class="s">&quot;There you go!&quot;</span> <span class="p">]</span>
-</code></pre></div>
-
+<span class="nf">view</span> <span class="nf">model</span> <span class="ow">=</span>
+    <span class="nf">h1</span> <span class="kt">[]</span> <span class="p">[</span> <span class="nf">text</span> <span class="s">&#34;There you go!&#34;</span> <span class="p">]</span></code></pre></div>
 <p>There&rsquo;s not much to see here yet, just a giant <strong>There you go!</strong> on our screen (You can check it out <a href="https://runelm.io/c/qw1">here</a>). Let&rsquo;s change that.</p>
 
 <p>We&rsquo;ll begin with the <code>createCard</code> function, which will be the single <code>div</code> showing the card picture.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">createCard</span> <span class="kt">:</span> <span class="kt">Html</span> <span class="kt">Msg</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">createCard</span> <span class="kt">:</span> <span class="kt">Html</span> <span class="kt">Msg</span>
 <span class="nf">createCard</span> <span class="ow">=</span>
-    <span class="n">div</span> <span class="p">[</span> <span class="kr">class</span> <span class="s">&quot;container&quot;</span> <span class="p">]</span>
-        <span class="c1">-- try changing (&quot;flipped&quot;, False) into (&quot;flipped&quot;, True)</span>
-        <span class="p">[</span> <span class="n">div</span> <span class="p">[</span> <span class="n">classList</span> <span class="p">[</span> <span class="p">(</span> <span class="s">&quot;card&quot;</span><span class="p">,</span> <span class="kt">True</span> <span class="p">),</span> <span class="p">(</span> <span class="s">&quot;flipped&quot;</span><span class="p">,</span> <span class="kt">True</span> <span class="p">)</span> <span class="p">]</span> <span class="p">]</span>
-            <span class="p">[</span> <span class="n">div</span> <span class="p">[</span> <span class="kr">class</span> <span class="s">&quot;card-back&quot;</span> <span class="p">]</span> <span class="kt">[]</span>
-            <span class="p">,</span> <span class="n">div</span> <span class="p">[</span> <span class="kr">class</span> <span class="s">&quot;front card-dinosaur&quot;</span> <span class="p">]</span> <span class="kt">[]</span>
+    <span class="nf">div</span> <span class="p">[</span> <span class="kr">class</span> <span class="s">&#34;container&#34;</span> <span class="p">]</span>
+        <span class="c1">-- try changing (&#34;flipped&#34;, False) into (&#34;flipped&#34;, True)</span>
+        <span class="p">[</span> <span class="nf">div</span> <span class="p">[</span> <span class="nf">classList</span> <span class="p">[</span> <span class="p">(</span> <span class="s">&#34;card&#34;</span><span class="p">,</span> <span class="kt">True</span> <span class="p">),</span> <span class="p">(</span> <span class="s">&#34;flipped&#34;</span><span class="p">,</span> <span class="kt">True</span> <span class="p">)</span> <span class="p">]</span> <span class="p">]</span>
+            <span class="p">[</span> <span class="nf">div</span> <span class="p">[</span> <span class="kr">class</span> <span class="s">&#34;card-back&#34;</span> <span class="p">]</span> <span class="kt">[]</span>
+            <span class="p">,</span> <span class="nf">div</span> <span class="p">[</span> <span class="kr">class</span> <span class="s">&#34;front card-dinosaur&#34;</span> <span class="p">]</span> <span class="kt">[]</span>
             <span class="p">]</span>
-        <span class="p">]</span>
-</code></pre></div>
-
+        <span class="p">]</span></code></pre></div>
 <p>There&rsquo;s a bunch of hardcoded stuff in here, but it will be enough for now. Specifically, we&rsquo;ll want to replace the <code>dinosaur</code> image and we&rsquo;ll want the <code>flipped</code> class to update depending on the state of our card.</p>
 
 <p>For now, let&rsquo;s just place a few cards on the page, by changing our <code>view</code>:</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">view</span> <span class="kt">:</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
-<span class="nf">view</span> <span class="n">model</span> <span class="ow">=</span>
-    <span class="n">div</span> <span class="p">[</span> <span class="kr">class</span> <span class="s">&quot;wrapper&quot;</span> <span class="p">]</span>
-        <span class="p">[</span> <span class="n">createCard</span>
-        <span class="p">,</span> <span class="n">createCard</span>
-        <span class="p">,</span> <span class="n">createCard</span>
-        <span class="p">,</span> <span class="n">createCard</span>
-        <span class="p">,</span> <span class="n">createCard</span>
-        <span class="p">]</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">view</span> <span class="kt">:</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
+<span class="nf">view</span> <span class="nf">model</span> <span class="ow">=</span>
+    <span class="nf">div</span> <span class="p">[</span> <span class="kr">class</span> <span class="s">&#34;wrapper&#34;</span> <span class="p">]</span>
+        <span class="p">[</span> <span class="nf">createCard</span>
+        <span class="p">,</span> <span class="nf">createCard</span>
+        <span class="p">,</span> <span class="nf">createCard</span>
+        <span class="p">,</span> <span class="nf">createCard</span>
+        <span class="p">,</span> <span class="nf">createCard</span>
+        <span class="p">]</span></code></pre></div>
 <p>Our grid is starting to take shape.</p>
 
 <div class="runelm-wrapper no-focus">
@@ -236,97 +230,81 @@ What are we going to build Here&rsquo;s a working demo of the finished project:
 <p>Time to show some real cards.</p>
 
 <p>First of all, we need to introduce a couple of types:</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="n">alias</span> <span class="kt">Card</span> <span class="ow">=</span>
-    <span class="p">{</span> <span class="n">id</span> <span class="kt">:</span> <span class="kt">String</span>
-    <span class="p">,</span> <span class="n">group</span> <span class="kt">:</span> <span class="kt">Group</span>
-    <span class="p">,</span> <span class="n">flipped</span> <span class="kt">:</span> <span class="kt">Bool</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="nf">alias</span> <span class="kt">Card</span> <span class="ow">=</span>
+    <span class="p">{</span> <span class="nf">id</span> <span class="kt">:</span> <span class="kt">String</span>
+    <span class="p">,</span> <span class="nf">group</span> <span class="kt">:</span> <span class="kt">Group</span>
+    <span class="p">,</span> <span class="nf">flipped</span> <span class="kt">:</span> <span class="kt">Bool</span>
     <span class="p">}</span>
 
 
 <span class="kr">type</span> <span class="kt">Group</span>
     <span class="ow">=</span> <span class="kt">A</span>
-    <span class="o">|</span> <span class="kt">B</span>
-</code></pre></div>
-
+    <span class="o">|</span> <span class="kt">B</span></code></pre></div>
 <p>The <code>Card</code> type is quite simple, we need to have a <code>group</code> property to differentiate between the two different copies of the same card in the deck. Let&rsquo;s also list all the available cards:</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">cards</span> <span class="kt">:</span> <span class="kt">List</span> <span class="kt">String</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">cards</span> <span class="kt">:</span> <span class="kt">List</span> <span class="kt">String</span>
 <span class="nf">cards</span> <span class="ow">=</span>
-    <span class="p">[</span> <span class="s">&quot;dinosaur&quot;</span>
-    <span class="p">,</span> <span class="s">&quot;8-ball&quot;</span>
-    <span class="p">,</span> <span class="s">&quot;baked-potato&quot;</span>
-    <span class="p">,</span> <span class="s">&quot;kronos&quot;</span>
-    <span class="p">,</span> <span class="s">&quot;rocket&quot;</span>
-    <span class="p">,</span> <span class="s">&quot;skinny-unicorn&quot;</span>
-    <span class="p">,</span> <span class="s">&quot;that-guy&quot;</span>
-    <span class="p">,</span> <span class="s">&quot;zeppelin&quot;</span>
-    <span class="p">]</span>
-</code></pre></div>
-
+    <span class="p">[</span> <span class="s">&#34;dinosaur&#34;</span>
+    <span class="p">,</span> <span class="s">&#34;8-ball&#34;</span>
+    <span class="p">,</span> <span class="s">&#34;baked-potato&#34;</span>
+    <span class="p">,</span> <span class="s">&#34;kronos&#34;</span>
+    <span class="p">,</span> <span class="s">&#34;rocket&#34;</span>
+    <span class="p">,</span> <span class="s">&#34;skinny-unicorn&#34;</span>
+    <span class="p">,</span> <span class="s">&#34;that-guy&#34;</span>
+    <span class="p">,</span> <span class="s">&#34;zeppelin&#34;</span>
+    <span class="p">]</span></code></pre></div>
 <p>We&rsquo;ll define a function <code>initCard</code> that returns a <code>Card</code> object:</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">initCard</span> <span class="kt">:</span> <span class="kt">Group</span> <span class="ow">-&gt;</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Card</span>
-<span class="nf">initCard</span> <span class="n">group</span> <span class="n">name</span> <span class="ow">=</span>
-    <span class="p">{</span> <span class="n">id</span> <span class="ow">=</span> <span class="n">name</span>
-    <span class="p">,</span> <span class="n">group</span> <span class="ow">=</span> <span class="n">group</span>
-    <span class="p">,</span> <span class="n">flipped</span> <span class="ow">=</span> <span class="kt">False</span>
-    <span class="p">}</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">initCard</span> <span class="kt">:</span> <span class="kt">Group</span> <span class="ow">-&gt;</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Card</span>
+<span class="nf">initCard</span> <span class="nf">group</span> <span class="nf">name</span> <span class="ow">=</span>
+    <span class="p">{</span> <span class="nf">id</span> <span class="ow">=</span> <span class="nf">name</span>
+    <span class="p">,</span> <span class="nf">group</span> <span class="ow">=</span> <span class="nf">group</span>
+    <span class="p">,</span> <span class="nf">flipped</span> <span class="ow">=</span> <span class="kt">False</span>
+    <span class="p">}</span></code></pre></div>
 <p>It can be used like this: <code>initCard A &quot;dinosaur&quot;</code> and that&rsquo;s exactly what we&rsquo;re going to do in order to create our deck:</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">deck</span> <span class="kt">:</span> <span class="kt">Deck</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">deck</span> <span class="kt">:</span> <span class="kt">Deck</span>
 <span class="nf">deck</span> <span class="ow">=</span>
     <span class="kr">let</span>
-        <span class="n">groupA</span> <span class="ow">=</span>
-            <span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="p">(</span><span class="n">initCard</span> <span class="kt">A</span><span class="p">)</span> <span class="n">cards</span>
+        <span class="nf">groupA</span> <span class="ow">=</span>
+            <span class="kt">List</span><span class="o">.</span><span class="nf">map</span> <span class="p">(</span><span class="nf">initCard</span> <span class="kt">A</span><span class="p">)</span> <span class="nf">cards</span>
 
-        <span class="n">groupB</span> <span class="ow">=</span>
-            <span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="p">(</span><span class="n">initCard</span> <span class="kt">B</span><span class="p">)</span> <span class="n">cards</span>
+        <span class="nf">groupB</span> <span class="ow">=</span>
+            <span class="kt">List</span><span class="o">.</span><span class="nf">map</span> <span class="p">(</span><span class="nf">initCard</span> <span class="kt">B</span><span class="p">)</span> <span class="nf">cards</span>
     <span class="kr">in</span>
-        <span class="kt">List</span><span class="o">.</span><span class="n">concat</span> <span class="p">[</span> <span class="n">groupA</span><span class="p">,</span> <span class="n">groupB</span> <span class="p">]</span>
-</code></pre></div>
-
+        <span class="kt">List</span><span class="o">.</span><span class="nf">concat</span> <span class="p">[</span> <span class="nf">groupA</span><span class="p">,</span> <span class="nf">groupB</span> <span class="p">]</span></code></pre></div>
 <p><code>deck</code> will hold two copies of all the cards we defined. You might notice this doesn&rsquo;t take shuffling into account, we&rsquo;ll look into it later.</p>
 
 <p>Cool, let&rsquo;s update the <code>Model</code> so that we can show actual cards in our <code>view</code>.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="kt">Model</span>
-    <span class="ow">=</span> <span class="kt">Playing</span> <span class="kt">Deck</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">Model</span>
+    <span class="ow">=</span> <span class="kt">Playing</span> <span class="kt">Deck</span></code></pre></div>
 <p>And the <code>createModel</code> function.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">createModel</span> <span class="kt">:</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">createModel</span> <span class="kt">:</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
 <span class="nf">createModel</span> <span class="ow">=</span>
     <span class="c1">-- Our model now constists of the unshuffled deck</span>
-    <span class="p">(</span> <span class="kt">Playing</span> <span class="n">deck</span><span class="p">,</span> <span class="kt">Cmd</span><span class="o">.</span><span class="n">none</span> <span class="p">)</span>
-</code></pre></div>
-
+    <span class="p">(</span> <span class="kt">Playing</span> <span class="nf">deck</span><span class="p">,</span> <span class="kt">Cmd</span><span class="o">.</span><span class="nf">none</span> <span class="p">)</span></code></pre></div>
 <p>Our game will only have a generic <code>Playing</code> state for now, we&rsquo;ll add more later on.</p>
 
 <p>And now to the view layer. <code>createCard</code>, as it is, is pretty useless because we can&rsquo;t say what&rsquo;s the card we want to create, so let&rsquo;s add an argument and update the function accordingly.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">cardClass</span> <span class="kt">:</span> <span class="kt">Card</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
-<span class="nf">cardClass</span> <span class="n">card</span> <span class="ow">=</span>
-    <span class="s">&quot;card-&quot;</span> <span class="o">++</span> <span class="n">card</span><span class="o">.</span><span class="n">id</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">cardClass</span> <span class="kt">:</span> <span class="kt">Card</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
+<span class="nf">cardClass</span> <span class="nf">card</span> <span class="ow">=</span>
+    <span class="s">&#34;card-&#34;</span> <span class="o">++</span> <span class="nf">card</span><span class="o">.</span><span class="nf">id</span>
 
 
 <span class="nf">createCard</span> <span class="kt">:</span> <span class="kt">Card</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
-<span class="nf">createCard</span> <span class="n">card</span> <span class="ow">=</span>
-    <span class="n">div</span> <span class="p">[</span> <span class="kr">class</span> <span class="s">&quot;container&quot;</span> <span class="p">]</span>
-        <span class="c1">-- try changing (&quot;flipped&quot;, False) into (&quot;flipped&quot;, True)</span>
-        <span class="p">[</span> <span class="n">div</span> <span class="p">[</span> <span class="n">classList</span> <span class="p">[</span> <span class="p">(</span> <span class="s">&quot;card&quot;</span><span class="p">,</span> <span class="kt">True</span> <span class="p">),</span> <span class="p">(</span> <span class="s">&quot;flipped&quot;</span><span class="p">,</span> <span class="kt">False</span> <span class="p">)</span> <span class="p">]</span> <span class="p">]</span>
-            <span class="p">[</span> <span class="n">div</span> <span class="p">[</span> <span class="kr">class</span> <span class="s">&quot;card-back&quot;</span> <span class="p">]</span> <span class="kt">[]</span>
-            <span class="p">,</span> <span class="n">div</span> <span class="p">[</span> <span class="kr">class</span> <span class="p">(</span><span class="s">&quot;front &quot;</span> <span class="o">++</span> <span class="n">cardClass</span> <span class="n">card</span><span class="p">)</span> <span class="p">]</span> <span class="kt">[]</span>
+<span class="nf">createCard</span> <span class="nf">card</span> <span class="ow">=</span>
+    <span class="nf">div</span> <span class="p">[</span> <span class="kr">class</span> <span class="s">&#34;container&#34;</span> <span class="p">]</span>
+        <span class="c1">-- try changing (&#34;flipped&#34;, False) into (&#34;flipped&#34;, True)</span>
+        <span class="p">[</span> <span class="nf">div</span> <span class="p">[</span> <span class="nf">classList</span> <span class="p">[</span> <span class="p">(</span> <span class="s">&#34;card&#34;</span><span class="p">,</span> <span class="kt">True</span> <span class="p">),</span> <span class="p">(</span> <span class="s">&#34;flipped&#34;</span><span class="p">,</span> <span class="kt">False</span> <span class="p">)</span> <span class="p">]</span> <span class="p">]</span>
+            <span class="p">[</span> <span class="nf">div</span> <span class="p">[</span> <span class="kr">class</span> <span class="s">&#34;card-back&#34;</span> <span class="p">]</span> <span class="kt">[]</span>
+            <span class="p">,</span> <span class="nf">div</span> <span class="p">[</span> <span class="kr">class</span> <span class="p">(</span><span class="s">&#34;front &#34;</span> <span class="o">++</span> <span class="nf">cardClass</span> <span class="nf">card</span><span class="p">)</span> <span class="p">]</span> <span class="kt">[]</span>
             <span class="p">]</span>
-        <span class="p">]</span>
-</code></pre></div>
-
+        <span class="p">]</span></code></pre></div>
 <p>We introduced <code>cardClass</code> to get the proper CSS class. You can see that the <code>front</code> image is now dynamic, and this also shows how you can concatenate strings in Elm (which are just aliases for <code>List Char</code> – that&rsquo;s why it works!)</p>
 
 <p>We can get rid of the hardcoded cards that we have and properly map through our deck, by changing the <code>view</code>.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">view</span> <span class="kt">:</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
-<span class="nf">view</span> <span class="n">model</span> <span class="ow">=</span>
-    <span class="kr">case</span> <span class="n">model</span> <span class="kr">of</span>
-        <span class="kt">Playing</span> <span class="n">deck</span> <span class="ow">-&gt;</span>
-            <span class="n">div</span> <span class="p">[</span> <span class="kr">class</span> <span class="s">&quot;wrapper&quot;</span> <span class="p">]</span> <span class="p">(</span><span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="n">createCard</span> <span class="n">deck</span><span class="p">)</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">view</span> <span class="kt">:</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
+<span class="nf">view</span> <span class="nf">model</span> <span class="ow">=</span>
+    <span class="kr">case</span> <span class="nf">model</span> <span class="kr">of</span>
+        <span class="kt">Playing</span> <span class="nf">deck</span> <span class="ow">-&gt;</span>
+            <span class="nf">div</span> <span class="p">[</span> <span class="kr">class</span> <span class="s">&#34;wrapper&#34;</span> <span class="p">]</span> <span class="p">(</span><span class="kt">List</span><span class="o">.</span><span class="nf">map</span> <span class="nf">createCard</span> <span class="nf">deck</span><span class="p">)</span></code></pre></div>
 <p>Notice we had to pattern match on the model. It looks dumb with a single case but we&rsquo;ll add more. Now change <code>(&quot;flipped&quot;, False)</code> to <code>(&quot;flipped&quot;, True)</code> in <code>createCard</code> and look at all the beautiful card pictures (do it yourself below, just edit the code and run it! It&rsquo;s on line 110).</p>
 
 <div class="runelm-wrapper ">
@@ -351,61 +329,49 @@ What are we going to build Here&rsquo;s a working demo of the finished project:
 <p>We can return commands along side the updated model in the <code>udpate</code> function (that explains why the returned type is a tuple in the form of <code>(Model, Cmd Msg)</code>). But we can also hand over Commands to the runtime when we first create our model in our <code>main</code> function. So let&rsquo;s get down to do some random number generation.</p>
 
 <p>First of all, import the <code>Random</code> module.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">import</span> <span class="nn">Random</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Random</span></code></pre></div>
 <p>You can read about how this module works in <a href="http://package.elm-lang.org/packages/elm-lang/core/latest/Random">the docs</a> but the gist of it is that you first need to create an appropriate <code>Generator</code>, depending on the type you&rsquo;re dealing with, and then use <code>Random.generate</code> to create the Command that will be handed off to the runtime. We need to generate random numbers, so we can stick with <code>Generator Int</code> but it would be cool if we could get back a list of random numbers instead of a single one, and for that we can use <code>Random.list</code>. So we can create a function <code>randomList</code> which gets an argument <code>len</code> and returns a Command that will generate <code>len</code> random numbers from 0 to 100.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">randomList</span> <span class="kt">:</span> <span class="p">(</span><span class="kt">List</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Msg</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Cmd</span> <span class="kt">Msg</span>
-<span class="nf">randomList</span> <span class="n">msg</span> <span class="n">len</span> <span class="ow">=</span>
-    <span class="kt">Random</span><span class="o">.</span><span class="n">int</span> <span class="mi">0</span> <span class="mi">100</span>
-        <span class="o">|&gt;</span> <span class="kt">Random</span><span class="o">.</span><span class="n">list</span> <span class="n">len</span>
-        <span class="o">|&gt;</span> <span class="kt">Random</span><span class="o">.</span><span class="n">generate</span> <span class="n">msg</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">randomList</span> <span class="kt">:</span> <span class="p">(</span><span class="kt">List</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Msg</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Cmd</span> <span class="kt">Msg</span>
+<span class="nf">randomList</span> <span class="nf">msg</span> <span class="nf">len</span> <span class="ow">=</span>
+    <span class="kt">Random</span><span class="o">.</span><span class="nf">int</span> <span class="mi">0</span> <span class="mi">100</span>
+        <span class="o">|&gt;</span> <span class="kt">Random</span><span class="o">.</span><span class="nf">list</span> <span class="nf">len</span>
+        <span class="o">|&gt;</span> <span class="kt">Random</span><span class="o">.</span><span class="nf">generate</span> <span class="nf">msg</span></code></pre></div>
 <p>As we said, when the runtime executes our command, it will pass back the results in the update function using a Message of our choice. We can extend our <code>Msg</code> type to include a <code>Shuffle (List Int)</code> value.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="kt">Msg</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">Msg</span>
     <span class="ow">=</span> <span class="kt">NoOp</span>
-    <span class="o">|</span> <span class="kt">Shuffle</span> <span class="p">(</span><span class="kt">List</span> <span class="kt">Int</span><span class="p">)</span>
-</code></pre></div>
-
+    <span class="o">|</span> <span class="kt">Shuffle</span> <span class="p">(</span><span class="kt">List</span> <span class="kt">Int</span><span class="p">)</span></code></pre></div>
 <p>We can now return a Command in our <code>createModel</code></p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">createModel</span> <span class="kt">:</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">createModel</span> <span class="kt">:</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
 <span class="nf">createModel</span> <span class="ow">=</span>
     <span class="kr">let</span>
-        <span class="n">model</span> <span class="ow">=</span>
-            <span class="kt">Playing</span> <span class="n">deck</span>
+        <span class="nf">model</span> <span class="ow">=</span>
+            <span class="kt">Playing</span> <span class="nf">deck</span>
 
-        <span class="n">cmd</span> <span class="ow">=</span>
-            <span class="n">randomList</span> <span class="kt">Shuffle</span> <span class="p">(</span><span class="kt">List</span><span class="o">.</span><span class="n">length</span> <span class="n">deck</span><span class="p">)</span>
+        <span class="nf">cmd</span> <span class="ow">=</span>
+            <span class="nf">randomList</span> <span class="kt">Shuffle</span> <span class="p">(</span><span class="kt">List</span><span class="o">.</span><span class="nf">length</span> <span class="nf">deck</span><span class="p">)</span>
     <span class="kr">in</span>
-        <span class="p">(</span> <span class="n">model</span><span class="p">,</span> <span class="n">cmd</span> <span class="p">)</span>
-</code></pre></div>
-
+        <span class="p">(</span> <span class="nf">model</span><span class="p">,</span> <span class="nf">cmd</span> <span class="p">)</span></code></pre></div>
 <p>That&rsquo;s pretty cool, so we can now use the random list of numbers to shuffle our deck. Let&rsquo;s take care of the <code>update</code> function for a second, because right now it&rsquo;s pretty static and dumb. We want it to react to the different actions that will be coming through – right now we&rsquo;re interested in <code>Shuffle</code>.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="c1">-- a ! b is equivalent to (a, Cmd.batch b)</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="c1">-- a ! b is equivalent to (a, Cmd.batch b)</span>
 <span class="nf">update</span> <span class="kt">:</span> <span class="kt">Msg</span> <span class="ow">-&gt;</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
-<span class="nf">update</span> <span class="n">msg</span> <span class="n">model</span> <span class="ow">=</span>
-    <span class="kr">case</span> <span class="n">msg</span> <span class="kr">of</span>
+<span class="nf">update</span> <span class="nf">msg</span> <span class="nf">model</span> <span class="ow">=</span>
+    <span class="kr">case</span> <span class="nf">msg</span> <span class="kr">of</span>
         <span class="kt">NoOp</span> <span class="ow">-&gt;</span>
-            <span class="n">model</span> <span class="o">!</span> <span class="kt">[]</span>
+            <span class="nf">model</span> <span class="o">!</span> <span class="kt">[]</span>
 
-        <span class="kt">Shuffle</span> <span class="n">xs</span> <span class="ow">-&gt;</span>
+        <span class="kt">Shuffle</span> <span class="nf">xs</span> <span class="ow">-&gt;</span>
             <span class="kr">let</span>
-                <span class="n">newDeck</span> <span class="ow">=</span>
-                    <span class="n">shuffleDeck</span> <span class="n">deck</span> <span class="n">xs</span>
+                <span class="nf">newDeck</span> <span class="ow">=</span>
+                    <span class="nf">shuffleDeck</span> <span class="nf">deck</span> <span class="nf">xs</span>
             <span class="kr">in</span>
-                <span class="kt">Playing</span> <span class="n">newDeck</span> <span class="o">!</span> <span class="kt">[]</span>
-</code></pre></div>
-
+                <span class="kt">Playing</span> <span class="nf">newDeck</span> <span class="o">!</span> <span class="kt">[]</span></code></pre></div>
 <p>We need to implement <code>shuffleDeck</code></p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">shuffleDeck</span> <span class="kt">:</span> <span class="kt">Deck</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="n">comparable</span> <span class="ow">-&gt;</span> <span class="kt">Deck</span>
-<span class="nf">shuffleDeck</span> <span class="n">deck</span> <span class="n">xs</span> <span class="ow">=</span>
-    <span class="kt">List</span><span class="o">.</span><span class="n">map2</span> <span class="p">(,)</span> <span class="n">deck</span> <span class="n">xs</span>
-        <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="n">sortBy</span> <span class="kt">Tuple</span><span class="o">.</span><span class="n">second</span>
-        <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="n">unzip</span>
-        <span class="o">|&gt;</span> <span class="kt">Tuple</span><span class="o">.</span><span class="n">first</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">shuffleDeck</span> <span class="kt">:</span> <span class="kt">Deck</span> <span class="ow">-&gt;</span> <span class="kt">List</span> <span class="nf">comparable</span> <span class="ow">-&gt;</span> <span class="kt">Deck</span>
+<span class="nf">shuffleDeck</span> <span class="nf">deck</span> <span class="nf">xs</span> <span class="ow">=</span>
+    <span class="kt">List</span><span class="o">.</span><span class="nf">map2</span> <span class="p">(,)</span> <span class="nf">deck</span> <span class="nf">xs</span>
+        <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="nf">sortBy</span> <span class="kt">Tuple</span><span class="o">.</span><span class="nf">second</span>
+        <span class="o">|&gt;</span> <span class="kt">List</span><span class="o">.</span><span class="nf">unzip</span>
+        <span class="o">|&gt;</span> <span class="kt">Tuple</span><span class="o">.</span><span class="nf">first</span></code></pre></div>
 <p>Here&rsquo;s what it does:</p>
 
 <ol>
@@ -433,42 +399,32 @@ What are we going to build Here&rsquo;s a working demo of the finished project:
 <p>Looking back at our <code>Model</code> we can see there&rsquo;s a <code>flipped</code> property that indicates whether the card is facing up or down. We want to switch this when the user clicks on a card.</p>
 
 <p>That&rsquo;s easy enough to do, but we need to add the <code>Flip</code> tag in our <code>Msg</code> to indicate the user has clicked on a card.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="kt">Msg</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">Msg</span>
     <span class="ow">=</span> <span class="kt">NoOp</span>
     <span class="o">|</span> <span class="kt">Shuffle</span> <span class="p">(</span><span class="kt">List</span> <span class="kt">Int</span><span class="p">)</span>
-    <span class="o">|</span> <span class="kt">Flip</span> <span class="kt">Card</span>
-</code></pre></div>
-
+    <span class="o">|</span> <span class="kt">Flip</span> <span class="kt">Card</span></code></pre></div>
 <p>Great, now let&rsquo;s take this action into account in the <code>update</code> function. We&rsquo;ll need to implement an helper function (let&rsquo;s call it <code>flip</code>) that, given our desired flipped state and two cards, takes care of updating the <code>flipped</code> property if the cards match.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">flip</span> <span class="kt">:</span> <span class="kt">Bool</span> <span class="ow">-&gt;</span> <span class="kt">Card</span> <span class="ow">-&gt;</span> <span class="kt">Card</span> <span class="ow">-&gt;</span> <span class="kt">Card</span>
-<span class="nf">flip</span> <span class="n">isFlipped</span> <span class="n">a</span> <span class="n">b</span> <span class="ow">=</span>
-    <span class="kr">if</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">b</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">group</span> <span class="o">==</span> <span class="n">b</span><span class="o">.</span><span class="n">group</span><span class="p">)</span> <span class="kr">then</span>
-        <span class="p">{</span> <span class="n">b</span> <span class="o">|</span> <span class="n">flipped</span> <span class="ow">=</span> <span class="n">isFlipped</span> <span class="p">}</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">flip</span> <span class="kt">:</span> <span class="kt">Bool</span> <span class="ow">-&gt;</span> <span class="kt">Card</span> <span class="ow">-&gt;</span> <span class="kt">Card</span> <span class="ow">-&gt;</span> <span class="kt">Card</span>
+<span class="nf">flip</span> <span class="nf">isFlipped</span> <span class="nf">a</span> <span class="nf">b</span> <span class="ow">=</span>
+    <span class="kr">if</span> <span class="p">(</span><span class="nf">a</span><span class="o">.</span><span class="nf">id</span> <span class="o">==</span> <span class="nf">b</span><span class="o">.</span><span class="nf">id</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nf">a</span><span class="o">.</span><span class="nf">group</span> <span class="o">==</span> <span class="nf">b</span><span class="o">.</span><span class="nf">group</span><span class="p">)</span> <span class="kr">then</span>
+        <span class="p">{</span> <span class="nf">b</span> <span class="o">|</span> <span class="nf">flipped</span> <span class="ow">=</span> <span class="nf">isFlipped</span> <span class="p">}</span>
     <span class="kr">else</span>
-        <span class="n">b</span>
-</code></pre></div>
-
+        <span class="nf">b</span></code></pre></div>
 <p>This might seem pointless but it&rsquo;s actually very much needed when extending the <code>update</code> function, because there is no mutable stuff (luckily!) so we have to return a new copy of the <code>deck</code> and, in order to do that, it&rsquo;s quite useful to have a <code>flip</code> function that only updates the card we want to update. Let&rsquo;s see how we might use it:</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="c1">-- update function</span>
-<span class="kt">Flip</span> <span class="n">card</span> <span class="ow">-&gt;</span>
-    <span class="kr">case</span> <span class="n">model</span> <span class="kr">of</span>
-        <span class="kt">Playing</span> <span class="n">deck</span> <span class="ow">-&gt;</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="c1">-- update function</span>
+<span class="kt">Flip</span> <span class="nf">card</span> <span class="ow">-&gt;</span>
+    <span class="kr">case</span> <span class="nf">model</span> <span class="kr">of</span>
+        <span class="kt">Playing</span> <span class="nf">deck</span> <span class="ow">-&gt;</span>
             <span class="kr">let</span>
-                <span class="n">newDeck</span> <span class="ow">=</span>
-                    <span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="p">(</span><span class="n">flip</span> <span class="kt">True</span> <span class="n">card</span><span class="p">)</span> <span class="n">deck</span>
+                <span class="nf">newDeck</span> <span class="ow">=</span>
+                    <span class="kt">List</span><span class="o">.</span><span class="nf">map</span> <span class="p">(</span><span class="nf">flip</span> <span class="kt">True</span> <span class="nf">card</span><span class="p">)</span> <span class="nf">deck</span>
             <span class="kr">in</span>
-                <span class="kt">Playing</span> <span class="n">newDeck</span> <span class="o">!</span> <span class="kt">[]</span>
-</code></pre></div>
-
+                <span class="kt">Playing</span> <span class="nf">newDeck</span> <span class="o">!</span> <span class="kt">[]</span></code></pre></div>
 <p>We need to import <code>onClick</code> so that users can click on cards:</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">import</span> <span class="nn">Html.Events</span> <span class="n">exposing</span> <span class="p">(</span><span class="n">onClick</span><span class="p">)</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">import</span> <span class="nn">Html.Events</span> <span class="nf">exposing</span> <span class="p">(</span><span class="nf">onClick</span><span class="p">)</span></code></pre></div>
 <p>At this point, we can proceed updating the <code>createCard</code> function so that it tags click events with <code>Flip</code>.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="c1">--- createCard</span>
-<span class="p">[</span> <span class="n">div</span> <span class="p">[</span> <span class="n">classList</span> <span class="p">[</span> <span class="p">(</span> <span class="s">&quot;card&quot;</span><span class="p">,</span> <span class="kt">True</span> <span class="p">),</span> <span class="p">(</span> <span class="s">&quot;flipped&quot;</span><span class="p">,</span> <span class="n">card</span><span class="o">.</span><span class="n">flipped</span> <span class="p">)</span> <span class="p">],</span> <span class="n">onClick</span> <span class="p">(</span><span class="kt">Flip</span> <span class="n">card</span><span class="p">)</span> <span class="p">]</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="c1">--- createCard</span>
+<span class="p">[</span> <span class="nf">div</span> <span class="p">[</span> <span class="nf">classList</span> <span class="p">[</span> <span class="p">(</span> <span class="s">&#34;card&#34;</span><span class="p">,</span> <span class="kt">True</span> <span class="p">),</span> <span class="p">(</span> <span class="s">&#34;flipped&#34;</span><span class="p">,</span> <span class="nf">card</span><span class="o">.</span><span class="nf">flipped</span> <span class="p">)</span> <span class="p">],</span> <span class="nf">onClick</span> <span class="p">(</span><span class="kt">Flip</span> <span class="nf">card</span><span class="p">)</span> <span class="p">]</span></code></pre></div>
 <p>You&rsquo;ll now be able to flip cards back and forth without any constraints. In the next step we&rsquo;re going to implement a proper game logic when <code>Flip</code> is dispatched, so that cards can be flipped only when the game allows it and matched cards remain face up.</p>
 
 <div class="runelm-wrapper ">
@@ -490,12 +446,10 @@ What are we going to build Here&rsquo;s a working demo of the finished project:
 <li>Our game will be in the state <code>Guessing Deck Card</code> when a single card is flipped and another one awaits to be flipped and (eventually) matched.</li>
 <li>The state <code>MatchCard Deck Card Card</code> will represent the game state where two cards are flipped simultaneously, whether they match or not (the check will be made at the next <code>Flip</code>, otherwise you wouldn&rsquo;t be able to see the card you just flipped).</li>
 </ul>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="kt">Model</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">Model</span>
     <span class="ow">=</span> <span class="kt">Playing</span> <span class="kt">Deck</span>
     <span class="o">|</span> <span class="kt">Guessing</span> <span class="kt">Deck</span> <span class="kt">Card</span>
-    <span class="o">|</span> <span class="kt">MatchCard</span> <span class="kt">Deck</span> <span class="kt">Card</span> <span class="kt">Card</span>
-</code></pre></div>
-
+    <span class="o">|</span> <span class="kt">MatchCard</span> <span class="kt">Deck</span> <span class="kt">Card</span> <span class="kt">Card</span></code></pre></div>
 <p>Cool, now we have to decide how to update our <code>model</code> whenever a <code>Flip</code> action comes through:</p>
 
 <ol>
@@ -507,62 +461,56 @@ What are we going to build Here&rsquo;s a working demo of the finished project:
 <p>Let&rsquo;s try to implement this, it is definitely the trickiest part of the game, but it&rsquo;s not that difficult, maybe just a little bit overwhelming if you&rsquo;re not familiar with how to reason in FP yet.</p>
 
 <p>First, we&rsquo;ll define <code>checkIfCorrect</code>:</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">checkIfCorrect</span> <span class="kt">:</span> <span class="kt">Card</span> <span class="ow">-&gt;</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
-<span class="nf">checkIfCorrect</span> <span class="n">card</span> <span class="n">model</span> <span class="ow">=</span>
-    <span class="kr">case</span> <span class="n">model</span> <span class="kr">of</span>
-        <span class="kt">Playing</span> <span class="n">deck</span> <span class="ow">-&gt;</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">checkIfCorrect</span> <span class="kt">:</span> <span class="kt">Card</span> <span class="ow">-&gt;</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="p">(</span> <span class="kt">Model</span><span class="p">,</span> <span class="kt">Cmd</span> <span class="kt">Msg</span> <span class="p">)</span>
+<span class="nf">checkIfCorrect</span> <span class="nf">card</span> <span class="nf">model</span> <span class="ow">=</span>
+    <span class="kr">case</span> <span class="nf">model</span> <span class="kr">of</span>
+        <span class="kt">Playing</span> <span class="nf">deck</span> <span class="ow">-&gt;</span>
             <span class="kr">let</span>
-                <span class="n">newDeck</span> <span class="ow">=</span>
-                    <span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="p">(</span><span class="n">flip</span> <span class="kt">True</span> <span class="n">card</span><span class="p">)</span> <span class="n">deck</span>
+                <span class="nf">newDeck</span> <span class="ow">=</span>
+                    <span class="kt">List</span><span class="o">.</span><span class="nf">map</span> <span class="p">(</span><span class="nf">flip</span> <span class="kt">True</span> <span class="nf">card</span><span class="p">)</span> <span class="nf">deck</span>
             <span class="kr">in</span>
-                <span class="kt">Guessing</span> <span class="n">newDeck</span> <span class="n">card</span> <span class="o">!</span> <span class="kt">[]</span>
+                <span class="kt">Guessing</span> <span class="nf">newDeck</span> <span class="nf">card</span> <span class="o">!</span> <span class="kt">[]</span>
 
-        <span class="kt">Guessing</span> <span class="n">deck</span> <span class="n">guess</span> <span class="ow">-&gt;</span>
+        <span class="kt">Guessing</span> <span class="nf">deck</span> <span class="nf">guess</span> <span class="ow">-&gt;</span>
             <span class="kr">let</span>
-                <span class="n">newDeck</span> <span class="ow">=</span>
-                    <span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="p">(</span><span class="n">flip</span> <span class="kt">True</span> <span class="n">card</span><span class="p">)</span> <span class="n">deck</span>
+                <span class="nf">newDeck</span> <span class="ow">=</span>
+                    <span class="kt">List</span><span class="o">.</span><span class="nf">map</span> <span class="p">(</span><span class="nf">flip</span> <span class="kt">True</span> <span class="nf">card</span><span class="p">)</span> <span class="nf">deck</span>
 
-                <span class="n">newModel</span> <span class="ow">=</span>
-                    <span class="kt">MatchCard</span> <span class="n">newDeck</span> <span class="n">guess</span> <span class="n">card</span>
+                <span class="nf">newModel</span> <span class="ow">=</span>
+                    <span class="kt">MatchCard</span> <span class="nf">newDeck</span> <span class="nf">guess</span> <span class="nf">card</span>
             <span class="kr">in</span>
-                <span class="n">newModel</span> <span class="o">!</span> <span class="kt">[]</span>
+                <span class="nf">newModel</span> <span class="o">!</span> <span class="kt">[]</span>
 
-        <span class="kt">MatchCard</span> <span class="n">deck</span> <span class="n">guess1</span> <span class="n">guess2</span> <span class="ow">-&gt;</span>
-            <span class="kr">if</span> <span class="n">guess1</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">guess2</span><span class="o">.</span><span class="n">id</span> <span class="kr">then</span>
-                <span class="cm">{-</span>
-<span class="cm">                   user has guessed correctly!</span>
-<span class="cm">                   keep both cards flipped and then run update</span>
-<span class="cm">                   again to flip the new card that has been just clicked</span>
-<span class="cm">                -}</span>
-                <span class="n">update</span> <span class="p">(</span><span class="kt">Flip</span> <span class="n">card</span><span class="p">)</span> <span class="p">(</span><span class="kt">Playing</span> <span class="n">deck</span><span class="p">)</span>
+        <span class="kt">MatchCard</span> <span class="nf">deck</span> <span class="nf">guess1</span> <span class="nf">guess2</span> <span class="ow">-&gt;</span>
+            <span class="kr">if</span> <span class="nf">guess1</span><span class="o">.</span><span class="nf">id</span> <span class="o">==</span> <span class="nf">guess2</span><span class="o">.</span><span class="nf">id</span> <span class="kr">then</span>
+                <span class="cm">{-
+</span><span class="cm">                   user has guessed correctly!
+</span><span class="cm">                   keep both cards flipped and then run update
+</span><span class="cm">                   again to flip the new card that has been just clicked
+</span><span class="cm">                -}</span>
+                <span class="nf">update</span> <span class="p">(</span><span class="kt">Flip</span> <span class="nf">card</span><span class="p">)</span> <span class="p">(</span><span class="kt">Playing</span> <span class="nf">deck</span><span class="p">)</span>
             <span class="kr">else</span>
                 <span class="c1">-- flip the two cards face down because they don&#39;t match</span>
                 <span class="kr">let</span>
-                    <span class="n">flipGuess</span> <span class="ow">=</span>
-                        <span class="n">flip</span> <span class="kt">False</span> <span class="n">guess1</span> <span class="o">&gt;&gt;</span> <span class="n">flip</span> <span class="kt">False</span> <span class="n">guess2</span>
+                    <span class="nf">flipGuess</span> <span class="ow">=</span>
+                        <span class="nf">flip</span> <span class="kt">False</span> <span class="nf">guess1</span> <span class="o">&gt;&gt;</span> <span class="nf">flip</span> <span class="kt">False</span> <span class="nf">guess2</span>
 
-                    <span class="n">newDeck</span> <span class="ow">=</span>
-                        <span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="n">flipGuess</span> <span class="n">deck</span>
+                    <span class="nf">newDeck</span> <span class="ow">=</span>
+                        <span class="kt">List</span><span class="o">.</span><span class="nf">map</span> <span class="nf">flipGuess</span> <span class="nf">deck</span>
                 <span class="kr">in</span>
-                    <span class="kt">Playing</span> <span class="n">newDeck</span> <span class="o">!</span> <span class="kt">[]</span>
-</code></pre></div>
-
+                    <span class="kt">Playing</span> <span class="nf">newDeck</span> <span class="o">!</span> <span class="kt">[]</span></code></pre></div>
 <p>And then we&rsquo;ll change the <code>Flip</code> branch in the <code>update</code> function:</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kt">Flip</span> <span class="n">card</span> <span class="ow">-&gt;</span>
-    <span class="kr">if</span> <span class="n">card</span><span class="o">.</span><span class="n">flipped</span> <span class="kr">then</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kt">Flip</span> <span class="nf">card</span> <span class="ow">-&gt;</span>
+    <span class="kr">if</span> <span class="nf">card</span><span class="o">.</span><span class="nf">flipped</span> <span class="kr">then</span>
         <span class="c1">-- if a user clicks on an image that&#39;s flipped already</span>
         <span class="c1">-- then don&#39;t do anything</span>
-        <span class="n">model</span> <span class="o">!</span> <span class="kt">[]</span>
+        <span class="nf">model</span> <span class="o">!</span> <span class="kt">[]</span>
     <span class="kr">else</span>
-        <span class="n">checkIfCorrect</span> <span class="n">card</span> <span class="n">model</span>
-</code></pre></div>
-
+        <span class="nf">checkIfCorrect</span> <span class="nf">card</span> <span class="nf">model</span></code></pre></div>
 <p>This should all make sense, but I want to go over a couple of things that might not be immediately clear.</p>
 
 <p>First, in order to change the flip status of two cards, we define <code>flipGuess</code> using function composition (spefically, the <code>&gt;&gt;</code> operator). Another way of writing <code>flipGuess</code> would be:</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">flipGuess</span> <span class="n">card</span> <span class="ow">=</span> <span class="n">flip</span> <span class="kt">False</span> <span class="n">guess</span> <span class="p">(</span><span class="n">flip</span> <span class="kt">False</span> <span class="n">current</span> <span class="n">card</span><span class="p">)</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">flipGuess</span> <span class="nf">card</span> <span class="ow">=</span> <span class="nf">flip</span> <span class="kt">False</span> <span class="nf">guess</span> <span class="p">(</span><span class="nf">flip</span> <span class="kt">False</span> <span class="nf">current</span> <span class="nf">card</span><span class="p">)</span></code></pre></div>
 <p>It is just easier to write functions as a result of composition, once you understand how that works.</p>
 
 <p>Second, we can see that <code>update</code> is calling itself recursively when the two cards match. This is so we don&rsquo;t need to repeat the same logic we already have in the <code>Playing</code> branch. <code>update</code> is just a function after all, there&rsquo;s nothing magical behind it and we can use it as any other function!</p>
@@ -585,90 +533,76 @@ What are we going to build Here&rsquo;s a working demo of the finished project:
 <p>All right, we&rsquo;re pretty much done!</p>
 
 <p>The only thing left is to detect when the player has won the game, and display a message to play again. Let&rsquo;s update our <code>Model</code> and add a new <code>GameOver</code> state.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="kt">Model</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">Model</span>
     <span class="ow">=</span> <span class="kt">Playing</span> <span class="kt">Deck</span>
     <span class="o">|</span> <span class="kt">Guessing</span> <span class="kt">Deck</span> <span class="kt">Card</span>
     <span class="o">|</span> <span class="kt">MatchCard</span> <span class="kt">Deck</span> <span class="kt">Card</span> <span class="kt">Card</span>
-    <span class="o">|</span> <span class="kt">GameOver</span> <span class="kt">Deck</span>
-</code></pre></div>
-
+    <span class="o">|</span> <span class="kt">GameOver</span> <span class="kt">Deck</span></code></pre></div>
 <p>Now we have to change our <code>update</code> function to transition in the <code>GameOver</code> state when appropriate. This is done in the <code>Guessing</code> branch, where we already have a card flipped. When we flip the second card, and all cards are flipped, it means the game is over!</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kt">Guessing</span> <span class="n">deck</span> <span class="n">guess</span> <span class="ow">-&gt;</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kt">Guessing</span> <span class="nf">deck</span> <span class="nf">guess</span> <span class="ow">-&gt;</span>
     <span class="kr">let</span>
-        <span class="n">newDeck</span> <span class="ow">=</span>
-            <span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="p">(</span><span class="n">flip</span> <span class="kt">True</span> <span class="n">card</span><span class="p">)</span> <span class="n">deck</span>
+        <span class="nf">newDeck</span> <span class="ow">=</span>
+            <span class="kt">List</span><span class="o">.</span><span class="nf">map</span> <span class="p">(</span><span class="nf">flip</span> <span class="kt">True</span> <span class="nf">card</span><span class="p">)</span> <span class="nf">deck</span>
 
         <span class="c1">-- when all cards are flipped, the game is over</span>
-        <span class="n">isOver</span> <span class="ow">=</span>
-            <span class="kt">List</span><span class="o">.</span><span class="n">all</span> <span class="o">.</span><span class="n">flipped</span> <span class="n">newDeck</span>
+        <span class="nf">isOver</span> <span class="ow">=</span>
+            <span class="kt">List</span><span class="o">.</span><span class="nf">all</span> <span class="o">.</span><span class="nf">flipped</span> <span class="nf">newDeck</span>
 
-        <span class="n">newModel</span> <span class="ow">=</span>
-            <span class="kr">if</span> <span class="n">isOver</span> <span class="kr">then</span>
-                <span class="kt">GameOver</span> <span class="n">newDeck</span>
+        <span class="nf">newModel</span> <span class="ow">=</span>
+            <span class="kr">if</span> <span class="nf">isOver</span> <span class="kr">then</span>
+                <span class="kt">GameOver</span> <span class="nf">newDeck</span>
             <span class="kr">else</span>
-                <span class="kt">MatchCard</span> <span class="n">newDeck</span> <span class="n">guess</span> <span class="n">card</span>
+                <span class="kt">MatchCard</span> <span class="nf">newDeck</span> <span class="nf">guess</span> <span class="nf">card</span>
     <span class="kr">in</span>
-        <span class="n">newModel</span> <span class="o">!</span> <span class="kt">[]</span>
-</code></pre></div>
-
+        <span class="nf">newModel</span> <span class="o">!</span> <span class="kt">[]</span></code></pre></div>
 <p>We&rsquo;ll have to deal with the <code>GameOver</code> branch in the <code>update</code> function as well. This doesn&rsquo;t make much sense because a <code>Flip</code> action shouldn&rsquo;t come through when the game is over. Still, it&rsquo;s good that the compiler forces us to take care of this as well, and we&rsquo;ll just return the current model as is:</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kt">GameOver</span> <span class="n">deck</span> <span class="ow">-&gt;</span>
-    <span class="kt">GameOver</span> <span class="n">deck</span> <span class="o">!</span> <span class="kt">[]</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kt">GameOver</span> <span class="nf">deck</span> <span class="ow">-&gt;</span>
+    <span class="kt">GameOver</span> <span class="nf">deck</span> <span class="o">!</span> <span class="kt">[]</span></code></pre></div>
 <p>Let&rsquo;s also create a <code>playAgainOverlay</code> which will be shown when the game finishes.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">playAgainOverlay</span> <span class="kt">:</span> <span class="kt">Html</span> <span class="kt">Msg</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">playAgainOverlay</span> <span class="kt">:</span> <span class="kt">Html</span> <span class="kt">Msg</span>
 <span class="nf">playAgainOverlay</span> <span class="ow">=</span>
-    <span class="n">div</span> <span class="p">[</span> <span class="kr">class</span> <span class="s">&quot;congrats&quot;</span> <span class="p">]</span>
-        <span class="p">[</span> <span class="n">p</span> <span class="kt">[]</span> <span class="p">[</span> <span class="n">text</span> <span class="s">&quot;Yay! You win!&quot;</span> <span class="p">]</span>
-        <span class="p">,</span> <span class="n">text</span> <span class="s">&quot;Do you want to &quot;</span>
-        <span class="p">,</span> <span class="n">span</span> <span class="p">[</span> <span class="n">onClick</span> <span class="kt">Reset</span> <span class="p">]</span> <span class="p">[</span> <span class="n">text</span> <span class="s">&quot;play again?&quot;</span> <span class="p">]</span>
-        <span class="p">]</span>
-</code></pre></div>
-
+    <span class="nf">div</span> <span class="p">[</span> <span class="kr">class</span> <span class="s">&#34;congrats&#34;</span> <span class="p">]</span>
+        <span class="p">[</span> <span class="nf">p</span> <span class="kt">[]</span> <span class="p">[</span> <span class="nf">text</span> <span class="s">&#34;Yay! You win!&#34;</span> <span class="p">]</span>
+        <span class="p">,</span> <span class="nf">text</span> <span class="s">&#34;Do you want to &#34;</span>
+        <span class="p">,</span> <span class="nf">span</span> <span class="p">[</span> <span class="nf">onClick</span> <span class="kt">Reset</span> <span class="p">]</span> <span class="p">[</span> <span class="nf">text</span> <span class="s">&#34;play again?&#34;</span> <span class="p">]</span>
+        <span class="p">]</span></code></pre></div>
 <p>We&rsquo;re adding a new Action to our Messages – <code>Reset</code> – indicating we want to clear the current game and start fresh. Let&rsquo;s add it to the <code>Msg</code> type:</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kr">type</span> <span class="kt">Msg</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kr">type</span> <span class="kt">Msg</span>
     <span class="ow">=</span> <span class="kt">NoOp</span>
     <span class="o">|</span> <span class="kt">Reset</span> <span class="c1">-- add Reset</span>
     <span class="o">|</span> <span class="kt">Shuffle</span> <span class="p">(</span><span class="kt">List</span> <span class="kt">Int</span><span class="p">)</span>
-    <span class="o">|</span> <span class="kt">Flip</span> <span class="kt">Card</span>
-</code></pre></div>
-
+    <span class="o">|</span> <span class="kt">Flip</span> <span class="kt">Card</span></code></pre></div>
 <p>And the <code>update</code> function:</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="kt">Reset</span> <span class="ow">-&gt;</span>
-    <span class="n">createModel</span>
-</code></pre></div>
-
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="kt">Reset</span> <span class="ow">-&gt;</span>
+    <span class="nf">createModel</span></code></pre></div>
 <p>Our addition to <code>update</code> is extremely straightforward because we already have <code>createModel</code> laying around and it&rsquo;s exactly what we need. All that is left is to change <code>view</code> to show the overlay when we&rsquo;re in the <code>GameOver</code> state.</p>
-<div class="highlight"><pre><code class="language-haskell" data-lang="haskell"><span></span><span class="nf">wrapper</span> <span class="kt">:</span> <span class="kt">Deck</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
-<span class="nf">wrapper</span> <span class="n">deck</span> <span class="n">overlay</span> <span class="ow">=</span>
-    <span class="n">div</span> <span class="p">[</span> <span class="kr">class</span> <span class="s">&quot;wrapper&quot;</span> <span class="p">]</span>
-        <span class="p">[</span> <span class="n">div</span> <span class="kt">[]</span> <span class="p">(</span><span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="n">createCard</span> <span class="n">deck</span><span class="p">)</span>
-        <span class="p">,</span> <span class="n">overlay</span>
+<div class="highlight"><pre class="chroma"><code class="language-haskell" data-lang="haskell"><span class="nf">wrapper</span> <span class="kt">:</span> <span class="kt">Deck</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
+<span class="nf">wrapper</span> <span class="nf">deck</span> <span class="nf">overlay</span> <span class="ow">=</span>
+    <span class="nf">div</span> <span class="p">[</span> <span class="kr">class</span> <span class="s">&#34;wrapper&#34;</span> <span class="p">]</span>
+        <span class="p">[</span> <span class="nf">div</span> <span class="kt">[]</span> <span class="p">(</span><span class="kt">List</span><span class="o">.</span><span class="nf">map</span> <span class="nf">createCard</span> <span class="nf">deck</span><span class="p">)</span>
+        <span class="p">,</span> <span class="nf">overlay</span>
         <span class="p">]</span>
 
 
 <span class="nf">game</span> <span class="kt">:</span> <span class="kt">Deck</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
-<span class="nf">game</span> <span class="n">deck</span> <span class="ow">=</span>
-    <span class="n">wrapper</span> <span class="n">deck</span> <span class="p">(</span><span class="n">text</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+<span class="nf">game</span> <span class="nf">deck</span> <span class="ow">=</span>
+    <span class="nf">wrapper</span> <span class="nf">deck</span> <span class="p">(</span><span class="nf">text</span> <span class="s">&#34;&#34;</span><span class="p">)</span>
 
 
 <span class="nf">view</span> <span class="kt">:</span> <span class="kt">Model</span> <span class="ow">-&gt;</span> <span class="kt">Html</span> <span class="kt">Msg</span>
-<span class="nf">view</span> <span class="n">model</span> <span class="ow">=</span>
-    <span class="kr">case</span> <span class="n">model</span> <span class="kr">of</span>
-        <span class="kt">Playing</span> <span class="n">deck</span> <span class="ow">-&gt;</span>
-            <span class="n">game</span> <span class="n">deck</span>
+<span class="nf">view</span> <span class="nf">model</span> <span class="ow">=</span>
+    <span class="kr">case</span> <span class="nf">model</span> <span class="kr">of</span>
+        <span class="kt">Playing</span> <span class="nf">deck</span> <span class="ow">-&gt;</span>
+            <span class="nf">game</span> <span class="nf">deck</span>
 
-        <span class="kt">Guessing</span> <span class="n">deck</span> <span class="kr">_</span> <span class="ow">-&gt;</span>
-            <span class="n">game</span> <span class="n">deck</span>
+        <span class="kt">Guessing</span> <span class="nf">deck</span> <span class="kr">_</span> <span class="ow">-&gt;</span>
+            <span class="nf">game</span> <span class="nf">deck</span>
 
-        <span class="kt">MatchCard</span> <span class="n">deck</span> <span class="kr">_</span> <span class="kr">_</span> <span class="ow">-&gt;</span>
-            <span class="n">game</span> <span class="n">deck</span>
+        <span class="kt">MatchCard</span> <span class="nf">deck</span> <span class="kr">_</span> <span class="kr">_</span> <span class="ow">-&gt;</span>
+            <span class="nf">game</span> <span class="nf">deck</span>
 
-        <span class="kt">GameOver</span> <span class="n">deck</span> <span class="ow">-&gt;</span>
-            <span class="n">wrapper</span> <span class="n">deck</span> <span class="n">playAgainOverlay</span>
-</code></pre></div>
-
+        <span class="kt">GameOver</span> <span class="nf">deck</span> <span class="ow">-&gt;</span>
+            <span class="nf">wrapper</span> <span class="nf">deck</span> <span class="nf">playAgainOverlay</span></code></pre></div>
 <p>We&rsquo;re changing the markup a bit, but the essence remains the same. The <code>game</code> function will just show some empty text in place of the overlay when the game is still running.</p>
 
 <p>This is it! There&rsquo;s other stuff that you might want to add as an exercise, such as counting the moves the player has made and stop the game if it&rsquo;s taking them too long (in terms of time and or moves).</p>
