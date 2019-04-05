@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Exercise #05 - On/Off switch | Zero Bullshit Haskell</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://unpkg.com/mocha/mocha.css" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/themes/prism.min.css">
+
+    <style>
+      * { box-sizing: border-box; }
+      html, body { font-family: Arial, Helvetica, sans-serif; font-size: 16px; line-height: 1.5; margin: 0; }
+      p { margin: 0 0 1em; }
+      a { color: #0066CC; text-decoration: none; border-bottom: 1px solid; }
+      .container { width: 90%; max-width: 50em; margin: 1.5em auto; }
+      section { margin: 3em 0; }
+      .logo { max-width: 10em; margin-bottom: 3em; }
+      h2 { margin: 0 0 0.5em; }
+
+      h4 { margin: 0 0 .5em; }
+      pre { margin: 0; }
+      pre[class*=language-] { padding: 0 1em; margin-bottom: 1.5em; }
+      code { font-size: 85%; margin: 0; padding: .2em .4em; font-size: 85%; background: #eee; border-radius: 3px; font-family: monospace; }
+
+      .run-btn { padding: 1em; border: 1px solid #ddd; cursor: pointer; border-radius: 5px; font-size: 1em; }
+      .run-btn:hover { background: #0066CC; color: #fff; }
+
+      .msg { display: none; border-left: 5px solid #ffcc00; padding: .5em 1.5em; margin-bottom: 1.5em; }
+
+      .test-running .run-btn { display: none;}
+      .test-running .refresh-notice { display: block; }
+      .server-unreachable .server-down-notice { display: block; }
+
+      #mocha { margin: 0 0 1.5em; }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <section>
+        <img src="/logo-wide.png" class="logo" />
+        <h2>Exercise #05 - On/Off switch</h2>
+        <p>
+  Write a server that exposes a <code>/onoff-switch</code> route.<br>
+  The server will maintain the state of a switch. The state can either be "Off" or "On".
+  The switch will start in the "Off" position. Everytime a request is sent, flip the
+  switch and return the current state.
+
+  <pre>
+    POST /onoff-switch
+    >>> expected "On"
+
+    POST /onoff-switch
+    >>> expected "Off"
+
+    POST /onoff-switch
+    >>> expected "On"
+  </pre>
+</p>
+
+      </section>
+
+      <div class="msg server-down-notice">
+        It looks like your server isn't up. This page expects your Haskell application to be listineing on
+        <a href="http://localhost:7879">http://localhost:7879</a>. <br>
+        If you're unsure on how to proceed, read more on how to setup your 
+        <a href="google.com">Local dev environment</a> to complete the exercises.
+      </div>
+
+      <button class="run-btn" onClick="runTests()">Run tests</button>
+
+      <div id="mocha"></div>
+
+      <p class="msg refresh-notice">
+        Refresh the page to run the tests again.
+      </p>
+
+      <section>
+        <h4>Reference node.js implementation</h4>
+        <pre>
+          <code class="language-javascript">
+const app = require("express")()
+
+// Mutable state!
+let currentState = "Off"
+
+app.post("/onoff-switch", (req, res) => {
+  currentState = currentState === "Off" ? "On" : "Off"
+  res.send(currentState)
+})
+
+console.log("Starting server...")
+app.listen(7879)
+</code>
+        </pre>
+
+        <h4>Where to get help</h4>
+        <p>
+          Got stuck? Don't worry! Join the discussion on Github (<a href="github.com">issue #12</a>). It might
+          be that the exercise could be clearer or there's something you really can't wrap your head around.
+          That's totally fine! 🙂
+        </p>
+        <p>
+          You can also have a look at <a href="github.com">my solution</a>. No shame in having a peek. 🧐<br>
+          But do share your thoughts on the exercises, it would be really helpful!
+        </p>
+      </section>
+      
+    </main>
+
+    <script src="https://unpkg.com/chai/chai.js"></script>
+    <script src="https://unpkg.com/mocha/mocha.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chai-http@4.2.1/dist/chai-http.js"></script>
+
+    <script class="mocha-init">
+      mocha.setup('bdd');
+      mocha.checkLeaks();
+
+      function runTests() {
+        html.classList.add('test-running')
+        clearInterval(checkInterval)
+        mocha.run()
+      }
+
+      function checkServerReachable() {
+        fetch('http://localhost:7879/__ping')
+        .then(function(res) {
+          var method = res.ok ? 'remove' : 'add'
+          html.classList[method]('server-unreachable')
+        })
+        .catch(function() { html.classList.add('server-unreachable') })
+      }
+
+      var html = document.getElementsByTagName('html')[0]
+      var checkInterval = setInterval(checkServerReachable, 1000)
+
+      window.EXERCISE = "05"
+    </script>
+    <script src="/bundle.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/prism.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/components/prism-javascript.min.js"></script>
+  </body>
+</html>
