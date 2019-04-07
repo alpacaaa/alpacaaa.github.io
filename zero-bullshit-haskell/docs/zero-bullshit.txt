@@ -4,14 +4,18 @@
 
 -- | A simple and mildly useful webserver library.
 --   
---   Please see the README on GitHub at
---   <a>https://github.com/alpacaaa/zero-haskell#readme</a>
+--   This Haskell package provides a very simple webserver implementation
+--   similar to <tt>express.js</tt> or <tt>sinatra</tt>.
+--   
+--   It comes as part of the <a>Zero Bullshit Haskell</a> project, where
+--   you can learn Haskell with hands on exercises and bullshit free
+--   explanations!
 @package zero-bullshit
 @version 0.1.0.0
 
 
--- | A very simple webserver library inspired by Sinatra, Express.js and
---   the likes.
+-- | A very simple webserver library inspired by <tt>express.js</tt>,
+--   <tt>sinatra</tt>.and the likes.
 --   
 --   Use this library to complete the <a>Zero Bullshit Haskell
 --   exercises</a>.
@@ -22,8 +26,8 @@ module Zero.Server
 
 -- | Start the server on port <tt>7879</tt>.
 --   
---   As an example, this is a server that listens to <tt>/hello</tt> and
---   <tt>/ping</tt> requests.
+--   As an example, this is a server that exposes <tt>/hello</tt> and
+--   <tt>/ping</tt> routes.
 --   
 --   <pre>
 --   helloHandler :: Handler
