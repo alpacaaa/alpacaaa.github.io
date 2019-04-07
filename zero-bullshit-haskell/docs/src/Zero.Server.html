@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE ConstraintKinds #-}</span><span>
 </span><a name="line-2"></a><span class="hs-pragma">{-# LANGUAGE LambdaCase #-}</span><span>
 </span><a name="line-3"></a><span class="hs-pragma">{-# LANGUAGE OverloadedStrings #-}</span><span>
-</span><a name="line-4"></a><span class="hs-comment">-- | A very simple webserver library inspired by @express.js@, @sinatra@.and the likes.</span><span>
+</span><a name="line-4"></a><span class="hs-comment">-- | A very simple webserver library inspired by @express.js@, @sinatra@ and the likes.</span><span>
 </span><a name="line-5"></a><span class="hs-comment">--</span><span>
 </span><a name="line-6"></a><span class="hs-comment">-- Use this library to complete the</span><span>
 </span><a name="line-7"></a><span class="hs-comment">-- &lt;https://github.com/alpacaaa/zero-bullshit-haskell#exercises Zero Bullshit Haskell exercises&gt;.</span><span>
@@ -361,8 +361,8 @@
 </span><a name="line-361"></a><span class="hs-comment">-- pong</span><span>
 </span><a name="line-362"></a><span class="hs-comment">--</span><span>
 </span><a name="line-363"></a><span class="hs-comment">--   The server will listen on port @7879@. If you're following along with the</span><span>
-</span><a name="line-364"></a><span class="hs-comment">--   exercises, they expect to find a server running on that port. In other words,</span><span>
-</span><a name="line-365"></a><span class="hs-comment">--   you are good to go!</span><span>
+</span><a name="line-364"></a><span class="hs-comment">--   exercises, the integration tests expect to find a server running on that</span><span>
+</span><a name="line-365"></a><span class="hs-comment">--   port. In other words, you are good to go!</span><span>
 </span><a name="line-366"></a><span class="hs-identifier">startServer</span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><a href="Zero.Server.html#Handler"><span class="hs-identifier hs-type">Handler</span></a><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-identifier hs-type">IO</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
 </span><a name="line-367"></a><a name="startServer"><a href="Zero.Server.html#startServer"><span class="hs-identifier">startServer</span></a></a><span>
 </span><a name="line-368"></a><span>  </span><span class="hs-glyph">=</span><span> </span><a href="Zero.Server.html#startServerOnPort"><span class="hs-identifier hs-var">startServerOnPort</span></a><span> </span><span class="hs-number">7879</span><span>

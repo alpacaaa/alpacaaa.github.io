@@ -15,7 +15,7 @@
 
 
 -- | A very simple webserver library inspired by <tt>express.js</tt>,
---   <tt>sinatra</tt>.and the likes.
+--   <tt>sinatra</tt> and the likes.
 --   
 --   Use this library to complete the <a>Zero Bullshit Haskell
 --   exercises</a>.
@@ -52,8 +52,8 @@ module Zero.Server
 --   </pre>
 --   
 --   The server will listen on port <tt>7879</tt>. If you're following
---   along with the exercises, they expect to find a server running on that
---   port. In other words, you are good to go!
+--   along with the exercises, the integration tests expect to find a
+--   server running on that port. In other words, you are good to go!
 startServer :: [Handler] -> IO ()
 
 -- | An <a>Handler</a> is something that can handle HTTP requests. You can
