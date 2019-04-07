@@ -12,6 +12,12 @@
 
 -- | A very simple webserver library inspired by Sinatra, Express.js and
 --   the likes.
+--   
+--   Use this library to complete the <a>Zero Bullshit Haskell
+--   exercises</a>.
+--   
+--   If you're unsure on how to proceed, read more on how to setup your
+--   <a>Local dev environment</a> to complete the exercises.
 module Zero.Server
 
 -- | Start the server on port <tt>7879</tt>.
@@ -200,6 +206,69 @@ handlersWithState :: state -> [StatefulHandler state] -> Handler
 -- | Exactly like <a>startServer</a>, but allows you to specify a different
 --   port.
 startServerOnPort :: Int -> [Handler] -> IO ()
+
+-- | How do I send a JSON response?
+--   
+--   Your type needs a <a>ToJSON</a> instance, which you can derive
+--   automatically. (That's why you need the <tt>Generic</tt> thing, but
+--   feel free to ignore, it's not important)
+--   
+--   <pre>
+--   import GHC.Generics (Generic)
+--   import qualified Zero.Server as Server
+--   
+--   data Person
+--     = Person { name :: String, age :: Int }
+--   deriving (Generic, Server.ToJSON)
+--   </pre>
+--   
+--   Then you want to use <a>jsonResponse</a> to produce a <a>Response</a>
+--   that contains the JSON representation of your type. Note that
+--   <b>encoding to JSON cannot fail</b>, while parsing from JSON could
+--   potentially fail if the JSON input is malformed.
+--   
+--   <pre>
+--   myHandler :: Request -&gt; Response
+--   myHandler req
+--     = jsonResponse p
+--     where
+--       p = Person "bob" 69
+--   </pre>
+type ToJSON a = (ToJSON a)
+
+-- | How do I turn a JSON value into a value of type <tt>a</tt>?
+--   
+--   Your type needs a <a>FromJSON</a> instance, which you can derive
+--   automatically.
+--   
+--   (That's why you need the <tt>Generic</tt> thing, but feel free to
+--   ignore, it's not important)
+--   
+--   <pre>
+--   import GHC.Generics (Generic)
+--   import qualified Zero.Server as Server
+--   
+--   data Person
+--     = Person { name :: String, age :: Int }
+--   deriving (Generic, Server.FromJSON)
+--   </pre>
+--   
+--   Then you want to use <a>decodeJson</a> to either get an error (when
+--   the JSON is invalid) or a value of type <tt>Person</tt>
+--   
+--   <pre>
+--   myHandler :: Request -&gt; Response
+--   myHandler req
+--     = stringResponse result
+--     where
+--       body
+--         = requestBody req
+--       result
+--         = case decodeJson body of
+--             Left err -&gt; "Failed to decode request body as a Person. It must be something else"
+--             Right p  -&gt; "Yay! We have a person named: " &lt;&gt; (name p)
+--   </pre>
+type FromJSON a = (FromJSON a)
 instance GHC.Show.Show Zero.Server.Request
 instance GHC.Classes.Eq Zero.Server.Request
 instance GHC.Show.Show Zero.Server.Method
