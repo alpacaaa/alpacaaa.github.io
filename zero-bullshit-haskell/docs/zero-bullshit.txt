@@ -101,9 +101,9 @@ data Request
 requestBody :: Request -> String
 
 -- | Given a <a>String</a>, either succesfully parse it to a type
---   <tt>a</tt> or return an error (as a <a>String</a>). It's very
---   important for the compiler to know what the <tt>a</tt> type is. If
---   you're having problem with `Ambiguous occurrence...`, read TODO.
+--   <tt>a</tt> or return an error (as a <a>String</a>).
+--   
+--   Read the documentation for <a>FromJSON</a> for a practical example.
 decodeJson :: FromJSON a => String -> Either String a
 
 -- | HTTP Response.
@@ -189,8 +189,7 @@ data StatefulHandler state
 --   Compare it with the simpler <tt>Request -&gt; Response</tt>. The
 --   difference is that you get the current state as a parameter, and you
 --   no longer return <b>just</b> the <tt>Response</tt>, but an updated
---   version of the state as well. For a more in depth explanation, read
---   TODO.
+--   version of the state as well.
 statefulHandler :: Method -> String -> (state -> Request -> (state, Response)) -> StatefulHandler state
 
 -- | Once you have some <a>StatefulHandler</a>s that share the same state
@@ -206,10 +205,6 @@ statefulHandler :: Method -> String -> (state -> Request -> (state, Response)) -
 --   state (especially given that it knows nothing about what
 --   <tt>state</tt> _is_, it could be anything! Yay, polymorphysm).
 handlersWithState :: state -> [StatefulHandler state] -> Handler
-
--- | Exactly like <a>startServer</a>, but allows you to specify a different
---   port.
-startServerOnPort :: Int -> [Handler] -> IO ()
 
 -- | How do I send a JSON response?
 --   
@@ -258,7 +253,7 @@ type ToJSON a = (ToJSON a)
 --   </pre>
 --   
 --   Then you want to use <a>decodeJson</a> to either get an error (when
---   the JSON is invalid) or a value of type <tt>Person</tt>
+--   the JSON is invalid) or a value of type <tt>Person</tt>.
 --   
 --   <pre>
 --   myHandler :: Request -&gt; Response
