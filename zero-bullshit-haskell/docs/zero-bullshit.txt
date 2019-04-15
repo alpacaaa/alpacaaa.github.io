@@ -10,6 +10,30 @@
 --   It comes as part of the <a>Zero Bullshit Haskell</a> project, where
 --   you can learn Haskell with hands on exercises and bullshit free
 --   explanations!
+--   
+--   To install this package, add it as an external dependency in your
+--   <tt>stack.yaml</tt> (it's not on Hackage yet).
+--   
+--   <pre>
+--   # stack.yaml
+--   
+--   extra-deps:
+--   - github: alpacaaa/zero-bullshit-haskell
+--     commit: master
+--     subdirs:
+--       - library
+--   </pre>
+--   
+--   And then add <tt>zero-bullshit</tt> as a dependency in
+--   <tt>package.yaml</tt>.
+--   
+--   <pre>
+--   # package.yaml
+--   
+--   dependencies:
+--   - base
+--   - zero-bullshit
+--   </pre>
 @package zero-bullshit
 @version 0.1.0.0
 
