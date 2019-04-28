@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Exercise #08 - ShoppingCart V2 | Zero Bullshit Haskell</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="//unpkg.com/mocha/mocha.css" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/themes/prism.min.css">
+
+    <style>
+      * { box-sizing: border-box; }
+      html, body { font-family: Arial, Helvetica, sans-serif; font-size: 16px; line-height: 1.5; margin: 0; }
+      p { margin: 0 0 1em; }
+      a { color: #0066CC; text-decoration: none; border-bottom: 1px solid; }
+      .container { width: 90%; max-width: 50em; margin: 1.5em auto; }
+      section { margin: 3em 0; }
+      .logo { border: 0 none; }
+      .logo img { max-width: 10em; margin-bottom: 3em; }
+      h2 { margin: 0 0 0.5em; }
+
+      h4 { margin: 0 0 .5em; }
+      pre { margin: 0; }
+      pre[class*=language-] { padding: 0 1em; margin-bottom: 1.5em; }
+      code { font-size: 85%; margin: 0; padding: .2em .4em; font-size: 85%; background: #eee; border-radius: 3px; font-family: monospace; }
+
+      .run-btn { padding: 1em; border: 1px solid #ddd; cursor: pointer; border-radius: 5px; font-size: 1em; }
+      .run-btn:hover { background: #0066CC; color: #fff; }
+
+      .msg { display: none; border-left: 5px solid #ffcc00; padding: .5em 1.5em; margin-bottom: 1.5em; }
+
+      .test-running .run-btn { display: none;}
+      .test-running .refresh-notice { display: block; }
+      .server-unreachable .server-down-notice { display: block; }
+
+      #mocha { margin: 0 0 1.5em; }
+
+      footer { margin: 3em 0; padding: 1.5em 0; border-top: 1px solid #ddd; font-size: 0.75em; }
+      footer ul { margin: 0; padding: 0; text-align: center; }
+      footer li { display: inline-block; }
+      footer li:after { content: ' ~'; padding: 0 0.5em; }
+      footer li:last-child:after { content: ''; }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <section>
+        <a href="https://github.com/alpacaaa/zero-bullshit-haskell#exercises" class="logo">
+          <img src="../logo-wide.png" alt="Zero Bullshit Haskell logo" />
+        </a>
+        <h2>Exercise #08 - ShoppingCart V2</h2>
+        <p>
+  <em>Continues from <a href="./Ex07">Exercise #07</a></em>.<br>
+  Items can now be added multiple times. If the item is in the cart already,
+  add the existing quantity to the new item's quantity.
+</p>
+<p>
+  Expose the same two routes, but return items <strong>ordered by quantity</strong>,
+  from highest to lowest.
+</>
+<ul>
+  <li><code>GET  /cart</code></li>
+  <li><code>POST /cart</code></li>
+</ul>
+
+<p>
+  The cart starts empty. Note how the order of the returned items changes
+  as more items are added.
+
+  <pre>
+    GET /cart
+    >>> expected []
+
+    POST /cart
+    { "model": "first thing", "quantity": 2 }
+
+    GET /cart
+    >>> expected
+      [
+        { "model": "first thing", "quantity": 2 }
+      ]
+
+    POST /cart
+    { "model": "another thing", "quantity": 30 }
+
+    GET /cart
+    >>> expected
+      [
+        { "model": "another thing", "quantity": 30 },
+        { "model": "first thing", "quantity": 2 }
+      ]
+
+    POST /cart
+    { "model": "first thing", "quantity": 45 }
+
+    GET /cart
+    >>> expected
+      [
+        { "model": "first thing", "quantity": 47 },
+        { "model": "another thing", "quantity": 30 }
+      ]
+
+  </pre>
+</p>
+
+      </section>
+
+      <div class="msg server-down-notice">
+        It looks like your server isn't up. This page expects your Haskell application to be listineing on
+        <a href="http://localhost:7879">http://localhost:7879</a>. <br>
+        If you're unsure on how to proceed, read more on how to setup your 
+        <a href="https://github.com/alpacaaa/zero-bullshit-haskell#toc-solve-exercise">Local dev environment</a>
+        to complete the exercises.
+      </div>
+
+      <button class="run-btn" onClick="runTests()">Run tests</button>
+
+      <div id="mocha"></div>
+
+      <p class="msg refresh-notice">
+        Refresh the page to run the tests again.
+      </p>
+
+      <section>
+        <h4>Reference node.js implementation</h4>
+        <pre>
+          <code class="language-javascript">
+const app = require("express")()
+const bodyParser = require("body-parser")
+
+app.use(bodyParser.json())
+
+// Mutable state!
+// Items are indexed by "model"
+let currentCart = {}
+
+app.post("/cart", (req, res) => {
+  const item = req.body
+
+  if (item.model && item.quantity)
+  {
+    const existingQuantity = currentCart[item.model] ? currentCart[item.model].quantity : 0
+    item.quantity = existingQuantity + item.quantity
+    currentCart[item.model] = item
+    res.send("ok")
+  }
+  else {
+    throw new Error("Not a valid item")
+  }
+})
+
+app.get("/cart", (req, res) => {
+  const items = Object.values(currentCart)
+  // Items should be sorted by quantity
+  res.json(items.sort((a, b) => a.quantity < b.quantity))
+})
+
+console.log("Starting server...")
+app.listen(7879)
+</code>
+        </pre>
+      </section>
+
+
+      <section>
+        <h4>Where to get help</h4>
+        <p>
+          Got stuck? Don't worry! Join the discussion on Github (<a href="https://github.com/alpacaaa/zero-bullshit-haskell/issues/7">issue #7</a>). It might
+          be that the exercise could be clearer or there's something you really can't wrap your head around.
+          That's totally fine! 🙂
+        </p>
+        <p>
+          You can also have a look at <a href="https://github.com/alpacaaa/zero-bullshit-haskell/blob/master/exercises/src/Ex08ShoppingCartV2&#x2F;ShoppingCartV2.hs">my solution</a>. No shame in having a peek. 🧐<br>
+          But do share your thoughts on the exercises, it would be really helpful!
+        </p>
+      </section>
+
+      <footer>
+        <ul>
+          <li>2019</li>
+          <li><a href="https://github.com/alpacaaa/zero-bullshit-haskell">Zero Bullshit Haskell</a></li>
+          <li><a href="https://github.com/alpacaaa/zero-bullshit-haskell#exercises">Exercises</a></li>
+          <li><a href="https://alpacaaa.net/zero-bullshit-haskell/docs">Docs</a></li>
+          <li><a href="https://www.youtube.com/channel/UCJiwOqQi88UZCe8w7lwV4gw">Youtube</a></li>
+        </ul>
+      </footer>
+      
+    </main>
+
+    <script src="https://unpkg.com/chai/chai.js"></script>
+    <script src="https://unpkg.com/mocha/mocha.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chai-http@4.2.1/dist/chai-http.js"></script>
+
+    <script class="mocha-init">
+      mocha.setup('bdd');
+      mocha.checkLeaks();
+
+      function runTests() {
+        html.classList.add('test-running')
+        clearInterval(checkInterval)
+        mocha.run()
+      }
+
+      function checkServerReachable() {
+        fetch('http://localhost:7879/__ping')
+        .then(function(res) {
+          var method = res.ok ? 'remove' : 'add'
+          html.classList[method]('server-unreachable')
+        })
+        .catch(function() { html.classList.add('server-unreachable') })
+      }
+
+      var html = document.getElementsByTagName('html')[0]
+      var checkInterval = setInterval(checkServerReachable, 1000)
+
+      window.EXERCISE = "08"
+    </script>
+    <script src="../bundle.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/prism.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/prism/1.5.1/components/prism-javascript.min.js"></script>
+  </body>
+</html>
