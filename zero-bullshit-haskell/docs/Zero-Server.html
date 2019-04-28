@@ -69,7 +69,7 @@ import qualified Zero.Server as Server
 
 data Person
   = Person { name :: String, age :: Int }
-deriving (Generic, Server.ToJSON)</pre><p>Then you want to use <code><a href="Zero-Server.html#v:jsonResponse" title="Zero.Server">jsonResponse</a></code> to produce a <code><a href="Zero-Server.html#t:Response" title="Zero.Server">Response</a></code> that contains the JSON
+  deriving (Generic, Server.ToJSON)</pre><p>Then you want to use <code><a href="Zero-Server.html#v:jsonResponse" title="Zero.Server">jsonResponse</a></code> to produce a <code><a href="Zero-Server.html#t:Response" title="Zero.Server">Response</a></code> that contains the JSON
  representation of your type. Note that <strong>encoding to JSON cannot fail</strong>, while parsing
  from JSON could potentially fail if the JSON input is malformed.</p><pre>myHandler :: Request -&gt; Response
 myHandler req
@@ -80,7 +80,7 @@ import qualified Zero.Server as Server
 
 data Person
   = Person { name :: String, age :: Int }
-deriving (Generic, Server.FromJSON)</pre><p>Then you want to use <code><a href="Zero-Server.html#v:decodeJson" title="Zero.Server">decodeJson</a></code> to either get an error (when the JSON is invalid)
+  deriving (Generic, Server.FromJSON)</pre><p>Then you want to use <code><a href="Zero-Server.html#v:decodeJson" title="Zero.Server">decodeJson</a></code> to either get an error (when the JSON is invalid)
  or a value of type <code>Person</code>.</p><pre>myHandler :: Request -&gt; Response
 myHandler req
   = stringResponse result

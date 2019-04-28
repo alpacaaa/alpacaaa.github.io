@@ -242,7 +242,7 @@ handlersWithState :: state -> [StatefulHandler state] -> Handler
 --   
 --   data Person
 --     = Person { name :: String, age :: Int }
---   deriving (Generic, Server.ToJSON)
+--     deriving (Generic, Server.ToJSON)
 --   </pre>
 --   
 --   Then you want to use <a>jsonResponse</a> to produce a <a>Response</a>
@@ -273,7 +273,7 @@ type ToJSON a = (ToJSON a)
 --   
 --   data Person
 --     = Person { name :: String, age :: Int }
---   deriving (Generic, Server.FromJSON)
+--     deriving (Generic, Server.FromJSON)
 --   </pre>
 --   
 --   Then you want to use <a>decodeJson</a> to either get an error (when
