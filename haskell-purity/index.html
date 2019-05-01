@@ -18,11 +18,16 @@
 
       a { color: #0066CC; text-decoration: none; border-bottom: 1px solid; }
       hr { width: 10%; margin: 0 auto 3em; border: 0px solid transparent; }
-      pre { margin: 4em 0 4em 5%; font-size: 16px; }
+      pre { margin: 4em 0 4em 5%; font-size: 16px; overflow: scroll; }
       p > code { font-size: 85%; margin: 0; padding: .2em .4em; font-size: 85%; background: #eee; border-radius: 3px; font-family: monospace; }
 
       blockquote { font-size: 1.5em; padding: .5em 4em 0 5%; margin: 0 0 1.5em; }
       .thanks + p { font-size: 1em; font-weight: 300; padding: 3em 0 0; }
+
+      @media (max-width: 500px) {
+        main { max-width: 100%; padding: 0 30px; }
+        blockquote { padding-right: 0; }
+      }
     </style>
   </head>
   <body>
