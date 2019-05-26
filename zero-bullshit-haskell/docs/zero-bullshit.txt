@@ -91,11 +91,12 @@ startServer :: [Handler] -> IO ()
 data Handler
 
 -- | HTTP Method.
---   
---   Only <a>GET</a> or <a>POST</a> for simplicity.
 data Method
 GET :: Method
 POST :: Method
+PUT :: Method
+PATCH :: Method
+DELETE :: Method
 
 -- | Most basic HTTP handler.
 --   
