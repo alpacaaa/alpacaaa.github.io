@@ -3,7 +3,7 @@
   <head>
     <title>Scaling Teams with Micro Frontends</title>
     <meta charset="utf-8" />
-    <meta name="description" content="diobo" />
+    <meta name="description" content="How to split a frontend monolith into micro apps." />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700" rel="stylesheet">
 
@@ -14,7 +14,7 @@
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://alpacaaa.net/haskell-purity/" />
     <meta property="og:title" content="Scaling Teams with Micro Frontends" />
-    <meta property="og:description" content="diobo" />
+    <meta property="og:description" content="How to split a frontend monolith into micro apps." />
 
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="@_alpacaaa" />
@@ -54,27 +54,22 @@ applications into microservices is a hot topic for Backend services, but huge
 Frontends exist and have their fair share of problems.</p>
 <p>A monolithic Frontend app might be quicker to build and easier to release,
 compared to a Backend app. However, things fall apart when multiple teams with
-different deadlines and goals end up working on it.</p>
-<p>Microapps are to the Frontend what microservices are to the Backend: a way for
-teams to gain back autonomy and speed of release. The process of splitting up a
-monolith is roughly the same in both cases.</p>
+different deadlines and goals end up working on it. Microapps are to the Frontend
+what microservices are to the Backend: a way for teams to gain back autonomy and speed of release.</p>
 <h3 id="split-apps-by-url">Split apps by url</h3>
-<p>There's one great thing about a monolith: the larger it is, the clearer how it
-should be split up. You should first ask which teams own what and proceed in
-decomposing the application accordingly. One rule of thumb is that a single
-microapp should respond only to requests at a single URL. An app handling
-payments will be concerned with anything under <code>/payment</code> such as
+<p>In order to split the monolith,
+you need to figure out which bits of the application are owned by the different teams.
+One rule of thumb is that a single microapp should respond only to requests at a specific
+URL prefix. An app handling payments will be concerned with anything under <code>/payment</code> such as
 <code>/payment/details</code> and <code>/payment/view/a123bc</code>. Avoid separate top-level URLs
 such as <code>/payment-details</code> and <code>/view-payment</code> as they're trickier to route.</p>
 <h3 id="a-router-in-front">A router in front</h3>
 <p>For Backend services, an Api Gateway receives all traffic coming through and
 routes requests to the correct microservices. The same technique can be employed
 on the Frontend by using something as simple as an Nginx proxy. There are great
-options available for Kubernetes, such as Traefik and Skipper. At <a href="https://www.habito.com">Habito</a>, we
-built a custom reverse proxy in Haskell because we felt there was too much magic
-involved with existing solutions. We're now a bit more familiar with Kubernetes
-and looking into an Ingress to handle all of our traffic.</p>
-<p>I'm personally a big fan of <a href="https://samnewman.io/patterns/architectural/bff/">Backends for Frontends</a>, a less painful and perhaps
+options available for Kubernetes, such as <a href="https://traefik.io/">Traefik</a> and <a href="https://opensource.zalando.com/skipper/">Skipper</a>,
+but be sure to understand all the complexity involved with those solutions.</p>
+<p>I'm a big fan of <a href="https://samnewman.io/patterns/architectural/bff/">Backends for Frontends</a>, a less painful and perhaps
 more romantic approach to routing. You can use the same backend you already have
 to route requests, there's no need for Nginx or any fancy proxy in front. It
 very much depends on how much traffic you get, but chances are you'll be able
@@ -112,8 +107,25 @@ anonymous traffic goes through <code>www.company.com</code>. You can also do the
 reverse with <code>about.company.com</code> being the <a href="https://about.gitlab.com/">main website</a>. Although the marketing
 department will hate you for that.</p>
 <h3 id="conclusion">Conclusion</h3>
-<p>Going with microapps might look like an architectural defeat. Components in some flavour (be it React components, web components or what have you) should be enough to scale an application. Even so, a large application will still be challenging to work on as it grows in size. When struggling with deploy times, consistently broken builds and slow release cycles, microapps could be the cure. As with microservices, you have to be careful. Having your users download a 3mb bundle for each different page is not what I'm advocating for. Teams need to agree on a single framework and be mindful of user experience. Bundle splitting plays a big role here — users should download React only once.</p>
-<p>There's one thing I absolutely love about microapps: static pages. It seems like everything nowadays has to be a Single Page Application, otherwise you're missing out. I think SPAs are great for highly interactive pages. Go and build those pages as SPAs, but anything else can be statically generated or even server rendered (a tiny node/ruby/python app can go a long way). As most things in technology, reach for the simplest abstraction first and see if you can solve the problem with that. Microapps allow teams to work at different abstraction levels. When you need the big hammer (SPAs) then you can and should go for it. But when you realize a large monolithic React app is no fun to work on, then consider splitting it up into micro frontend applications.</p>
+<p>Going with microapps might look like an architectural defeat. Components in some
+flavour (be it React components, web components or what have you) should be enough
+to scale an application. Even so, a large application will still be challenging
+to work on as it grows in size. When struggling with deploy times, consistently
+broken builds and slow release cycles, microapps could be the cure. As with
+microservices, you have to be careful. Having your users download a 3mb bundle
+for each different page is not what I'm advocating for. Teams need to agree on a
+single framework and be mindful of user experience. Bundle splitting plays a big
+role here — users should download React only once.</p>
+<p>There's one thing I absolutely love about microapps: static pages. It seems like
+everything nowadays has to be a Single Page Application, otherwise you're missing
+out. I think SPAs are great for highly interactive pages. Go and build those
+pages as SPAs, but anything else can be statically generated or even server rendered
+(a tiny node/ruby/python app can go a long way). As most things in technology,
+reach for the simplest abstraction first and see if you can solve the problem
+with that. Microapps allow teams to work at different abstraction levels. When
+you need the big hammer (SPAs) then you can and should go for it. But when you
+realize a large monolithic React app is no fun to work on, then consider splitting
+it up into micro frontend applications.</p>
 
     </main>
   </body>
