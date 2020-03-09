@@ -701,11 +701,6 @@ video {
   max-width: 42rem;
 }
 
-.px-0{
-  padding-left: 0;
-  padding-right: 0;
-}
-
 .py-4{
   padding-top: 1rem;
   padding-bottom: 1rem;
@@ -745,6 +740,10 @@ video {
 }
 
 .text-primary{
+  color: #2484c1;
+}
+
+.hover\:text-primary:hover{
   color: #2484c1;
 }
 
@@ -859,11 +858,6 @@ pre[class*="language-"] {
   color: #96CBFE;
 }
 
-
-    .style .token.string {
-  color: #87C38A;
-}
-
 .token.function {
   color: #DAD085;
 }
@@ -955,5 +949,13 @@ article hr {
   }
 
   article > * { padding: 0;
+  }
+}
+
+@media (min-width: 768px){
+
+  .md\:px-0{
+    padding-left: 0;
+    padding-right: 0;
   }
 }
