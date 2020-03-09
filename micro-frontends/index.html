@@ -1,69 +1,58 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <title>Scaling Teams with Micro Frontends</title>
-    <meta charset="utf-8" />
-    <meta name="description" content="Gain back autonomy and speed of release by splitting your monolithic Frontend into microapps." />
+    <title>Scaling Teams with Micro Frontends - Marco Sampellegrini</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/static/style.css">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700" rel="stylesheet">
-
-    <meta name="author" content="Marco Sampellegrini" />
-    <meta property="og:site_name" content="Marco Sampellegrini" />
-    <meta property="og:email" content="babbonatale@alpacaaa.net" />
-
-    <meta property="og:type" content="article" />
-    <meta property="og:url" content="https://alpacaaa.net/micro-frontends/" />
-    <meta property="og:title" content="Scaling Teams with Micro Frontends" />
-    <meta property="og:description" content="Gain back autonomy and speed of release by splitting your monolithic Frontend into microapps." />
-
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:site" content="@_alpacaaa" />
-    <meta name="twitter:creator" content="@_alpacaaa" />
-
-    <style>
-      *, *:before, *:after { box-sizing: inherit; }
-
-      html { box-sizing: border-box; }
-      body { font-family: 'Source Sans Pro', sans-serif; font-size: 20px; line-height: 1.5; margin: 0; color: #222; }
-
-      h1 { font-size: 3.5em; font-weight: 700; margin-bottom: 0.5em; line-height: 1; }
-      main { width: 90%; max-width: 35em; margin: 6em auto; }
-      h1 + p { font-size: 1.5em; font-style: italic; font-weight: 300; }
-
-      a { color: #0066CC; text-decoration: none; border-bottom: 1px solid; }
-      hr { width: 10%; margin: 0 auto 3em; border: 0px solid transparent; }
-      pre { margin: 4em 0 4em 5%; font-size: 16px; overflow: scroll; }
-      p > code { font-size: 85%; margin: 0; padding: .2em .4em; font-size: 85%; background: #eee; border-radius: 3px; font-family: monospace; }
-
-      blockquote { font-size: 1.5em; padding: .5em 4em 0 5%; margin: 0 0 1.5em; }
-      .thanks + p { font-size: 1em; font-weight: 300; padding: 3em 0 0; }
-
-      @media (max-width: 500px) {
-        main { max-width: 100%; padding: 0 30px; }
-        blockquote { font-size: 1.25em; padding-right: 0; }
-        h1 { font-size: 2.5em; }
-        h1 + p { font-size: 1em; }
-      }
-    </style>
   </head>
-  <body>
-    <main>
-      <h1>Scaling Teams with Micro Frontends</h1>
-      <p>Monoliths are problematic anywhere in the stack. Splitting up big monolithic
+
+  <body class="antialiased text-dark">
+    <header class="max-w-2xl px-8 md:px-0 py-4 mx-auto ">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center">
+          <div class="text-sm text-dark font-bold">
+            <a href="/">Marco Sampellegrini</a>
+          </div>
+        </div>
+
+        <nav class="text-xs text-gray-600 font-bold uppercase tracking-wide">
+          <a href="/about" class="hover:text-primary">About</a>
+          <a href="/feed.xml" class="ml-3 hover:text-primary">RSS</a>
+        </nav>
+
+      </div>
+    </header>
+
+    <main class="pb-12 mx-auto">
+      
+        
+        <div class="max-w-2xl max-w-2xl px-8 md:px-0 pt-16 pb-10 mx-auto text-center">
+          <div class="text-gray-600 text-sm">Jun 08, 2019</div>
+          <h1 class="text-3xl font-bold">Scaling Teams with Micro Frontends</h1>
+        </div>
+        
+
+        <article class="font-body text-xl mt-6">
+          <p>Monoliths are problematic anywhere in the stack. Splitting up big monolithic
 applications into microservices is a hot topic for Backend services, but huge
 Frontends exist and have their fair share of problems.</p>
 <p>A monolithic Frontend app might be quicker to build and easier to release,
 compared to a Backend app. However, things fall apart when multiple teams with
 different deadlines and goals end up working on it. Microapps are to the Frontend
 what microservices are to the Backend: a way for teams to gain back autonomy and speed of release.</p>
-<h3 id="split-apps-by-url">Split apps by url</h3>
+<p> </p>
+<h3>Split apps by url</h3>
 <p>In order to split the monolith,
 you need to figure out which bits of the application are owned by the different teams.
 One rule of thumb is that a single microapp should respond only to requests at a specific
 URL prefix. An app handling payments will be concerned with anything under <code>/payment</code> such as
 <code>/payment/details</code> and <code>/payment/view/a123bc</code>. Avoid separate top-level URLs
 such as <code>/payment-details</code> and <code>/view-payment</code> as they're trickier to route.</p>
-<h3 id="a-router-in-front">A router in front</h3>
+<p> </p>
+<h3>A router in front</h3>
 <p>For Backend services, an Api Gateway receives all traffic coming through and
 routes requests to the correct microservices. The same technique can be employed
 on the Frontend by using something as simple as an Nginx proxy. There are great
@@ -74,7 +63,8 @@ more romantic approach to routing. You can use the same backend you already have
 to route requests, there's no need for Nginx or any fancy proxy in front. It
 very much depends on how much traffic you get, but chances are you'll be able
 to handle moderate load without issues.</p>
-<h3 id="use-url-prefixes">Use URL prefixes</h3>
+<p> </p>
+<h3>Use URL prefixes</h3>
 <p>As said, apps should own a single top-level URL. This is so that the router is
 simple to configure and the system easier to reason about. In the Payment app
 example above, you wouldn't have to list all the actual URLs the app is able to
@@ -92,7 +82,8 @@ time. The old route can always be removed later. Negative diff commits are
 great —  consider however the slower approach of deprecating a route first and
 make sure it is effectively not receiving any traffic (perhaps by a link that
 was missed) before removing the relevant code.</p>
-<h3 id="fallback-app-and-subdomains">Fallback app and subdomains</h3>
+<p> </p>
+<h3>Fallback app and subdomains</h3>
 <p>Pick one of your apps to act as a fallback app. Requests that can't be
 handled by any other app are going to be served by this <em>catch-all</em> app.
 Certainly any unknown request is going to be a <code>404</code>, so why bother?
@@ -106,7 +97,8 @@ companies that serve traffic for logged in users at <code>app.company.com</code>
 anonymous traffic goes through <code>www.company.com</code>. You can also do the
 reverse with <code>about.company.com</code> being the <a href="https://about.gitlab.com/">main website</a>. Although the marketing
 department will hate you for that.</p>
-<h3 id="conclusion">Conclusion</h3>
+<p> </p>
+<h3>Conclusion</h3>
 <p>Going with microapps might look like an architectural defeat. Components in some
 flavour (be it React components, web components or what have you) should be enough
 to scale an application. Even so, a large application will still be challenging
@@ -127,6 +119,18 @@ you need the big hammer (SPAs) then you can and should go for it. But when you
 realize a large monolithic React app is no fun to work on, then consider splitting
 it up into micro frontend applications.</p>
 
+
+          
+            <hr>
+            <p>
+              You can follow me on Twitter 
+              <a href="https://twitter.com/_alpacaaa">@_alpacaaa</a>.
+            </p>
+          
+
+        </article>
+
+      
     </main>
   </body>
 </html>

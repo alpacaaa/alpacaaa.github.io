@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>The Joy of modal editors - Marco Sampellegrini</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/static/style.css">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+
+  <body class="antialiased text-dark">
+    <header class="max-w-2xl px-8 md:px-0 py-4 mx-auto ">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center">
+          <div class="text-sm text-dark font-bold">
+            <a href="/">Marco Sampellegrini</a>
+          </div>
+        </div>
+
+        <nav class="text-xs text-gray-600 font-bold uppercase tracking-wide">
+          <a href="/about" class="hover:text-primary">About</a>
+          <a href="/feed.xml" class="ml-3 hover:text-primary">RSS</a>
+        </nav>
+
+      </div>
+    </header>
+
+    <main class="pb-12 mx-auto">
+      
+        
+        <div class="max-w-2xl max-w-2xl px-8 md:px-0 pt-16 pb-10 mx-auto text-center">
+          <div class="text-gray-600 text-sm">Mar 09, 2020</div>
+          <h1 class="text-3xl font-bold">The Joy of modal editors</h1>
+        </div>
+        
+
+        <article class="font-body text-xl mt-6">
+          <p>I've been using <a href="https://github.com/mawww/kakoune">Kakoune</a> for more than two years as my main editor.</p>
+<p>Kakoune is a modal editor, much like vim. It's the first one I've ever learned. I used the usual suspects before that, mainly Atom and Sublime Text. There was something about modal editing and vim in particular that made me think I was missing out on something. I tried learning vim for months, but couldn't do it. I forced myself to use it on a daily basis. It just didn't click.</p>
+<p>That's how I arrived at Kakoune. It's very similar to vim in some aspects, but takes on a fundamentally different direction to deserve being a separate project. Kakoune is awesome. I managed to get into modal editing thanks to it. Learning modal editors requires effort but they're a joy to use.</p>
+<p> </p>
+<h3>Practice</h3>
+<p>This is not going to be a Kakoune guide. I followed along the <a href="https://github.com/mawww/kakoune/blob/master/contrib/TRAMPOLINE">TRAMPOLINE</a> tutorial many times, it was really helpful in building the muscle memory. I have a custom config, however I only use 2 plugins. I try to keep my configuration minimal, trimming down my needs as much as possible. This forces me to understand what I really need, and get rid of all the rest. It's an idea I took away from the vim community. There are people that treat vim as a full fledged editor, installing dozens of plugins and making it indistinguishable from a desktop app. Nothing wrong with that, but I don't like having too many moving parts. There are other people in the vim community that try to use vim as <em>raw</em> as possible, with very little custom configuration.</p>
+<p>I really like that. Firstly, it forces you to learn the editor as it was conceived. Yes vim is very old. Some ideas haven't aged that well. But you want to use it as the authors intended. I don't want to turn it into VS Code, otherwise might as well just use that. The other reason is that you'll be productive in any environment with vim installed. You won't be relying on any extra plugins. You'll have mastered the editor as is.</p>
+<p>Of course, going fully barebones is crazy, and some plugins really make a difference. But the takeaway for me is to be mindful about what you're bringing in. Revisit your configuration from time to time, see if you can trim it. See if there's a shortcut you wish you had. Take away as much as possible and stick to a core set of features and plugins that you really know well and use day in and out (this whole mantra I learned from my friend <a href="https://twitter.com/am_i_tom">Tom</a>).</p>
+<p> </p>
+<h3>Feelings</h3>
+<p>I love the <em>visceral</em> feeling of writing in a modal editor. You can only use your keyboard, no mouse. The goal is to compose basic operations in the most efficient way possible. There's a tiny challenge everytime you need to do something, and a tiny adrenaline shot everytime you nail some command chain. That's what keeps me coming back to modal editing, especially with Kakoune. I have a workflow that I really enjoy, and it's completely mouse free.</p>
+<p>To be clear, that's nothing to brag about. I'm 100% convinced I'm missing out on a lot of great features implemented in VS Code that I'd enjoy. (In fact, I regularly go back to VS Code. I really like it.). It's not even about the speed or the efficiency of writing software with modal editors. I used to write code in Sublime Text and I was really <em>really</em> fast. I have probably slowed down a bit, definitely haven't improved on that side. But I enjoy it more, I find it more satisfying. I feel closer to the machine.</p>
+<p>Working on a terminal all day gives you a weird sensation. The low detail, the block-y interface, the lack of colours, it's all part of the experience. And it's definitely not just Kakoune. I use tmux and zsh as much as my editor. My workflow has a very specific shape now. Still, I love seeing it improve a tiny bit whenever I discover the odd trick or a new command/tool.</p>
+<p> </p>
+<h3>Conclusion</h3>
+<p>It's definitely worth getting into modal editing.</p>
+<p>At least give it a try. You don't have to start with Kakoune. I had no experience with vim before and I found the inverse selection-command workflow in Kakoune much more predictable and inline with the way I think. But maybe vim is for you. I still use vim from time to time and it's valuable being able to operate it, even if at a basic level. Vim is something you'll find on any machine you'll get to work with. That includes servers but also colleagues' computers.</p>
+<p>Modal editing is fun, rewarding and it's just something worth learning. It might not make you faster, or a better developer. You might completely hate it. There are a lot of quirks with the command line that you will avoid by never getting outside the comfort of your IDE. I might not be faster, but editing and working with Kakoune made me slightly happier. Shaping up my workflow with a few command line tools (that I use at a very basic level) made my programming days more enjoyable. I encourage you try!</p>
+<p> </p>
+<div class="text-sm">
+<p>I only use two Kakoune plugins: <a href="https://github.com/andreyorst/fzf.kak">fzf.kak</a> and <a href="https://github.com/TeddyDD/kakoune-edit-or-dir">edit-or-dir</a> (yes, it's deprecated, but it works for me).</p>
+</div>
+
+
+          
+            <hr>
+            <p>
+              You can follow me on Twitter 
+              <a href="https://twitter.com/_alpacaaa">@_alpacaaa</a>.
+            </p>
+          
+
+        </article>
+
+      
+    </main>
+  </body>
+</html>

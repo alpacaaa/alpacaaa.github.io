@@ -1,79 +1,53 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <title>Purity in Haskell</title>
-    <meta charset="utf-8" />
-    <meta name="description" content="A pure programming language is rather unconventional. This article will help you grok purity and show you why it's important to separate business logic and side effects." />
+    <title>Purity in Haskell - Marco Sampellegrini</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/static/style.css">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700" rel="stylesheet">
-
-    <meta name="author" content="Marco Sampellegrini" />
-    <meta property="og:site_name" content="Marco Sampellegrini" />
-    <meta property="og:email" content="babbonatale@alpacaaa.net" />
-
-    <meta property="og:type" content="article" />
-    <meta property="og:url" content="https://alpacaaa.net/haskell-purity/" />
-    <meta property="og:title" content="Purity in Haskell" />
-    <meta property="og:description" content="A pure programming language is rather unconventional. This article will help you grok purity and show you why it's important to separate business logic and side effects." />
-
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:site" content="@_alpacaaa" />
-    <meta name="twitter:creator" content="@_alpacaaa" />
-
-    <style>
-      *, *:before, *:after { box-sizing: inherit; }
-
-      html { box-sizing: border-box; }
-      body { font-family: 'Source Sans Pro', sans-serif; font-size: 20px; line-height: 1.5; margin: 0; color: #222; }
-
-      h1 { font-size: 3.5em; font-weight: 700; margin-bottom: 0.5em; line-height: 1; }
-      main { width: 90%; max-width: 35em; margin: 6em auto; }
-      h1 + p { font-size: 1.5em; font-style: italic; font-weight: 300; }
-
-      a { color: #0066CC; text-decoration: none; border-bottom: 1px solid; }
-      hr { width: 10%; margin: 0 auto 3em; border: 0px solid transparent; }
-      pre { margin: 4em 0 4em 5%; font-size: 16px; overflow: scroll; }
-      p > code { font-size: 85%; margin: 0; padding: .2em .4em; font-size: 85%; background: #eee; border-radius: 3px; font-family: monospace; }
-
-      blockquote { font-size: 1.5em; padding: .5em 4em 0 5%; margin: 0 0 1.5em; }
-      .thanks + p { font-size: 1em; font-weight: 300; padding: 3em 0 0; }
-
-      @media (max-width: 500px) {
-        main { max-width: 100%; padding: 0 30px; }
-        blockquote { font-size: 1.25em; padding-right: 0; }
-        h1 { font-size: 2.5em; }
-        h1 + p { font-size: 1em; }
-      }
-    </style>
   </head>
-  <body>
-    <main>
-      <h1>Purity in Haskell</h1>
-      <p>Haskell can do anything your mainstream programming language can.<br>
+
+  <body class="antialiased text-dark">
+    <header class="max-w-2xl px-8 md:px-0 py-4 mx-auto ">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center">
+          <div class="text-sm text-dark font-bold">
+            <a href="/">Marco Sampellegrini</a>
+          </div>
+        </div>
+
+        <nav class="text-xs text-gray-600 font-bold uppercase tracking-wide">
+          <a href="/about" class="hover:text-primary">About</a>
+          <a href="/feed.xml" class="ml-3 hover:text-primary">RSS</a>
+        </nav>
+
+      </div>
+    </header>
+
+    <main class="pb-12 mx-auto">
+      
+        
+        <div class="max-w-2xl max-w-2xl px-8 md:px-0 pt-16 pb-10 mx-auto text-center">
+          <div class="text-gray-600 text-sm">May 01, 2019</div>
+          <h1 class="text-3xl font-bold">Purity in Haskell</h1>
+        </div>
+        
+
+        <article class="font-body text-xl mt-6">
+          <p>Haskell can do anything your mainstream programming language can.<br>
 Purity is not about preventing side effects (a database query or an http request), it's about having a <em>clear boundary</em> between code with side effects (impure) and pure code.</p>
-<hr>
-<h2 id="what-are-pure-functions">What are Pure functions?</h2>
+<p> </p>
+<h3>What are Pure functions?</h3>
 <p>Haskell is a purely functional programming language.</p>
 <p>Today we're mostly interested in the <em>pure</em> bit. We could get away by saying that <em>functional</em> means you can only work with functions. There are no objects sending messages to one another — a Haskell program is just a big <em>composition</em> of functions put together like Lego blocks.</p>
 <p>A lot of people associate purity with <strong>lack of side effects</strong>. I certainly did when I started learning about Haskell. It was something that confused me for quite some time. If everything is pure, how can I write to a file? How do I send an email?</p>
 <p>One of the things you immediately come across is this thing called <code>IO</code>. In the beginning I wasn't clear exactly what it represented, but I understood that if you wanted to do <em>useful stuff</em> you had to do things in <code>IO</code>.</p>
 <p>Let's make an example. A function that takes a <code>ShoppingCart</code> and returns an <code>Int</code> (a number) representing the total number of items in the cart, would have this type signature:</p>
-<pre class="language-haskell"><code class="language-haskell"><span class="token hvariable">numberOfItems</span> <span class="token operator">::</span> <span class="token constant">ShoppingCart</span> <span class="token operator">-></span> <span class="token constant">Int</span>
-</code></pre>
+<pre class="language-haskell"><code class="language-haskell"><span class="token hvariable">numberOfItems</span> <span class="token operator">::</span> <span class="token constant">ShoppingCart</span> <span class="token operator">-></span> <span class="token constant">Int</span></code></pre>
 <p>I don't want to assume you know too much about Haskell so let's write this function in Javascript. I have a cart which is just a list of items with some quantity.</p>
-<pre class="language-javascript"><code class="language-javascript"><span class="token keyword">const</span> numberOfItems <span class="token operator">=</span> cart <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
-  <span class="token keyword">return</span> cart<span class="token punctuation">.</span>items<span class="token punctuation">.</span><span class="token function">reduce</span><span class="token punctuation">(</span>
-    <span class="token punctuation">(</span>acc<span class="token punctuation">,</span> item<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> acc <span class="token operator">+</span> item<span class="token punctuation">.</span>quantity<span class="token punctuation">,</span> <span class="token number">0</span>
-  <span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
-
-<span class="token keyword">const</span> sampleCart <span class="token operator">=</span> <span class="token punctuation">[</span>
-  <span class="token punctuation">{</span> item<span class="token punctuation">:</span> <span class="token string">"A book"</span><span class="token punctuation">,</span>  quantity<span class="token punctuation">:</span> <span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span> item<span class="token punctuation">:</span> <span class="token string">"A chair"</span><span class="token punctuation">,</span> quantity<span class="token punctuation">:</span> <span class="token number">3</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">]</span>
-
-console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">numberOfItems</span><span class="token punctuation">(</span>sampleCart<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 4</span>
-</code></pre>
+<pre class="language-javascript"><code class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">numberOfItems</span> <span class="token operator">=</span> <span class="token parameter">cart</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token keyword">return</span> cart<span class="token punctuation">.</span>items<span class="token punctuation">.</span><span class="token function">reduce</span><span class="token punctuation">(</span><br>    <span class="token punctuation">(</span><span class="token parameter">acc<span class="token punctuation">,</span> item</span><span class="token punctuation">)</span> <span class="token operator">=></span> acc <span class="token operator">+</span> item<span class="token punctuation">.</span>quantity<span class="token punctuation">,</span> <span class="token number">0</span><br>  <span class="token punctuation">)</span><br><span class="token punctuation">}</span><br><br><span class="token keyword">const</span> sampleCart <span class="token operator">=</span> <span class="token punctuation">[</span><br>  <span class="token punctuation">{</span> item<span class="token operator">:</span> <span class="token string">"A book"</span><span class="token punctuation">,</span>  quantity<span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span> item<span class="token operator">:</span> <span class="token string">"A chair"</span><span class="token punctuation">,</span> quantity<span class="token operator">:</span> <span class="token number">3</span> <span class="token punctuation">}</span><span class="token punctuation">,</span><br><span class="token punctuation">]</span><br><br>console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">numberOfItems</span><span class="token punctuation">(</span>sampleCart<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// 4</span></code></pre>
 <p>Simple right? Now, this function doesn't have any side effects. This is what we call a <em>pure function</em>.</p>
 <p>There are many definitions of purity out there, but the one I like to use to introduce the concept is:</p>
 <blockquote>
@@ -86,70 +60,38 @@ console<span class="token punctuation">.</span><span class="token function">log<
 <li>Easy to test</li>
 </ul>
 <p> </p>
-<h2 id="a-program-made-of-only-pure-functions-is-useless">A program made of only pure functions is useless</h2>
+<h3>A program made of only pure functions is useless</h3>
 <p>I know what you're thinking. This is all well and good but in the <em>real world</em> I need to do messy stuff! I need to connect to a database to fetch the items in the shopping cart and my function wouldn't be pure anymore. So what's the point?</p>
 <p>The point is creating a <strong>clear boundary</strong> between pure and impure functions.</p>
 <p>Let's expand on our simple example and pretend that a cart is stored in some Postgres table.</p>
-<pre class="language-javascript"><code class="language-javascript"># Carts table
-<span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span>
-cart_id <span class="token operator">|</span> product_id <span class="token operator">|</span> quantity
-<span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span>
-ab341   <span class="token operator">|</span> A book     <span class="token operator">|</span> <span class="token number">1</span>
-ab341   <span class="token operator">|</span> A chair    <span class="token operator">|</span> <span class="token number">3</span>
-
-</code></pre>
+<pre class="language-javascript"><code class="language-javascript"># Carts table<br><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span><br>cart_id <span class="token operator">|</span> product_id <span class="token operator">|</span> quantity<br><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span><br>ab341   <span class="token operator">|</span> <span class="token constant">A</span> book     <span class="token operator">|</span> <span class="token number">1</span><br>ab341   <span class="token operator">|</span> <span class="token constant">A</span> chair    <span class="token operator">|</span> <span class="token number">3</span><br></code></pre>
 <p>Our <code>numberOfItems</code> function can no longer be pure. We need to write some SQL query and perform a side effect by executing it. We lost purity because <strong>the output</strong> of our function is no longer determined by <strong>its input</strong>. There's now a database involved which could be empty or have hundreds of carts.</p>
 <p>The state of the database is in no way provided as input so the output is no longer deterministic! Theoretically, if we could pass the <em>entire content</em> of the database as an input then this function would still be pure. Obviously that's not practical, but it's a nice thought experiment nonetheless. :)</p>
-<pre class="language-javascript"><code class="language-javascript"><span class="token keyword">const</span> numberOfItems <span class="token operator">=</span> cartId <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
-  <span class="token keyword">return</span> db<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span>
-      <span class="token string">'select * from Carts where cart_id = ?'</span><span class="token punctuation">,</span>
-      cartId
-    <span class="token punctuation">)</span>
-    <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span>items <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
-      <span class="token keyword">return</span> items<span class="token punctuation">.</span><span class="token function">reduce</span><span class="token punctuation">(</span>
-        <span class="token punctuation">(</span>acc<span class="token punctuation">,</span> item<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> acc <span class="token operator">+</span> item<span class="token punctuation">.</span>quantity<span class="token punctuation">,</span> <span class="token number">0</span>
-      <span class="token punctuation">)</span>
-    <span class="token punctuation">}</span><span class="token punctuation">)</span>
-<span class="token punctuation">}</span>
-
-<span class="token function">numberOfItems</span><span class="token punctuation">(</span><span class="token string">'ab341'</span><span class="token punctuation">)</span>
-<span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span>count <span class="token operator">=</span><span class="token operator">></span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>count<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 4</span>
-</code></pre>
+<pre class="language-javascript"><code class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">numberOfItems</span> <span class="token operator">=</span> <span class="token parameter">cartId</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>  <span class="token keyword">return</span> db<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span><br>      <span class="token string">'select * from Carts where cart_id = ?'</span><span class="token punctuation">,</span><br>      cartId<br>    <span class="token punctuation">)</span><br>    <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">items</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>      <span class="token keyword">return</span> items<span class="token punctuation">.</span><span class="token function">reduce</span><span class="token punctuation">(</span><br>        <span class="token punctuation">(</span><span class="token parameter">acc<span class="token punctuation">,</span> item</span><span class="token punctuation">)</span> <span class="token operator">=></span> acc <span class="token operator">+</span> item<span class="token punctuation">.</span>quantity<span class="token punctuation">,</span> <span class="token number">0</span><br>      <span class="token punctuation">)</span><br>    <span class="token punctuation">}</span><span class="token punctuation">)</span><br><span class="token punctuation">}</span><br><br><span class="token function">numberOfItems</span><span class="token punctuation">(</span><span class="token string">'ab341'</span><span class="token punctuation">)</span><br><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">count</span> <span class="token operator">=></span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>count<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// 4</span></code></pre>
 <p>The corresponding function in Haskell would have to change its type signature. We finally get to <code>IO</code> — the <strong>massive hammer</strong> we have available to do anything and everything.</p>
-<pre class="language-haskell"><code class="language-haskell"><span class="token comment" spellcheck="true">-- We can no longer simply return `Int`.</span>
-<span class="token comment" spellcheck="true">-- The output needs to be wrapped in `IO`.</span>
-<span class="token hvariable">numberOfItems</span> <span class="token operator">::</span> <span class="token constant">ShoppingCartId</span> <span class="token operator">-></span> <span class="token constant">IO</span> <span class="token constant">Int</span>
-</code></pre>
+<pre class="language-haskell"><code class="language-haskell"><span class="token comment">-- We can no longer simply return `Int`.</span><br><span class="token comment">-- The output needs to be wrapped in `IO`.</span><br><span class="token hvariable">numberOfItems</span> <span class="token operator">::</span> <span class="token constant">ShoppingCartId</span> <span class="token operator">-></span> <span class="token constant">IO</span> <span class="token constant">Int</span></code></pre>
 <p>Functions are nice and pure by default. When there are side effects, the function needs to be in <code>IO</code> otherwise the compiler will refuse to compile your program. Reading from a file? You'll get an <code>IO String</code>. Generating a random number? You'll get an <code>IO Int</code>.</p>
 <p>You can think of <code>IO</code> as a way of <strong>marking a function as impure</strong>. You know that a function is impure (it <em>might</em> perform some side effects) when its output is wrapped in <code>IO</code>.</p>
 <p>Impure functions are <strong>not desirable</strong>.</p>
 <p>We said pure functions are easy to reason about and to test. Impure functions are the exact opposite!</p>
-<h4 id="1-impure-code-is-harder-to-reason-about">1. Impure code is harder to reason about</h4>
+<h4>1. Impure code is harder to reason about</h4>
 <p>By making <code>numberOfItems</code> impure, we lost the ability to easily reason about it. We can no longer determine the result just by looking at the input, because the result is going to be dependent on <strong>external state</strong>, ie. the content of the <code>Carts</code> table in the database.</p>
-<h4 id="2-impure-code-is-harder-to-test">2. Impure code is harder to test</h4>
+<h4>2. Impure code is harder to test</h4>
 <p>Now that a database is involved, how are we going to test that function? The first version (the pure one) is extremely easy to unit test and we can prove that our implementation is correct just by checking that a certain input corresponds to a certain output.</p>
 <p>When we have side effects, <strong>we lose determinism</strong>. That means we'll need some disgusting way of mocking the database or populate a test database with the data we need. Not great.</p>
 <p> </p>
-<h2 id="a-clear-boundary-between-pure-and-impure-code">A <strong>clear boundary</strong> between pure and impure code</h2>
+<h3>A <strong>clear boundary</strong> between pure and impure code</h3>
 <p>All hope is not lost! We can refactor our code so that we keep the nice pure <code>numberOfItems</code> implementation and <em>compose</em> it to an impure function that just pulls data out of the database.</p>
 <p>The type signatures might look like:</p>
-<pre class="language-haskell"><code class="language-haskell"><span class="token comment" spellcheck="true">-- Pure</span>
-<span class="token hvariable">numberOfItems</span> <span class="token operator">::</span> <span class="token constant">ShoppingCart</span> <span class="token operator">-></span> <span class="token constant">Int</span>
-
-<span class="token comment" spellcheck="true">-- Impure</span>
-<span class="token hvariable">fetchShoppingCart</span> <span class="token operator">::</span> <span class="token constant">ShoppingCartId</span> <span class="token operator">-></span> <span class="token constant">IO</span> <span class="token constant">ShoppingCart</span>
-
-<span class="token comment" spellcheck="true">-- And now for the composition!</span>
-<span class="token hvariable">numberOfItemsByCartId</span> <span class="token operator">::</span> <span class="token constant">ShoppingCartId</span> <span class="token operator">-></span> <span class="token constant">IO</span> <span class="token constant">Int</span>
-</code></pre>
+<pre class="language-haskell"><code class="language-haskell"><span class="token comment">-- Pure</span><br><span class="token hvariable">numberOfItems</span> <span class="token operator">::</span> <span class="token constant">ShoppingCart</span> <span class="token operator">-></span> <span class="token constant">Int</span><br><br><span class="token comment">-- Impure</span><br><span class="token hvariable">fetchShoppingCart</span> <span class="token operator">::</span> <span class="token constant">ShoppingCartId</span> <span class="token operator">-></span> <span class="token constant">IO</span> <span class="token constant">ShoppingCart</span><br><br><span class="token comment">-- And now for the composition!</span><br><span class="token hvariable">numberOfItemsByCartId</span> <span class="token operator">::</span> <span class="token constant">ShoppingCartId</span> <span class="token operator">-></span> <span class="token constant">IO</span> <span class="token constant">Int</span></code></pre>
 <p>Now, if I look at <code>numberOfItems</code> I can be 100% sure that it's not going to have any <strong>nasty side effects</strong>.</p>
 <p>I accept that <code>fetchShoppingCart</code> will do something bad (made explicit by its output wrapped in <code>IO</code>)  but I don't really care about testing it because I <strong>factored all of the logic out</strong>. Finally, we define <code>numberOfItemsByCartId</code> by composing the two other functions together.</p>
 <blockquote>
 <p>Remember, when you compose pure and impure functions, the result is always going to be <strong>impure</strong>.
 <code>IO</code> is infective, it spreads through your program like a virus. We want to push side effects to the <em>edge</em> of our program so that our <em>core</em> can remain pure. This is the <a href="https://www.destroyallsoftware.com/screencasts/catalog/functional-core-imperative-shell">Functional core, Imperative shell</a> pattern.</p>
 </blockquote>
-<hr>
-<h2 id="conclusion">Conclusion</h2>
+<p> </p>
+<h3>Conclusion</h3>
 <p>Write your business logic as pure functions.</p>
 <p>Your code will be <strong>easier to reason about</strong> and <strong>to test</strong>. Keep impure code as dumb as possible. Impure functions should only be transferring data <em>in</em> and <em>out</em> of pure functions!</p>
 <p>Pure functions are great and you need to learn how to use them to your advantage. Obviously we could have made the same refactoring in our Javascript code just the same and that would have been a massive improvement. But there's nothing <strong>preventing you from making these mistakes</strong>. You have to be vigilant and disciplined about separating pure and impure code. That's what makes Haskell amazing, the compiler is there to tell you <strong>when you're doing something wrong</strong>.</p>
@@ -158,15 +100,28 @@ ab341   <span class="token operator">|</span> A chair    <span class="token oper
 <p> </p>
 <p><em>Here's the full Haskell code for reference.</em></p>
 <script src="https://gist.github.com/alpacaaa/bb7563ec734d943d959ff6a0e58e2d87.js"></script>
+<p> </p>
 <blockquote>
 <p>I'm writing a series for people that want to learn Haskell without the bullshit.<br>
 There are exercises and videos as well!</p>
 <p>Check out <a href="https://github.com/alpacaaa/zero-bullshit-haskell">Zero Bullshit Haskell</a> on Github.</p>
 </blockquote>
-<div class="thanks"></div>
+<p> </p>
 <p>Thanks to Giulio <a href="https://twitter.com/giuliocanti">@giuliocanti</a>
 and Tom <a href="https://twitter.com/am_i_tom">@am_i_tom</a> for the amazing feedback. ❤️</p>
 
+
+          
+            <hr>
+            <p>
+              You can follow me on Twitter 
+              <a href="https://twitter.com/_alpacaaa">@_alpacaaa</a>.
+            </p>
+          
+
+        </article>
+
+      
     </main>
   </body>
 </html>

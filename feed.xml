@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Marco Sampellegrini</title>
+  <subtitle>I write about Functional Programming and Software.</subtitle>
+  <link href="https://alpacaaa.net/feed.xml" rel="self"/>
+  <link href="https://alpacaaa.net/"/>
+  <updated>2019-05-01T02:00:00+02:00</updated>
+  <id>https://alpacaaa.net/</id>
+  <author>
+    <name>Marco Sampellegrini</name>
+    <email>babbonatale@alpacaaa.net</email>
+  </author>
+  
+  <entry>
+    <title>The Joy of modal editors</title>
+    <link href="https://alpacaaa.net/modal-editors/"/>
+    <updated>2020-03-09T01:00:00+01:00</updated>
+    <id>https://alpacaaa.net/modal-editors/</id>
+    <content type="html">&lt;p&gt;I&#39;ve been using &lt;a href=&quot;https://github.com/mawww/kakoune&quot;&gt;Kakoune&lt;/a&gt; for more than two years as my main editor.&lt;/p&gt;
+&lt;p&gt;Kakoune is a modal editor, much like vim. It&#39;s the first one I&#39;ve ever learned. I used the usual suspects before that, mainly Atom and Sublime Text. There was something about modal editing and vim in particular that made me think I was missing out on something. I tried learning vim for months, but couldn&#39;t do it. I forced myself to use it on a daily basis. It just didn&#39;t click.&lt;/p&gt;
+&lt;p&gt;That&#39;s how I arrived at Kakoune. It&#39;s very similar to vim in some aspects, but takes on a fundamentally different direction to deserve being a separate project. Kakoune is awesome. I managed to get into modal editing thanks to it. Learning modal editors requires effort but they&#39;re a joy to use.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;h3&gt;Practice&lt;/h3&gt;
+&lt;p&gt;This is not going to be a Kakoune guide. I followed along the &lt;a href=&quot;https://github.com/mawww/kakoune/blob/master/contrib/TRAMPOLINE&quot;&gt;TRAMPOLINE&lt;/a&gt; tutorial many times, it was really helpful in building the muscle memory. I have a custom config, however I only use 2 plugins. I try to keep my configuration minimal, trimming down my needs as much as possible. This forces me to understand what I really need, and get rid of all the rest. It&#39;s an idea I took away from the vim community. There are people that treat vim as a full fledged editor, installing dozens of plugins and making it indistinguishable from a desktop app. Nothing wrong with that, but I don&#39;t like having too many moving parts. There are other people in the vim community that try to use vim as &lt;em&gt;raw&lt;/em&gt; as possible, with very little custom configuration.&lt;/p&gt;
+&lt;p&gt;I really like that. Firstly, it forces you to learn the editor as it was conceived. Yes vim is very old. Some ideas haven&#39;t aged that well. But you want to use it as the authors intended. I don&#39;t want to turn it into VS Code, otherwise might as well just use that. The other reason is that you&#39;ll be productive in any environment with vim installed. You won&#39;t be relying on any extra plugins. You&#39;ll have mastered the editor as is.&lt;/p&gt;
+&lt;p&gt;Of course, going fully barebones is crazy, and some plugins really make a difference. But the takeaway for me is to be mindful about what you&#39;re bringing in. Revisit your configuration from time to time, see if you can trim it. See if there&#39;s a shortcut you wish you had. Take away as much as possible and stick to a core set of features and plugins that you really know well and use day in and out (this whole mantra I learned from my friend &lt;a href=&quot;https://twitter.com/am_i_tom&quot;&gt;Tom&lt;/a&gt;).&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;h3&gt;Feelings&lt;/h3&gt;
+&lt;p&gt;I love the &lt;em&gt;visceral&lt;/em&gt; feeling of writing in a modal editor. You can only use your keyboard, no mouse. The goal is to compose basic operations in the most efficient way possible. There&#39;s a tiny challenge everytime you need to do something, and a tiny adrenaline shot everytime you nail some command chain. That&#39;s what keeps me coming back to modal editing, especially with Kakoune. I have a workflow that I really enjoy, and it&#39;s completely mouse free.&lt;/p&gt;
+&lt;p&gt;To be clear, that&#39;s nothing to brag about. I&#39;m 100% convinced I&#39;m missing out on a lot of great features implemented in VS Code that I&#39;d enjoy. (In fact, I regularly go back to VS Code. I really like it.). It&#39;s not even about the speed or the efficiency of writing software with modal editors. I used to write code in Sublime Text and I was really &lt;em&gt;really&lt;/em&gt; fast. I have probably slowed down a bit, definitely haven&#39;t improved on that side. But I enjoy it more, I find it more satisfying. I feel closer to the machine.&lt;/p&gt;
+&lt;p&gt;Working on a terminal all day gives you a weird sensation. The low detail, the block-y interface, the lack of colours, it&#39;s all part of the experience. And it&#39;s definitely not just Kakoune. I use tmux and zsh as much as my editor. My workflow has a very specific shape now. Still, I love seeing it improve a tiny bit whenever I discover the odd trick or a new command/tool.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;h3&gt;Conclusion&lt;/h3&gt;
+&lt;p&gt;It&#39;s definitely worth getting into modal editing.&lt;/p&gt;
+&lt;p&gt;At least give it a try. You don&#39;t have to start with Kakoune. I had no experience with vim before and I found the inverse selection-command workflow in Kakoune much more predictable and inline with the way I think. But maybe vim is for you. I still use vim from time to time and it&#39;s valuable being able to operate it, even if at a basic level. Vim is something you&#39;ll find on any machine you&#39;ll get to work with. That includes servers but also colleagues&#39; computers.&lt;/p&gt;
+&lt;p&gt;Modal editing is fun, rewarding and it&#39;s just something worth learning. It might not make you faster, or a better developer. You might completely hate it. There are a lot of quirks with the command line that you will avoid by never getting outside the comfort of your IDE. I might not be faster, but editing and working with Kakoune made me slightly happier. Shaping up my workflow with a few command line tools (that I use at a very basic level) made my programming days more enjoyable. I encourage you try!&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;div class=&quot;text-sm&quot;&gt;
+&lt;p&gt;I only use two Kakoune plugins: &lt;a href=&quot;https://github.com/andreyorst/fzf.kak&quot;&gt;fzf.kak&lt;/a&gt; and &lt;a href=&quot;https://github.com/TeddyDD/kakoune-edit-or-dir&quot;&gt;edit-or-dir&lt;/a&gt; (yes, it&#39;s deprecated, but it works for me).&lt;/p&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  
+  <entry>
+    <title>My thoughts on Haskell in 2020</title>
+    <link href="https://alpacaaa.net/thoughts-on-haskell-2020/"/>
+    <updated>2019-12-26T01:00:00+01:00</updated>
+    <id>https://alpacaaa.net/thoughts-on-haskell-2020/</id>
+    <content type="html">&lt;p&gt;I gave a talk in October 2019. The recording sadly got lost because the conference organizer &lt;a href=&quot;https://www.theregister.co.uk/2019/11/05/skills_matter_goes_into_administration/&quot;&gt;folded&lt;/a&gt;. The talk was called &lt;em&gt;Stick to Simple Haskell&lt;/em&gt;. I put a lot of effort into writing and preparing it. Quite a few people came up to me to say they really liked it. They weren&#39;t your usual suspects: those that will never give up type level programming. Rather, they were normal Software developers. Like me and many others, they want their day job to be a bit less shit. I think some of the ideas in that talk are worth spreading, or at least worth talking about. Initiatives like the &lt;a href=&quot;https://www.snoyman.com/blog/2019/11/boring-haskell-manifesto&quot;&gt;Boring Haskell Manifesto&lt;/a&gt; are a breath of fresh air and we need more of those. This is my tiny contribution.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;h3&gt;30 Years old&lt;/h3&gt;
+&lt;p&gt;In 2020, Haskell will turn 30. Since the beginning, the language designers wanted Haskell to be used for:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;teaching functional programming&lt;/li&gt;
+&lt;li&gt;innovating and advancing programming language research&lt;/li&gt;
+&lt;li&gt;building real world applications and large systems&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Let&#39;s ignore teaching and focus on the other two.&lt;/p&gt;
+&lt;p&gt;Programming Language researchers love Haskell because GHC can be augmented through Extensions. GHC is the perfect playground to try out new ideas. It&#39;s pretty common nowadays to open up a file and be greeted with a wall of extensions:&lt;/p&gt;
+&lt;pre class=&quot;language-haskell&quot;&gt;&lt;code class=&quot;language-haskell&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;{-# LANGUAGE DataKinds            #-}&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;token comment&quot;&gt;{-# LANGUAGE FlexibleInstances    #-}&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;token comment&quot;&gt;{-# LANGUAGE FlexibleContexts     #-}&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;token comment&quot;&gt;{-# LANGUAGE KindSignatures       #-}&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;token comment&quot;&gt;{-# LANGUAGE GADTs                #-}&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;token comment&quot;&gt;{-# LANGUAGE ScopedTypeVariables  #-}&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;token comment&quot;&gt;{-# LANGUAGE StandaloneDeriving   #-}&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;token comment&quot;&gt;{-# LANGUAGE TypeFamilies         #-}&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;token comment&quot;&gt;{-# LANGUAGE TypeOperators        #-}&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;token comment&quot;&gt;{-# LANGUAGE UndecidableInstances #-}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;These radically change the language and the type system. You get to work with a much more complicated and capable beast. You get closer to Dependent Types. You get more guarantees at compile time because more information can be encoded in types. We usually refer to these as &lt;em&gt;Fancy types&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;And yet, &amp;quot;Haskell the language&amp;quot; hasn&#39;t evolved much since 1998. In very broad and inaccurate terms, Haskell98 is what you get when running GHC with no extensions enabled. You get simple data types, type classes and a lazy purely functional core.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;h3&gt;Building applications in Haskell&lt;/h3&gt;
+&lt;p&gt;PL researchers go all in on Fancy types. But I&#39;m no PL researcher. I&#39;m a Software developer. Recall that one of the designers&#39; goals was for Haskell to be used in the Industry, to write real world applications. Is Fancy Haskell suitable for this?&lt;/p&gt;
+&lt;h6&gt;Looks good on Paper&lt;/h6&gt;
+&lt;p&gt;Writing production software is very different than writing a paper.&lt;/p&gt;
+&lt;p&gt;Once a research write up is out, it doesn&#39;t have to be maintained. Techniques and tricks shown in code samples that look good on a PDF aren&#39;t indicative of how they would affect a real codebase. Researchers can rely on experimental features and untested extensions. They can get by with slow compilation times.&lt;/p&gt;
+&lt;h6&gt;Inclusivity&lt;/h6&gt;
+&lt;p&gt;Writing production software is a team effort.&lt;/p&gt;
+&lt;p&gt;I want to work with a diverse group of people. I don&#39;t want a PhD to be a requirement to work with Haskell. I want a codebase that is accessible to all skill levels. Most business logic in applications isn&#39;t rocket science. There&#39;s no reason to make apps more complex than they need to be.&lt;/p&gt;
+&lt;p&gt;Selfishly, as a company betting on Haskell, you get access to a wider pool of talent by lowering the barrier to entry.&lt;/p&gt;
+&lt;h6&gt;Marginal benefits&lt;/h6&gt;
+&lt;p&gt;Fancy types give us more guarantees, so we can write safer and more correct code. Why would we want to give that up?&lt;/p&gt;
+&lt;p&gt;I&#39;m not convinced the benefits are that dramatic. The jump from a mainstream programming language to Haskell is fairly stark. There are clear gains in having a compiler help you write correct code. That might still not be &lt;em&gt;the most correct&lt;/em&gt; code. It&#39;s true, with Fancy types I could gain that extra x% confidence. Is the complexity worth it?&lt;/p&gt;
+&lt;p&gt;In the interest of being pragmatic, we need to look out of the box for a second. We need to realize types are an invaluable tool, but they&#39;re not the only tool we can employ. Types aren&#39;t an excuse to avoid testing.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;h3&gt;Simple Haskell&lt;/h3&gt;
+&lt;p&gt;I&#39;m not suggesting we ignore everything that happened after 1998.&lt;/p&gt;
+&lt;p&gt;Haskell98 is a nice foundation, but we can improve it. The core idea is to &lt;strong&gt;accept the type system&lt;/strong&gt; as it is and &lt;strong&gt;focus on ergonomics&lt;/strong&gt;. Make the language nicer, not the type system.&lt;/p&gt;
+&lt;p&gt;This boils down to using Generics and enabling ergonomic extensions.&lt;/p&gt;
+&lt;p&gt;Generics aren&#39;t available in Haskell98. They&#39;re fantastic to remove boilerplate. You can automatically derive JSON instances and lenses with generic-lens.&lt;/p&gt;
+&lt;p&gt;Certain extensions are unharmful and make Haskell that much nicer to work with.&lt;/p&gt;
+&lt;pre class=&quot;language-haskell&quot;&gt;&lt;code class=&quot;language-haskell&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;{-# LANGUAGE BlockArguments    #-}&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;token comment&quot;&gt;{-# LANGUAGE LambdaCase        #-}&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;token comment&quot;&gt;{-# LANGUAGE OverloadedStrings #-}&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;token comment&quot;&gt;{-# LANGUAGE TypeApplications  #-}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;h3&gt;Application architecture&lt;/h3&gt;
+&lt;p&gt;Most applications should just be built as:&lt;/p&gt;
+&lt;pre class=&quot;language-haskell&quot;&gt;&lt;code class=&quot;language-haskell&quot;&gt;&lt;span class=&quot;token hvariable&quot;&gt;app&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;::&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;Env&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&gt;&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;IO&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;where &lt;code&gt;Env&lt;/code&gt; represents a dependency injection container.&lt;/p&gt;
+&lt;pre class=&quot;language-haskell&quot;&gt;&lt;code class=&quot;language-haskell&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;Env&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;Env&lt;/span&gt;&lt;br&gt;      &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token hvariable&quot;&gt;usersCache&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;::&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;TVar&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;br&gt;      &lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token hvariable&quot;&gt;postgresConnection&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;::&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;PG.Connection&lt;/span&gt;&lt;br&gt;      &lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;log&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;::&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;Severity&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&gt;&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;Text&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&gt;&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;IO&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;br&gt;      &lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token hvariable&quot;&gt;fetchUser&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;::&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;UserId&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&gt;&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;IO&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;br&gt;      &lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token hvariable&quot;&gt;storeFile&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;::&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;Filename&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&gt;&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;ByteString&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&gt;&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;IO&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;Either&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;Text&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;br&gt;      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;My euristic to determine if something belongs to &lt;code&gt;Env&lt;/code&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Is the thing a resource shared across the application? (ie. a Postgres connection)&lt;/li&gt;
+&lt;li&gt;Do I want to provide a different implementation? (ie. a mock during testing)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;When the type gets big, you can split it up further.&lt;/p&gt;
+&lt;pre class=&quot;language-haskell&quot;&gt;&lt;code class=&quot;language-haskell&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;UserService&lt;/span&gt;&lt;br&gt;  &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;UserService&lt;/span&gt;&lt;br&gt;      &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token hvariable&quot;&gt;fetchUser&lt;/span&gt;  &lt;span class=&quot;token operator&quot;&gt;::&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;UserId&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&gt;&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;IO&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;br&gt;      &lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token hvariable&quot;&gt;updateUser&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;::&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;User&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&gt;&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;IO&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;Either&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;UserServiceError&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;br&gt;      &lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token hvariable&quot;&gt;deleteUser&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;::&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;UserId&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&gt;&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;IO&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;Either&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;UserServiceError&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;br&gt;      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span class=&quot;token keyword&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;Env&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;Env&lt;/span&gt;&lt;br&gt;      &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token hvariable&quot;&gt;userService&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;::&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;UserService&lt;/span&gt;&lt;br&gt;      &lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt;&lt;br&gt;      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;When the application gets big, you can refactor to use the &lt;a href=&quot;https://www.fpcomplete.com/blog/2017/06/readert-design-pattern&quot;&gt;ReaderT design pattern&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;h3&gt;Haskell in 2020&lt;/h3&gt;
+&lt;p&gt;Haskell managed to succeed despite trying to please two different crowds: Programming Language researchers and Software developers. 30 years later, we have a language that is still used by both groups. But their needs couldn&#39;t be more different.&lt;/p&gt;
+&lt;p&gt;As Software developers, we need to understand which Haskell features are useful in writing applications. And more importantly, which features are harmful or ineffective. PL researchers and Software developers share the same tool, but that&#39;s not an excuse to blindly adopt Fancy types.&lt;/p&gt;
+&lt;p&gt;As Haskell developers, we need to realize not all problems deserve to be turned into a paper. You have a choice:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Embark on a 4 hours quest to find a beautiful solution at the type level.&lt;/li&gt;
+&lt;li&gt;Spend 10 minutes and solve it the boring way. Maybe even write a test.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;It&#39;s ok to sacrifice a bit of type safety in favour of Inclusivity. We can still make sure our software is correct through testing. This is what Simple Haskell really is about. The term Boring Haskell works even better.&lt;/p&gt;
+&lt;p&gt;Writing Simple/Boring Haskell is a joy. Concrete code is so liberating. Abstractions are nice, but Boring Haskell is nicer.&lt;/p&gt;
+&lt;p&gt;Next time a beginner talks to you:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Don&#39;t recommend Servant. Scotty works great. Type safe routing can wait.&lt;/li&gt;
+&lt;li&gt;Don&#39;t recommend any effect system. Massive abstractions can wait.&lt;/li&gt;
+&lt;li&gt;Don&#39;t trash Elm. Or Go. You&#39;re not accomplishing anything.&lt;/li&gt;
+&lt;li&gt;Don&#39;t recommend Nix. Stack works great.
+Yes, no matter how many hours it took you to get nix-build do what you intended.&lt;/li&gt;
+&lt;li&gt;Continue talking to them, even if they don&#39;t have a PhD.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In 2020, get &lt;s&gt;the fuck&lt;/s&gt; off the Ivory tower. Write Boring Haskell.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;In an unexpected turn of events, just a few hours after this post came out, &lt;a href=&quot;https://www.parsonsmatt.org/2019/12/26/write_junior_code.html&quot;&gt;Matt Parsons&lt;/a&gt; published a very good article promoting Junior Code.
+If you liked this post, you should give it a read. If you didn&#39;t like this post, then it&#39;s required reading.&lt;/p&gt;
+</content>
+  </entry>
+  
+  <entry>
+    <title>Scaling Teams with Micro Frontends</title>
+    <link href="https://alpacaaa.net/micro-frontends/"/>
+    <updated>2019-06-08T02:00:00+02:00</updated>
+    <id>https://alpacaaa.net/micro-frontends/</id>
+    <content type="html">&lt;p&gt;Monoliths are problematic anywhere in the stack. Splitting up big monolithic
+applications into microservices is a hot topic for Backend services, but huge
+Frontends exist and have their fair share of problems.&lt;/p&gt;
+&lt;p&gt;A monolithic Frontend app might be quicker to build and easier to release,
+compared to a Backend app. However, things fall apart when multiple teams with
+different deadlines and goals end up working on it. Microapps are to the Frontend
+what microservices are to the Backend: a way for teams to gain back autonomy and speed of release.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;h3&gt;Split apps by url&lt;/h3&gt;
+&lt;p&gt;In order to split the monolith,
+you need to figure out which bits of the application are owned by the different teams.
+One rule of thumb is that a single microapp should respond only to requests at a specific
+URL prefix. An app handling payments will be concerned with anything under &lt;code&gt;/payment&lt;/code&gt; such as
+&lt;code&gt;/payment/details&lt;/code&gt; and &lt;code&gt;/payment/view/a123bc&lt;/code&gt;. Avoid separate top-level URLs
+such as &lt;code&gt;/payment-details&lt;/code&gt; and &lt;code&gt;/view-payment&lt;/code&gt; as they&#39;re trickier to route.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;h3&gt;A router in front&lt;/h3&gt;
+&lt;p&gt;For Backend services, an Api Gateway receives all traffic coming through and
+routes requests to the correct microservices. The same technique can be employed
+on the Frontend by using something as simple as an Nginx proxy. There are great
+options available for Kubernetes, such as &lt;a href=&quot;https://traefik.io/&quot;&gt;Traefik&lt;/a&gt; and &lt;a href=&quot;https://opensource.zalando.com/skipper/&quot;&gt;Skipper&lt;/a&gt;,
+but be sure to understand all the complexity involved with those solutions.&lt;/p&gt;
+&lt;p&gt;I&#39;m a big fan of &lt;a href=&quot;https://samnewman.io/patterns/architectural/bff/&quot;&gt;Backends for Frontends&lt;/a&gt;, a less painful and perhaps
+more romantic approach to routing. You can use the same backend you already have
+to route requests, there&#39;s no need for Nginx or any fancy proxy in front. It
+very much depends on how much traffic you get, but chances are you&#39;ll be able
+to handle moderate load without issues.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;h3&gt;Use URL prefixes&lt;/h3&gt;
+&lt;p&gt;As said, apps should own a single top-level URL. This is so that the router is
+simple to configure and the system easier to reason about. In the Payment app
+example above, you wouldn&#39;t have to list all the actual URLs the app is able to
+handle. That would be a nightmare. A more robust approach is to have the router
+route traffic based on URL prefixes. Anything that starts with &lt;code&gt;/payment&lt;/code&gt; will be
+forwarded to the Payment app.&lt;/p&gt;
+&lt;p&gt;The addition or removal of a route won&#39;t require a reconfiguration of the
+router, as long as the prefix stays the same. Because of this, rollbacks are
+easier to handle as the router won&#39;t be involved. One less thing to worry about.&lt;/p&gt;
+&lt;p&gt;Changes to the router configuration should be seen as database migrations: they
+are backward compatible and don&#39;t cause disruption when applied to a running
+system. Always allow for a transition period with two routes co-existing (old and
+new) instead of dropping the old one and introducing the new one at the same
+time. The old route can always be removed later. Negative diff commits are
+great —  consider however the slower approach of deprecating a route first and
+make sure it is effectively not receiving any traffic (perhaps by a link that
+was missed) before removing the relevant code.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;h3&gt;Fallback app and subdomains&lt;/h3&gt;
+&lt;p&gt;Pick one of your apps to act as a fallback app. Requests that can&#39;t be
+handled by any other app are going to be served by this &lt;em&gt;catch-all&lt;/em&gt; app.
+Certainly any unknown request is going to be a &lt;code&gt;404&lt;/code&gt;, so why bother?
+Chances are there&#39;s a marketing department in your company or perhaps an entire team
+focused on growth. These folks need to come up with strong URLs for SEO and
+might want to experiment and change them often. Updating the router every time is
+going to be unfeasible. A better option is to have the marketing site being the
+catch-all app, so that the router doesn&#39;t have to know any of the actual routes.&lt;/p&gt;
+&lt;p&gt;If you can&#39;t roll out a router, consider using a subdomain. There are many
+companies that serve traffic for logged in users at &lt;code&gt;app.company.com&lt;/code&gt; while
+anonymous traffic goes through &lt;code&gt;www.company.com&lt;/code&gt;. You can also do the
+reverse with &lt;code&gt;about.company.com&lt;/code&gt; being the &lt;a href=&quot;https://about.gitlab.com/&quot;&gt;main website&lt;/a&gt;. Although the marketing
+department will hate you for that.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;h3&gt;Conclusion&lt;/h3&gt;
+&lt;p&gt;Going with microapps might look like an architectural defeat. Components in some
+flavour (be it React components, web components or what have you) should be enough
+to scale an application. Even so, a large application will still be challenging
+to work on as it grows in size. When struggling with deploy times, consistently
+broken builds and slow release cycles, microapps could be the cure. As with
+microservices, you have to be careful. Having your users download a 3mb bundle
+for each different page is not what I&#39;m advocating for. Teams need to agree on a
+single framework and be mindful of user experience. Bundle splitting plays a big
+role here — users should download React only once.&lt;/p&gt;
+&lt;p&gt;There&#39;s one thing I absolutely love about microapps: static pages. It seems like
+everything nowadays has to be a Single Page Application, otherwise you&#39;re missing
+out. I think SPAs are great for highly interactive pages. Go and build those
+pages as SPAs, but anything else can be statically generated or even server rendered
+(a tiny node/ruby/python app can go a long way). As most things in technology,
+reach for the simplest abstraction first and see if you can solve the problem
+with that. Microapps allow teams to work at different abstraction levels. When
+you need the big hammer (SPAs) then you can and should go for it. But when you
+realize a large monolithic React app is no fun to work on, then consider splitting
+it up into micro frontend applications.&lt;/p&gt;
+</content>
+  </entry>
+  
+  <entry>
+    <title>Purity in Haskell</title>
+    <link href="https://alpacaaa.net/haskell-purity/"/>
+    <updated>2019-05-01T02:00:00+02:00</updated>
+    <id>https://alpacaaa.net/haskell-purity/</id>
+    <content type="html">&lt;p&gt;Haskell can do anything your mainstream programming language can.&lt;br&gt;
+Purity is not about preventing side effects (a database query or an http request), it&#39;s about having a &lt;em&gt;clear boundary&lt;/em&gt; between code with side effects (impure) and pure code.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;h3&gt;What are Pure functions?&lt;/h3&gt;
+&lt;p&gt;Haskell is a purely functional programming language.&lt;/p&gt;
+&lt;p&gt;Today we&#39;re mostly interested in the &lt;em&gt;pure&lt;/em&gt; bit. We could get away by saying that &lt;em&gt;functional&lt;/em&gt; means you can only work with functions. There are no objects sending messages to one another — a Haskell program is just a big &lt;em&gt;composition&lt;/em&gt; of functions put together like Lego blocks.&lt;/p&gt;
+&lt;p&gt;A lot of people associate purity with &lt;strong&gt;lack of side effects&lt;/strong&gt;. I certainly did when I started learning about Haskell. It was something that confused me for quite some time. If everything is pure, how can I write to a file? How do I send an email?&lt;/p&gt;
+&lt;p&gt;One of the things you immediately come across is this thing called &lt;code&gt;IO&lt;/code&gt;. In the beginning I wasn&#39;t clear exactly what it represented, but I understood that if you wanted to do &lt;em&gt;useful stuff&lt;/em&gt; you had to do things in &lt;code&gt;IO&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Let&#39;s make an example. A function that takes a &lt;code&gt;ShoppingCart&lt;/code&gt; and returns an &lt;code&gt;Int&lt;/code&gt; (a number) representing the total number of items in the cart, would have this type signature:&lt;/p&gt;
+&lt;pre class=&quot;language-haskell&quot;&gt;&lt;code class=&quot;language-haskell&quot;&gt;&lt;span class=&quot;token hvariable&quot;&gt;numberOfItems&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;::&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;ShoppingCart&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&gt;&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;Int&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I don&#39;t want to assume you know too much about Haskell so let&#39;s write this function in Javascript. I have a cart which is just a list of items with some quantity.&lt;/p&gt;
+&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token function-variable function&quot;&gt;numberOfItems&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token parameter&quot;&gt;cart&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;br&gt;  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; cart&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;items&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;reduce&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;br&gt;    &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;acc&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; item&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; acc &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; item&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;quantity&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;br&gt;  &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; sampleCart &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;br&gt;  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; item&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;A book&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;  quantity&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;br&gt;  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; item&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;A chair&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; quantity&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;br&gt;&lt;br&gt;console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;numberOfItems&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;sampleCart&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;// 4&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Simple right? Now, this function doesn&#39;t have any side effects. This is what we call a &lt;em&gt;pure function&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;There are many definitions of purity out there, but the one I like to use to introduce the concept is:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;A function is pure when given the same &lt;em&gt;input&lt;/em&gt;, you &lt;strong&gt;always&lt;/strong&gt; get the same &lt;em&gt;output&lt;/em&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;It is as simple as that! No matter how many times we call &lt;code&gt;numberOfItems&lt;/code&gt;, if we give it the same &lt;code&gt;ShoppingCart&lt;/code&gt; we&#39;ll always get the same quantity back. This function doesn&#39;t read from a file or generates a random number, so its output &lt;em&gt;is only going to be determined&lt;/em&gt; by the input you feed it.&lt;/p&gt;
+&lt;p&gt;Pure functions are &lt;strong&gt;highly desirable&lt;/strong&gt; precisely because they are predictable. In other words they are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Easy to reason about&lt;/li&gt;
+&lt;li&gt;Easy to test&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;h3&gt;A program made of only pure functions is useless&lt;/h3&gt;
+&lt;p&gt;I know what you&#39;re thinking. This is all well and good but in the &lt;em&gt;real world&lt;/em&gt; I need to do messy stuff! I need to connect to a database to fetch the items in the shopping cart and my function wouldn&#39;t be pure anymore. So what&#39;s the point?&lt;/p&gt;
+&lt;p&gt;The point is creating a &lt;strong&gt;clear boundary&lt;/strong&gt; between pure and impure functions.&lt;/p&gt;
+&lt;p&gt;Let&#39;s expand on our simple example and pretend that a cart is stored in some Postgres table.&lt;/p&gt;
+&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;# Carts table&lt;br&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;br&gt;cart_id &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; product_id &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; quantity&lt;br&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;br&gt;ab341   &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt; book     &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;br&gt;ab341   &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt; chair    &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Our &lt;code&gt;numberOfItems&lt;/code&gt; function can no longer be pure. We need to write some SQL query and perform a side effect by executing it. We lost purity because &lt;strong&gt;the output&lt;/strong&gt; of our function is no longer determined by &lt;strong&gt;its input&lt;/strong&gt;. There&#39;s now a database involved which could be empty or have hundreds of carts.&lt;/p&gt;
+&lt;p&gt;The state of the database is in no way provided as input so the output is no longer deterministic! Theoretically, if we could pass the &lt;em&gt;entire content&lt;/em&gt; of the database as an input then this function would still be pure. Obviously that&#39;s not practical, but it&#39;s a nice thought experiment nonetheless. :)&lt;/p&gt;
+&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token function-variable function&quot;&gt;numberOfItems&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token parameter&quot;&gt;cartId&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;br&gt;  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; db&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;query&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;br&gt;      &lt;span class=&quot;token string&quot;&gt;&#39;select * from Carts where cart_id = ?&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;br&gt;      cartId&lt;br&gt;    &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;br&gt;    &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;items&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;br&gt;      &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; items&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;reduce&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;br&gt;        &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;acc&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; item&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; acc &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; item&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;quantity&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;br&gt;      &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;br&gt;    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span class=&quot;token function&quot;&gt;numberOfItems&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;ab341&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;count&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;count&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;// 4&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The corresponding function in Haskell would have to change its type signature. We finally get to &lt;code&gt;IO&lt;/code&gt; — the &lt;strong&gt;massive hammer&lt;/strong&gt; we have available to do anything and everything.&lt;/p&gt;
+&lt;pre class=&quot;language-haskell&quot;&gt;&lt;code class=&quot;language-haskell&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;-- We can no longer simply return `Int`.&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;token comment&quot;&gt;-- The output needs to be wrapped in `IO`.&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;token hvariable&quot;&gt;numberOfItems&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;::&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;ShoppingCartId&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&gt;&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;IO&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;Int&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Functions are nice and pure by default. When there are side effects, the function needs to be in &lt;code&gt;IO&lt;/code&gt; otherwise the compiler will refuse to compile your program. Reading from a file? You&#39;ll get an &lt;code&gt;IO String&lt;/code&gt;. Generating a random number? You&#39;ll get an &lt;code&gt;IO Int&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;You can think of &lt;code&gt;IO&lt;/code&gt; as a way of &lt;strong&gt;marking a function as impure&lt;/strong&gt;. You know that a function is impure (it &lt;em&gt;might&lt;/em&gt; perform some side effects) when its output is wrapped in &lt;code&gt;IO&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Impure functions are &lt;strong&gt;not desirable&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;We said pure functions are easy to reason about and to test. Impure functions are the exact opposite!&lt;/p&gt;
+&lt;h4&gt;1. Impure code is harder to reason about&lt;/h4&gt;
+&lt;p&gt;By making &lt;code&gt;numberOfItems&lt;/code&gt; impure, we lost the ability to easily reason about it. We can no longer determine the result just by looking at the input, because the result is going to be dependent on &lt;strong&gt;external state&lt;/strong&gt;, ie. the content of the &lt;code&gt;Carts&lt;/code&gt; table in the database.&lt;/p&gt;
+&lt;h4&gt;2. Impure code is harder to test&lt;/h4&gt;
+&lt;p&gt;Now that a database is involved, how are we going to test that function? The first version (the pure one) is extremely easy to unit test and we can prove that our implementation is correct just by checking that a certain input corresponds to a certain output.&lt;/p&gt;
+&lt;p&gt;When we have side effects, &lt;strong&gt;we lose determinism&lt;/strong&gt;. That means we&#39;ll need some disgusting way of mocking the database or populate a test database with the data we need. Not great.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;h3&gt;A &lt;strong&gt;clear boundary&lt;/strong&gt; between pure and impure code&lt;/h3&gt;
+&lt;p&gt;All hope is not lost! We can refactor our code so that we keep the nice pure &lt;code&gt;numberOfItems&lt;/code&gt; implementation and &lt;em&gt;compose&lt;/em&gt; it to an impure function that just pulls data out of the database.&lt;/p&gt;
+&lt;p&gt;The type signatures might look like:&lt;/p&gt;
+&lt;pre class=&quot;language-haskell&quot;&gt;&lt;code class=&quot;language-haskell&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;-- Pure&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;token hvariable&quot;&gt;numberOfItems&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;::&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;ShoppingCart&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&gt;&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;Int&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span class=&quot;token comment&quot;&gt;-- Impure&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;token hvariable&quot;&gt;fetchShoppingCart&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;::&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;ShoppingCartId&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&gt;&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;IO&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;ShoppingCart&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span class=&quot;token comment&quot;&gt;-- And now for the composition!&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;token hvariable&quot;&gt;numberOfItemsByCartId&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;::&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;ShoppingCartId&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&gt;&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;IO&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;Int&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now, if I look at &lt;code&gt;numberOfItems&lt;/code&gt; I can be 100% sure that it&#39;s not going to have any &lt;strong&gt;nasty side effects&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;I accept that &lt;code&gt;fetchShoppingCart&lt;/code&gt; will do something bad (made explicit by its output wrapped in &lt;code&gt;IO&lt;/code&gt;)  but I don&#39;t really care about testing it because I &lt;strong&gt;factored all of the logic out&lt;/strong&gt;. Finally, we define &lt;code&gt;numberOfItemsByCartId&lt;/code&gt; by composing the two other functions together.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Remember, when you compose pure and impure functions, the result is always going to be &lt;strong&gt;impure&lt;/strong&gt;.
+&lt;code&gt;IO&lt;/code&gt; is infective, it spreads through your program like a virus. We want to push side effects to the &lt;em&gt;edge&lt;/em&gt; of our program so that our &lt;em&gt;core&lt;/em&gt; can remain pure. This is the &lt;a href=&quot;https://www.destroyallsoftware.com/screencasts/catalog/functional-core-imperative-shell&quot;&gt;Functional core, Imperative shell&lt;/a&gt; pattern.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;h3&gt;Conclusion&lt;/h3&gt;
+&lt;p&gt;Write your business logic as pure functions.&lt;/p&gt;
+&lt;p&gt;Your code will be &lt;strong&gt;easier to reason about&lt;/strong&gt; and &lt;strong&gt;to test&lt;/strong&gt;. Keep impure code as dumb as possible. Impure functions should only be transferring data &lt;em&gt;in&lt;/em&gt; and &lt;em&gt;out&lt;/em&gt; of pure functions!&lt;/p&gt;
+&lt;p&gt;Pure functions are great and you need to learn how to use them to your advantage. Obviously we could have made the same refactoring in our Javascript code just the same and that would have been a massive improvement. But there&#39;s nothing &lt;strong&gt;preventing you from making these mistakes&lt;/strong&gt;. You have to be vigilant and disciplined about separating pure and impure code. That&#39;s what makes Haskell amazing, the compiler is there to tell you &lt;strong&gt;when you&#39;re doing something wrong&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;This has been eye opening to me. In Haskell you must be &lt;em&gt;explicit&lt;/em&gt; about side effects. A program without side effects would be &lt;em&gt;useless&lt;/em&gt;, but the point is not preventing side effects.&lt;/p&gt;
+&lt;p&gt;The point is having a clear separation between &lt;em&gt;pure&lt;/em&gt; and &lt;em&gt;impure&lt;/em&gt; code. Pure functions help us write &lt;strong&gt;robust and correct software&lt;/strong&gt; because they&#39;re easy to reason about and test.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Here&#39;s the full Haskell code for reference.&lt;/em&gt;&lt;/p&gt;
+&lt;script src=&quot;https://gist.github.com/alpacaaa/bb7563ec734d943d959ff6a0e58e2d87.js&quot;&gt;&lt;/script&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;I&#39;m writing a series for people that want to learn Haskell without the bullshit.&lt;br&gt;
+There are exercises and videos as well!&lt;/p&gt;
+&lt;p&gt;Check out &lt;a href=&quot;https://github.com/alpacaaa/zero-bullshit-haskell&quot;&gt;Zero Bullshit Haskell&lt;/a&gt; on Github.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Thanks to Giulio &lt;a href=&quot;https://twitter.com/giuliocanti&quot;&gt;@giuliocanti&lt;/a&gt;
+and Tom &lt;a href=&quot;https://twitter.com/am_i_tom&quot;&gt;@am_i_tom&lt;/a&gt; for the amazing feedback. ❤️&lt;/p&gt;
+</content>
+  </entry>
+</feed>
