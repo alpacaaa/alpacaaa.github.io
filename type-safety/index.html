@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Trade-Offs in Type Safety - Marco Sampellegrini</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/static/style.css">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+
+  <body class="antialiased text-dark">
+    <header class="max-w-2xl px-8 md:px-0 py-4 mx-auto ">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center">
+          <div class="text-sm text-dark font-bold">
+            <a href="/">Marco Sampellegrini</a>
+          </div>
+        </div>
+
+        <nav class="text-xs text-gray-600 font-bold uppercase tracking-wide">
+          <a href="/about/" class="hover:text-primary">About</a>
+          <a href="/feed.xml" class="ml-3 hover:text-primary">RSS</a>
+        </nav>
+
+      </div>
+    </header>
+
+    <main class="pb-12 mx-auto">
+      
+        
+        <div class="max-w-2xl max-w-2xl px-8 md:px-0 pt-16 pb-10 mx-auto text-center">
+          <div class="text-gray-600 text-sm">May 18, 2020</div>
+          <h1 class="text-3xl font-bold">Trade-Offs in Type Safety</h1>
+        </div>
+        
+
+        <article class="font-body text-xl mt-6">
+          <p>One of the stories people tell about Haskell is that you don't get runtime errors. Once it compiles, there's a good chance the program will run smoothly. However, runtime errors in the form of exceptions do exist in Haskell. Exceptions are a core part of GHC and, whether you like it or not, any code in <code>IO</code> could fail in unforeseen ways.</p>
+<p>Some exceptions are avoidable by carrying more proofs at the type level. The natural conclusion then, is to use Fancy types when writing Haskell.</p>
+<p>While that might sound sensible, it's not the whole story. Fancy types have a cost. There are scenarios where exceptions are not as bad as one might think. Type safety is a spectrum – it's worth discussing the trade-offs.</p>
+<p> </p>
+<h3>Scotty / Servant</h3>
+<p>When writing a webserver, we want to parse certain fragments of the URL.</p>
+<pre class="language-haskell"><code class="language-haskell"><span class="token string">"/user/:user_id/post/:post_id"</span></code></pre>
+<p>This route is only matched if both <code>user_id</code> and <code>post_id</code> are present. With <code>scotty</code>, we could get both parameters with something like this:</p>
+<pre class="language-haskell"><code class="language-haskell"><span class="token hvariable">Scotty.get</span> <span class="token string">"/user/:user_id/post/:post_id"</span> <span class="token operator">$</span> <span class="token keyword">do</span><br>  <span class="token hvariable">user</span> <span class="token operator">&lt;-</span> <span class="token hvariable">Scotty.param</span> <span class="token string">"user_id"</span><br>  <span class="token hvariable">post</span> <span class="token operator">&lt;-</span> <span class="token hvariable">Scotty.param</span> <span class="token string">"post_id"</span><br>  <span class="token comment">-- do stuff with user and post</span></code></pre>
+<p>Seems legit right? The <a href="https://hackage.haskell.org/package/scotty-0.12/docs/Web-Scotty-Trans.html#v:param">documentation</a> however, is fairly clear about what happens when the parameter isn't there:</p>
+<blockquote>
+<p>Raises an exception [...] if parameter is not found.</p>
+</blockquote>
+<p>This seems wrong. We know <em>for sure</em> the parameter is there, otherwise the route wouldn't even be matched. So why must we dirty our hands with exceptions and risk blowing everything up?</p>
+<p>The reason is simple: we are encoding the route as a string, so there's no way of statically knowing which parameters we're dealing with.</p>
+<p>Now take <code>servant</code>. This problem is non-existent because we encode the route at the type level and our handler gets both parameters as arguments:</p>
+<pre class="language-haskell"><code class="language-haskell"><span class="token keyword">type</span> <span class="token constant">Api</span> <span class="token operator">=</span><br>  <span class="token string">"user"</span><br>  <span class="token operator">:></span> <span class="token constant">Capture</span> <span class="token string">"user_id"</span> <span class="token constant">Integer</span><br>  <span class="token operator">:></span> <span class="token string">"post"</span><br>  <span class="token operator">:></span> <span class="token constant">Capture</span> <span class="token string">"post_id"</span> <span class="token constant">Integer</span><br>  <span class="token operator">:></span> <span class="token constant">Get</span> '<span class="token punctuation">[</span><span class="token constant">JSON</span><span class="token punctuation">]</span> <span class="token constant">Post</span><br>  <br><span class="token hvariable">getPost</span> <span class="token operator">::</span> <span class="token constant">Integer</span> <span class="token operator">-></span> <span class="token constant">Integer</span> <span class="token operator">-></span> <span class="token constant">Handler</span> <span class="token constant">Post</span><br><span class="token hvariable">getPost</span> <span class="token hvariable">user</span> <span class="token hvariable">post</span> <span class="token operator">=</span> <span class="token keyword">do</span><br>  <span class="token comment">-- do stuff with user and post</span></code></pre>
+<p>We're now leveraging the type system to <em>prove</em> to the compiler that our route definitely has two parameters. This is nice because we're guaranteed <code>user</code> and <code>post</code> will have a value. No more exceptions, yay!</p>
+<p> </p>
+<h3>PostgreSQL Simple / persistent</h3>
+<p>There are many libraries that deal with SQL in Haskell. The trade-off is apparent in this context as well.</p>
+<p>With <code>postgresql-simple</code>, we get very little guarantees about our queries.</p>
+<pre class="language-haskell"><code class="language-haskell"><span class="token hvariable">res</span> <span class="token operator">&lt;-</span> <span class="token hvariable">PG.query</span> <span class="token hvariable">conn</span> <span class="token string">"select title from post where post_id = ?"</span> <span class="token punctuation">[</span><span class="token hvariable">post</span><span class="token punctuation">]</span></code></pre>
+<p>There are many things that could go wrong here and result in an exception. Our <code>post</code> value might not match the column's type. The result type we expect might be different than the actual data type stored in the database.</p>
+<p>These problems go away when using a more type heavy library such as <code>persistent</code>.</p>
+<pre class="language-haskell"><code class="language-haskell"><span class="token comment">-- query DSL is esqueleto</span><br><span class="token hvariable">select</span> <span class="token operator">$</span> <span class="token hvariable">from</span> <span class="token operator">$</span> <span class="token operator">\</span><span class="token punctuation">(</span><span class="token hvariable">b</span><span class="token punctuation">,</span> <span class="token hvariable">p</span><span class="token punctuation">)</span> <span class="token operator">-></span> <span class="token keyword">do</span><br>    <span class="token hvariable">where_</span> <span class="token punctuation">(</span><span class="token hvariable">b</span> <span class="token operator">^.</span> <span class="token constant">BlogPostAuthorId</span> <span class="token operator">==.</span> <span class="token hvariable">p</span> <span class="token operator">^.</span> <span class="token constant">PersonId</span><span class="token punctuation">)</span><br>    <span class="token hvariable">orderBy</span> <span class="token punctuation">[</span><span class="token hvariable">asc</span> <span class="token punctuation">(</span><span class="token hvariable">b</span> <span class="token operator">^.</span> <span class="token constant">BlogPostTitle</span><span class="token punctuation">)</span><span class="token punctuation">]</span><br>    <span class="token builtin">return</span> <span class="token punctuation">(</span><span class="token hvariable">b</span><span class="token punctuation">,</span> <span class="token hvariable">p</span><span class="token punctuation">)</span></code></pre>
+<p>Now we're good. We can't mess up our inputs and we know for sure what we're getting back from the query. Again we see how giving more information to the compiler results in more guarantees.</p>
+<p>With <code>servant</code> we introduced an <code>Api</code> type. In this case, we need to describe our schema with some Template Haskell, so that GHC can derive everything necessary to let the magic happen:</p>
+<pre class="language-haskell"><code class="language-haskell"><span class="token hvariable">share</span> <span class="token punctuation">[</span> <span class="token hvariable">mkPersist</span> <span class="token hvariable">sqlSettings</span> <span class="token punctuation">]</span> <span class="token punctuation">[</span><span class="token hvariable">persistLowerCase</span><span class="token operator">|</span><br>  <span class="token constant">Person</span><br>    <span class="token hvariable">name</span> <span class="token constant">String</span><br>    <span class="token hvariable">age</span> <span class="token constant">Int</span> <span class="token constant">Maybe</span><br>    <span class="token keyword">deriving</span> <span class="token constant">Eq</span> <span class="token constant">Show</span><br>  <span class="token constant">BlogPost</span><br>    <span class="token hvariable">title</span> <span class="token constant">String</span><br>    <span class="token hvariable">authorId</span> <span class="token constant">PersonId</span><br>    <span class="token keyword">deriving</span> <span class="token constant">Eq</span> <span class="token constant">Show</span><br><span class="token operator">|</span><span class="token punctuation">]</span></code></pre>
+<div class="text-sm">
+If you've never seen code like this before – yes, this is valid Haskell. Code between <code>[|</code> and <code>|]</code> denotes a Template Haskell block, meaning the compiler will process it and generate more code as a result.
+</div>
+<p> </p>
+<h3>Type safety comes at a cost</h3>
+<p>Most Haskellers will claim that there's no point writing Haskell if you're not going for the most type safe option.</p>
+<p>I argue that the guarantees we get out of these examples aren't always worth it. In other words, I am ok trading off some type safety for less complexity. I would still pick <code>scotty</code> and <code>postgresql-simple</code> because they don't require opting in advanced GHC features, while not degrading the quality of the software I write.</p>
+<p>This is counter-intuitive, so let me elaborate on <em>why</em>.</p>
+<p>Let's say I make a typo in the <code>Scotty.param</code> call. An exception is thrown and my program blows up. This error wasn't caught at compile time. So what? I should be ashamed of myself and go back to dynamically typed languages if I love exceptions so much, you might say.</p>
+<p>Well, hear me out now.</p>
+<p>Would you avoid writing a test just because you went for the most type safe option? I wouldn't. And so <em>any test</em>, even the most basic, that just exercises the code path for the handler with a typo in it, would reveal the error.</p>
+<p>I want to stress this: you don't even have to assert anything, simply poking the controller would manifest the error.</p>
+<p>The same argument could be made for the SQL example. Sure, my code might have serious errors and still compile, but would you not write any tests just because you went for a safer library? Writing a very high level test that executes the query as part of it, would reveal the error.</p>
+<p>I'm not saying every route or query should be tested individually, that'd be a no-go. I'm also not an advocate for 100% test coverage. But type-safety is a spectrum and I deliberately make a trade-off. I choose to pick the simpler option and cover my bases with (basic and high level) testing, which I would have to do anyway.</p>
+<p>Even though I'm not leveraging Fancy types, I still get <em>a lot</em> out of writing Haskell. My software is correct <em>where it matters</em> – domain modeling and business logic. Complexity tends to increase once you bring in <code>DataKinds</code> and other extensions that are required for libraries like <code>servant</code> and <code>persistent</code> to work. I often don't see that complexity as necessary and I'm fine trading it for errors that are easily caught by tests.</p>
+<p>Sticking to the Haskell98 type system is a core tenant of what I call Simple Haskell. I covered more ideas about the topic in the post <a href="thoughts-on-haskell-2020">My thoughts on Haskell in 2020</a>.</p>
+
+
+          
+            <hr>
+            <p>
+              You can follow me on Twitter 
+              <a href="https://twitter.com/_alpacaaa">@_alpacaaa</a>.
+            </p>
+          
+
+        </article>
+
+      
+    </main>
+  </body>
+</html>
