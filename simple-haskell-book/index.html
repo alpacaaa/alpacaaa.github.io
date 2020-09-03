@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Haskell Book – Coming soon</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="/static/style.css" />
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <style>
+      .bg-primary {
+        background: #f07a0b;
+      }
+      p {
+        margin-bottom: 1.5em;
+      }
+      p a {
+        color: #f07a0b;
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+
+  <body class="antialiased text-dark">
+    <header class="text-center mt-12">
+      <h1 class="text-4xl font-bold">
+        Learn how to build Haskell applications.
+      </h1>
+      <p class="text-2xl hidden">
+        A project-driven approach to learning Haskell and Functional Programming
+      </p>
+    </header>
+
+    <main class="max-w-3xl px-8 md:px-0 py-4 mx-auto my-12">
+      <div class="md:flex">
+        <figure class="px-5 md:w-1/3 text-center">
+          <img src="/static/book-cover.png" alt="Book cover" />
+
+          <p class="text-sm text-gray-700 italic pt-3">Coming Fall 2020</p>
+        </figure>
+
+        <div class="flex-1 mt-3 md:px-5">
+          <div class="text-2xl">
+            <p>
+              In this book we will create a
+              <strong>Continuous Integration Server</strong> together.
+            </p>
+
+            <p>
+              We'll start from <em>zero</em> lines of code and will finish with
+              a working CI Server.
+            </p>
+
+            <p>Step by step. <strong>One type error at a time.</strong></p>
+
+            <p class="text-lg text-center hidden">
+              <a
+                href="subscribe"
+                class="bg-primary hover:bg-orange-700 text-white font-bold ml-2 py-2 px-4 rounded no-underline focus:outline-none focus:shadow-outline"
+                >Get notified</a
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <section class="my-12 text-lg">
+        <h3 class="text-2xl font-bold mb-4">Why this book?</h3>
+        <p>
+          This is the book I wish I had when learning Haskell. There are a lot
+          of great books out there that
+          <strong>teach you the language</strong> – but not how to actually
+          <strong>build applications with it</strong>.
+        </p>
+
+        <p>
+          I read many Haskell books. They're great to learn about types,
+          currying, type classes, Functors, Applicatives, Monads… but then what?
+          I felt lost. Many times I just wanted to give up because I couldn't
+          see how I should apply everything that I have learned in a
+          <em>practical</em> way.
+        </p>
+
+        <p>
+          It's hard to tell what's considered <strong>best practice</strong> in
+          the Haskell world. And that makes it difficult to get proficient with
+          the language. That's why this book focuses on
+          <strong>Simple Haskell</strong>, a subset of the language that I find
+          strikes the right balance between features and ease of use.
+        </p>
+      </section>
+
+      <section class="my-12 text-lg">
+        <h3 class="text-2xl font-bold mb-4">A real-world project</h3>
+        <p>
+          In this book, we'll build a Continuous Integration Server. Why such a
+          project? I wanted something serious enough that could pose some
+          <strong>real challenges</strong> while developing it. No point
+          implementing yet another blog or todo-list or similar toy applications
+          – you're not going to learn much from those.
+        </p>
+        <p>
+          A CI Server is interesting for a number of reasons. The domain isn't
+          trivial which means we'll have to put some thought into
+          <strong>coming up with the right model</strong>. The application will
+          have to work with external systems such as Docker containers and
+          Github webhooks so there's plenty of lessons to learn from there.
+        </p>
+
+        <p class="mb-4">
+          Here's a brief list of features that <strong>Quad CI</strong> (our
+          very own CI server!) will support:
+        </p>
+
+        <ul class="list-disc ml-12 mb-6">
+          <li>sandboxed builds in Docker containers</li>
+          <li>
+            a multi-node architecture with agents picking up jobs to work on
+          </li>
+          <li>an http api to interact with the frontend and other nodes</li>
+          <li>support for triggering builds with github webhooks</li>
+        </ul>
+
+        <p>
+          We'll get to build all that, <em>from scratch!</em>
+          <br />
+          In case you're wondering, the name Quad is a tribute to the popular CI
+          server <a href="https://drone.io/">Drone</a>.
+        </p>
+      </section>
+
+      <section class="my-12 text-lg">
+        <h3 class="text-2xl font-bold mb-4">Who is this book for?</h3>
+        <p>
+          This book won't teach you Haskell. I assume you have some
+          understanding of the language, can solve basic exercises and know what
+          <code>IO</code> actions are.
+        </p>
+
+        <p>
+          Instead, this book will teach you <strong>how to think</strong> about
+          problems in a functional language. We won't get things right the first
+          time, there's going to be <strong>a lot of refactoring</strong>. But
+          that's why Haskell is so good right? Many people praise Haskell for
+          its refactoring capabilities, but very few show
+          <em>precisely</em> what refactoring Haskell code feels like. That's
+          because you need a real project to experience that – you'll see many
+          examples of it throughout the book.
+        </p>
+
+        <p>
+          This book is for people that are struggling to make the jump
+          <strong>from beginner to intermediate</strong> Haskellers. There's
+          plenty of material on learning the language but very little has been
+          written on architecting applications and the thought process behind
+          it.
+        </p>
+
+        <p>
+          Even if you don't plan on using Haskell in your day job, most of the
+          lessons in this book will apply to other languages as well. Embracing
+          Functional Programming will make you a better programmer, no matter
+          the technology.
+        </p>
+      </section>
+
+      <div id="subscribe" class="my-12 py-6 text-center border-t border-b">
+        <h3 class="text-2xl font-bold">Stay in the loop</h3>
+        <p class="text-lg">
+          Subscribe to be notified when the book is ready. No spam, unsubscribe
+          any time.
+        </p>
+
+        <form
+          action="https://protonmail.us17.list-manage.com/subscribe/post?u=afec48f956164ed4f7ef44b5e&amp;id=d486253791"
+          method="post"
+          class="mt-6 mb-4 flex justify-center"
+        >
+          <input
+            type="email"
+            name="EMAIL"
+            required
+            class="w-64 appearance-none border rounded py-2 px-3 placeholder-gray-600 text-gray-900 leading-tight focus:outline-none focus:shadow-outline"
+            required
+            placeholder="Your email address"
+          />
+
+          <div style="position: absolute; left: -5000px;" aria-hidden="true">
+            <input
+              type="text"
+              name="b_afec48f956164ed4f7ef44b5e_d486253791"
+              tabindex="-1"
+              value=""
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="bg-primary hover:bg-orange-700 text-white font-bold ml-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Subscribe
+          </button>
+        </form>
+      </div>
+
+      <div class="text-lg">
+        <h3 class="text-2xl font-bold mb-4">About the author</h3>
+        <p>
+          <img
+            src="https://avatars1.githubusercontent.com/u/210896?s=400&u=5e31a16574fc26f5c2d43e7bc1431fada1fad152&v=4"
+            alt="Author's face"
+            class="w-32 h-32 mr-6 float-left rounded rounded-full"
+          />
+          Hi, my name is Marco. After many years working with traditional
+          programming languages, I decided I had enough of runtime errors.
+          That's when I started my journey into Functional Programming. I first
+          got into Elm and then, with some more effort, into Haskell. This
+          experience completely changed the way I look at Software development –
+          it really was a better way to build applications.
+        </p>
+
+        <p>
+          Fast forward three years, I successfully deployed Haskell, Purescript
+          and Elm applications in production. And now I want to share what I
+          learned in the process. My goal is to get other developers to fall in
+          love with Functional Programming and Haskell in particular.
+        </p>
+
+        <p>
+          This isn't my first attempt at teaching Haskell. About a year and half
+          ago I started working on a repository called
+          <a href="https://github.com/alpacaaa/zero-bullshit-haskell"
+            >Zero Bullshit Haskell</a
+          >. It became clear to me that <strong>learning by doing</strong> is
+          much more effective than simply going through all the theory. If
+          you're completely new to the language you might find some valuable
+          content in there too.
+        </p>
+
+        <p>
+          I hope you'll enjoy this book, I'm definitely having a lot of fun
+          writing it.
+        </p>
+      </div>
+
+      <div class="text-lg">
+        <h3 class="text-2xl font-bold mb-4">Questions?</h3>
+        <p>
+          You can learn more about me on Twitter
+          <a href="https://twitter.com/_alpacaaa">@_alpacaaa</a>. Feel free to
+          send me an email about the book (or anything else) at
+          <a href="mailto:babbonatale@alpacaaa.net">babbonatale@alpcaaa.net</a>.
+        </p>
+      </div>
+    </main>
+  </body>
+</html>
