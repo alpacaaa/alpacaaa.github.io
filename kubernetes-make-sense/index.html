@@ -36,7 +36,8 @@
         
 
         <article class="font-body text-xl mt-6">
-          <p>Kubernetes is a complex beast. Once you get the hang of some basic features, it can be a nice way of deploying and running software. I've used GKE some years ago and more recently EKS. Despite being &quot;managed&quot; offerings, I found the amount of ad-hoc glue required to keep a cluster going to be just too much.</p>
+          <p><strong>Update</strong>: Google Cloud Run seems like what I'm looking for. If you're in a similar boat, you should give it a try!</p>
+<p>Kubernetes is a complex beast. Once you get the hang of some basic features, it can be a nice way of deploying and running software. I've used GKE some years ago and more recently EKS. Despite being &quot;managed&quot; offerings, I found the amount of ad-hoc glue required to keep a cluster going to be just too much.</p>
 <p>In principle, Kubernetes is great. I stick to a very productive yet not too complex set of core features (pods / deployments / services). I only deploy stateless services on it – don't like having too many moving parts.</p>
 <p>A managed service should let me focus on running my workload. The initial provisioning of a cluster is usually straightforward. It's keeping it alive, getting auto-scaling to work, updating Kubernetes versions that make it a hassle.</p>
 <p>I don't want to think about the underlying compute instances. Is the cluster made up of 5 or 12 nodes? Don't really care, as long as it's running and serving traffic.</p>
