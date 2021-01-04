@@ -2,15 +2,16 @@
 <html>
   <head>
     <title>Purity in Haskell - Marco Sampellegrini</title>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="/static/style.css">
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="/static/style.css" />
 
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
 
   <body class="antialiased text-dark">
-    <header class="max-w-2xl px-8 md:px-0 py-4 mx-auto ">
+    
+    <header class="max-w-2xl px-8 md:px-0 py-4 mx-auto">
       <div class="flex justify-between items-center">
         <div class="flex items-center">
           <div class="text-sm text-dark font-bold">
@@ -18,25 +19,28 @@
           </div>
         </div>
 
-        <nav class="text-xs text-gray-600 font-bold uppercase tracking-wide">
+        <nav
+          class="hidden text-xs text-gray-600 font-bold uppercase tracking-wide"
+        >
           <a href="/about/" class="hover:text-primary">About</a>
           <a href="/feed.xml" class="ml-3 hover:text-primary">RSS</a>
         </nav>
-
       </div>
     </header>
+    
 
-    <main class="pb-12 mx-auto">
+    <div class="pb-12 mx-auto">
+       
+      <div
+        class="max-w-2xl max-w-2xl px-8 md:px-0 pt-16 pb-10 mx-auto text-center"
+      >
+        <div class="text-gray-600 text-sm">May 01, 2019</div>
+        <h1 class="text-3xl font-bold">Purity in Haskell</h1>
+      </div>
       
-        
-        <div class="max-w-2xl max-w-2xl px-8 md:px-0 pt-16 pb-10 mx-auto text-center">
-          <div class="text-gray-600 text-sm">May 01, 2019</div>
-          <h1 class="text-3xl font-bold">Purity in Haskell</h1>
-        </div>
-        
 
-        <article class="font-body text-xl mt-6">
-          <p>Haskell can do anything your mainstream programming language can.<br>
+      <article class="font-body text-xl mt-6">
+        <p>Haskell can do anything your mainstream programming language can.<br>
 Purity is not about preventing side effects (a database query or an http request), it's about having a <em>clear boundary</em> between code with side effects (impure) and pure code.</p>
 <p> </p>
 <h3>What are Pure functions?</h3>
@@ -111,17 +115,16 @@ There are exercises and videos as well!</p>
 and Tom <a href="https://twitter.com/am_i_tom">@am_i_tom</a> for the amazing feedback. ❤️</p>
 
 
-          
-            <hr>
-            <p>
-              You can follow me on Twitter 
-              <a href="https://twitter.com/_alpacaaa">@_alpacaaa</a>.
-            </p>
-          
-
-        </article>
+        
+        <hr />
+        <p>
+          You can follow me on Twitter
+          <a href="https://twitter.com/_alpacaaa">@_alpacaaa</a>.
+        </p>
+        
+      </article>
 
       
-    </main>
+    </div>
   </body>
 </html>

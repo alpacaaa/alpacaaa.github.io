@@ -2,15 +2,16 @@
 <html>
   <head>
     <title>When will Kubernetes make sense - Marco Sampellegrini</title>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="/static/style.css">
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="/static/style.css" />
 
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
 
   <body class="antialiased text-dark">
-    <header class="max-w-2xl px-8 md:px-0 py-4 mx-auto ">
+    
+    <header class="max-w-2xl px-8 md:px-0 py-4 mx-auto">
       <div class="flex justify-between items-center">
         <div class="flex items-center">
           <div class="text-sm text-dark font-bold">
@@ -18,25 +19,28 @@
           </div>
         </div>
 
-        <nav class="text-xs text-gray-600 font-bold uppercase tracking-wide">
+        <nav
+          class="hidden text-xs text-gray-600 font-bold uppercase tracking-wide"
+        >
           <a href="/about/" class="hover:text-primary">About</a>
           <a href="/feed.xml" class="ml-3 hover:text-primary">RSS</a>
         </nav>
-
       </div>
     </header>
+    
 
-    <main class="pb-12 mx-auto">
+    <div class="pb-12 mx-auto">
+       
+      <div
+        class="max-w-2xl max-w-2xl px-8 md:px-0 pt-16 pb-10 mx-auto text-center"
+      >
+        <div class="text-gray-600 text-sm">Jul 01, 2020</div>
+        <h1 class="text-3xl font-bold">When will Kubernetes make sense</h1>
+      </div>
       
-        
-        <div class="max-w-2xl max-w-2xl px-8 md:px-0 pt-16 pb-10 mx-auto text-center">
-          <div class="text-gray-600 text-sm">Jul 01, 2020</div>
-          <h1 class="text-3xl font-bold">When will Kubernetes make sense</h1>
-        </div>
-        
 
-        <article class="font-body text-xl mt-6">
-          <p><strong>Update</strong>: Google Cloud Run seems like what I'm looking for. If you're in a similar boat, you should give it a try!</p>
+      <article class="font-body text-xl mt-6">
+        <p><strong>Update</strong>: Google Cloud Run seems like what I'm looking for. If you're in a similar boat, you should give it a try!</p>
 <p>Kubernetes is a complex beast. Once you get the hang of some basic features, it can be a nice way of deploying and running software. I've used GKE some years ago and more recently EKS. Despite being &quot;managed&quot; offerings, I found the amount of ad-hoc glue required to keep a cluster going to be just too much.</p>
 <p>In principle, Kubernetes is great. I stick to a very productive yet not too complex set of core features (pods / deployments / services). I only deploy stateless services on it – don't like having too many moving parts.</p>
 <p>A managed service should let me focus on running my workload. The initial provisioning of a cluster is usually straightforward. It's keeping it alive, getting auto-scaling to work, updating Kubernetes versions that make it a hassle.</p>
@@ -47,17 +51,16 @@
 <p>Perhaps AWS Fargate is what I'm looking for. Perhaps Azure, DigitalOcean or Linode have implemented something similar. The vendor that figures this out will finally give me a comfortable way of running Kubernetes. Until then, it'll be hard to justify the operational burden.</p>
 
 
-          
-            <hr>
-            <p>
-              You can follow me on Twitter 
-              <a href="https://twitter.com/_alpacaaa">@_alpacaaa</a>.
-            </p>
-          
-
-        </article>
+        
+        <hr />
+        <p>
+          You can follow me on Twitter
+          <a href="https://twitter.com/_alpacaaa">@_alpacaaa</a>.
+        </p>
+        
+      </article>
 
       
-    </main>
+    </div>
   </body>
 </html>

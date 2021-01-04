@@ -2,15 +2,16 @@
 <html>
   <head>
     <title>Scaling Teams with Micro Frontends - Marco Sampellegrini</title>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="/static/style.css">
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="/static/style.css" />
 
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
 
   <body class="antialiased text-dark">
-    <header class="max-w-2xl px-8 md:px-0 py-4 mx-auto ">
+    
+    <header class="max-w-2xl px-8 md:px-0 py-4 mx-auto">
       <div class="flex justify-between items-center">
         <div class="flex items-center">
           <div class="text-sm text-dark font-bold">
@@ -18,25 +19,28 @@
           </div>
         </div>
 
-        <nav class="text-xs text-gray-600 font-bold uppercase tracking-wide">
+        <nav
+          class="hidden text-xs text-gray-600 font-bold uppercase tracking-wide"
+        >
           <a href="/about/" class="hover:text-primary">About</a>
           <a href="/feed.xml" class="ml-3 hover:text-primary">RSS</a>
         </nav>
-
       </div>
     </header>
+    
 
-    <main class="pb-12 mx-auto">
+    <div class="pb-12 mx-auto">
+       
+      <div
+        class="max-w-2xl max-w-2xl px-8 md:px-0 pt-16 pb-10 mx-auto text-center"
+      >
+        <div class="text-gray-600 text-sm">Jun 08, 2019</div>
+        <h1 class="text-3xl font-bold">Scaling Teams with Micro Frontends</h1>
+      </div>
       
-        
-        <div class="max-w-2xl max-w-2xl px-8 md:px-0 pt-16 pb-10 mx-auto text-center">
-          <div class="text-gray-600 text-sm">Jun 08, 2019</div>
-          <h1 class="text-3xl font-bold">Scaling Teams with Micro Frontends</h1>
-        </div>
-        
 
-        <article class="font-body text-xl mt-6">
-          <p>Monoliths are problematic anywhere in the stack. Splitting up big monolithic
+      <article class="font-body text-xl mt-6">
+        <p>Monoliths are problematic anywhere in the stack. Splitting up big monolithic
 applications into microservices is a hot topic for Backend services, but huge
 Frontends exist and have their fair share of problems.</p>
 <p>A monolithic Frontend app might be quicker to build and easier to release,
@@ -120,17 +124,16 @@ realize a large monolithic React app is no fun to work on, then consider splitti
 it up into micro frontend applications.</p>
 
 
-          
-            <hr>
-            <p>
-              You can follow me on Twitter 
-              <a href="https://twitter.com/_alpacaaa">@_alpacaaa</a>.
-            </p>
-          
-
-        </article>
+        
+        <hr />
+        <p>
+          You can follow me on Twitter
+          <a href="https://twitter.com/_alpacaaa">@_alpacaaa</a>.
+        </p>
+        
+      </article>
 
       
-    </main>
+    </div>
   </body>
 </html>

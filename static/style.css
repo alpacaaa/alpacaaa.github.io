@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=PT+Serif&display=swap');
+@import url("https://fonts.googleapis.com/css?family=PT+Serif&display=swap");
 
 /*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
 
@@ -643,10 +643,6 @@ video {
   background-color: #c05621;
 }
 
-.border-primary{
-  border-color: #2484c1;
-}
-
 .rounded{
   border-radius: 0.25rem;
 }
@@ -657,6 +653,10 @@ video {
 
 .border{
   border-width: 1px;
+}
+
+.border-b-2{
+  border-bottom-width: 2px;
 }
 
 .border-t{
@@ -778,12 +778,24 @@ video {
   margin-bottom: 1.5rem;
 }
 
+.mt-8{
+  margin-top: 2rem;
+}
+
+.mb-8{
+  margin-bottom: 2rem;
+}
+
 .mt-12{
   margin-top: 3rem;
 }
 
 .ml-12{
   margin-left: 3rem;
+}
+
+.mt-16{
+  margin-top: 4rem;
 }
 
 .max-w-2xl{
@@ -826,6 +838,11 @@ video {
 .py-6{
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
+}
+
+.py-8{
+  padding-top: 2rem;
+  padding-bottom: 2rem;
 }
 
 .px-8{
@@ -907,10 +924,6 @@ video {
 
 .text-gray-900{
   color: #1a202c;
-}
-
-.text-primary{
-  color: #2484c1;
 }
 
 .hover\:text-primary:hover{
@@ -1073,7 +1086,15 @@ pre[class*="language-"] {
   font-style: italic;
 }
 
-html,body { background: #fefefe;
+html,
+body {
+  background: #fefefe;
+}
+
+.page-home p a {
+  color: #2484c1;
+  border-bottom-width: 2px;
+  border-color: #2484c1;
 }
 
 article {
@@ -1082,44 +1103,71 @@ article {
   white-space: normal;
 }
 
-article > * { margin-left: auto; margin-right: auto; max-width: 42rem; padding-left: 2rem; padding-right: 2rem;
+article > * {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 42rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
 }
 
-article p { margin-bottom: 1rem;
+article p {
+  margin-bottom: 1rem;
 }
 
-article p code { font-size: initial; background: #f7f7f7; padding: 0.25em 0.5em; border-radius: 2px;
+article p code {
+  font-size: initial;
+  background: #f7f7f7;
+  padding: 0.25em 0.5em;
+  border-radius: 2px;
 }
 
 article h3,
 article h4,
 article h5,
-article h6
-  { font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 700; margin: 1rem auto;
+article h6 {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-weight: 700;
+  margin: 1rem auto;
 }
 
-article h3 { font-size: 1.5rem;
+article h3 {
+  font-size: 1.5rem;
 }
 
-article h4 { font-size: 1.25rem;
+article h4 {
+  font-size: 1.25rem;
 }
 
-article h5 { font-size: 1.25rem;
+article h5 {
+  font-size: 1.25rem;
 }
 
-article h6 { font-size: 1.25rem;
+article h6 {
+  font-size: 1.25rem;
 }
 
-.text-dark { color: #333;
+.text-dark {
+  color: #333;
 }
 
-article a  { color: #2484c1; border-bottom-width: 1px; border-color: #2484c1;
+article a {
+  color: #2484c1;
+  border-bottom-width: 1px;
+  border-color: #2484c1;
 }
 
-article > pre { max-width: 48rem; font-size: 0.875rem; margin-top: 1rem; margin-bottom: 1rem; margin-left: auto; margin-right: auto;
+article > pre {
+  max-width: 48rem;
+  font-size: 0.875rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-article ul, article blockquote {
+article ul,
+article blockquote {
   padding-left: 2rem;
   margin-bottom: 0.75rem;
 }
@@ -1148,10 +1196,12 @@ article hr {
 }
 
 @media (min-width: 768px) {
-  article pre { border-radius: 0.25rem;
+  article pre {
+    border-radius: 0.25rem;
   }
 
-  article > * { padding: 0;
+  article > * {
+    padding: 0;
   }
 }
 
@@ -1162,6 +1212,10 @@ article hr {
     display: flex;
   }
 
+  .md\:mb-0{
+    margin-bottom: 0;
+  }
+
   .md\:px-0{
     padding-left: 0;
     padding-right: 0;
@@ -1170,6 +1224,10 @@ article hr {
   .md\:px-5{
     padding-left: 1.25rem;
     padding-right: 1.25rem;
+  }
+
+  .md\:w-1\/2{
+    width: 50%;
   }
 
   .md\:w-1\/3{
