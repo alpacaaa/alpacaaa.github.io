@@ -19,13 +19,25 @@
   <h3 class="text-4xl">Hey, I'm Marco.</h3>
   <div class="text-2xl mt-8">
     <p>
-      As a full stack developer I help small teams with everything from
+      Full stack developer helping small teams with everything from
       <strong>product development</strong> to
       <strong>cloud infrastructure</strong>.
       <br />
       <br />
       <a href="mailto:marco.sampellegrini@protonmail.com">Get in touch</a> to
-      work together on interesting projects.
+      work together.
+    </p>
+  </div>
+
+  <div
+    id="ita"
+    class="hidden mt-12 -mb-4 p-4 text-white font-sans rounded shadow-inner"
+    style="background: #046b99"
+  >
+    <p class="text-xl font-bold">🇮🇹 &nbsp; Parli Italiano?</p>
+    <p>
+      Certo! Se hai bisogno di aiuto con il tuo prossimo progetto, mandami una
+      email a <strong>marco.sampellegrini@protonmail.com</strong> e parliamone.
     </p>
   </div>
 
@@ -49,11 +61,11 @@
       <h3 class="font-sans font-bold text-lg mb-2">Projects</h3>
       <ul><li class="mb-4">
           <a class="border-b-2" href="https://github.com/alpacaaa/quad-ci"> Quad CI</a>
-          <p>CI server written in
-Haskell</p>
+          <p>Tiny CI server written in
+Haskell.</p>
         </li><li class="mb-4">
-          <a class="border-b-2" href="https://github.com/alpacaaa/zero-bullshit-haskell"> Zero Bullshit
-Haskell</a>
+          <a class="border-b-2" href="https://github.com/alpacaaa/zero-bullshit-haskell"> Zero
+Bullshit Haskell</a>
           <p>Learn Haskell, without the bullshit.</p>
         </li></ul>
     </section>
@@ -68,6 +80,20 @@ Haskell</a>
     </p>
   </footer>
 
+  <script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+      if (
+        document.readyState === "interactive" ||
+        document.readyState === "complete"
+      ) {
+        navigator.languages.forEach(function (lang) {
+          if (lang.startsWith("it")) {
+            document.getElementById("ita").classList.remove("hidden");
+          }
+        });
+      }
+    });
+  </script>
   
     </div>
   </body>

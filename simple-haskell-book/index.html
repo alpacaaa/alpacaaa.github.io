@@ -1,16 +1,46 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Simple Haskell Book – Coming soon</title>
+    <title>
+      Simple Haskell Book – Learn how to build Haskell applications. Coming soon
+    </title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="/static/style.css" />
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@_alpacaaa" />
+    <meta
+      name="twitter:title"
+      content="Learn how to build Haskell applications."
+    />
+    <meta
+      name="twitter:description"
+      content="Create a real application from scratch. Step by step, one type error at a time."
+    />
+    <meta
+      name="twitter:image"
+      content="https://alpacaaa.net/static/twitter-card.png"
+    />
+
     <style>
+      html {
+        scroll-behavior: smooth;
+      }
       .bg-primary {
         background: #f07a0b;
+      }
+      .hover\:bg-primary:hover {
+        background: #f07a0b;
+        border-color: #f07a0b;
+      }
+      .hover\:bg-orange-700:hover {
+        border-color: #c05621;
+      }
+      .border-primary {
+        border-color: #f07a0b;
       }
       p {
         margin-bottom: 1.5em;
@@ -28,7 +58,8 @@
         Learn how to build Haskell applications.
       </h1>
       <p class="text-2xl hidden">
-        A project-driven approach to learning Haskell and Functional Programming
+        A project-driven approach approach to learning Haskell and Functional
+        Programming
       </p>
     </header>
 
@@ -44,7 +75,7 @@
           <div class="text-2xl">
             <p>
               In this book we will create a
-              <strong>Continuous Integration Server</strong> together.
+              <strong>Continuous Integration Server</strong> from scratch.
             </p>
 
             <p>
@@ -54,11 +85,16 @@
 
             <p>Step by step. <strong>One type error at a time.</strong></p>
 
-            <p class="text-lg text-center hidden">
+            <p class="text-lg text-center md:text-left">
               <a
-                href="subscribe"
-                class="bg-primary hover:bg-orange-700 text-white font-bold ml-2 py-2 px-4 rounded no-underline focus:outline-none focus:shadow-outline"
-                >Get notified</a
+                href="#buy"
+                class="bg-primary text-white font-bold py-2 px-4 mr-2 rounded no-underline inline-block border border-primary hover:bg-orange-700"
+                >Stay updated</a
+              >
+              <a
+                href="#free-sample"
+                class="font-bold py-2 px-4 rounded no-underline inline-block rounded border border-primary hover:bg-primary hover:text-white"
+                >Read a sample</a
               >
             </p>
           </div>
@@ -89,6 +125,35 @@
           <strong>Simple Haskell</strong>, a subset of the language that I find
           strikes the right balance between features and ease of use.
         </p>
+
+        <div id="free-sample" class="flex flex-col items-center">
+          <div class="flex flex-col md:flex-row text-center">
+            <img
+              src="/static/1.png"
+              alt="Page from the book"
+              class="w-48 m-6 border shadow-xl rounded"
+            />
+            <img
+              src="/static/2.png"
+              alt="Page from the book"
+              class="w-48 m-6 border shadow-xl rounded"
+            />
+            <img
+              src="/static/3.png"
+              alt="Page from the book"
+              class="w-48 m-6 border shadow-xl rounded"
+            />
+          </div>
+          <div class="flex-1 mt-10">
+            <a
+              href="https://www.dropbox.com/s/usxrg06aipzc92w/haskell-book-sample.pdf?raw=1"
+              class="bg-primary hover:bg-orange-700 rounded text-white font-bold py-2 px-4"
+              target="_blank"
+            >
+              Get a chapter sample
+            </a>
+          </div>
+        </div>
       </section>
 
       <section class="my-12 text-lg">
@@ -129,8 +194,13 @@
       </section>
 
       <section class="text-center">
-        <img src="https://github.com/alpacaaa/quad-ci/raw/main/screenshot.jpg" alt="Quad CI screenshot" />
-        <p class="text-sm italic text-gray-600 pt-5">Running a build in Quad CI</p>
+        <img
+          src="https://raw.githubusercontent.com/alpacaaa/quad-ci/main/frontend/images/screenshot.jpg"
+          alt="Quad CI screenshot"
+        />
+        <p class="text-sm italic text-gray-600 pt-5">
+          Running a build in Quad CI
+        </p>
       </section>
 
       <section class="my-12 text-lg">
@@ -168,11 +238,10 @@
         </p>
       </section>
 
-      <div id="subscribe" class="my-12 py-6 text-center border-t border-b">
+      <div id="buy" class="my-12 py-6 text-center border-t border-b">
         <h3 class="text-2xl font-bold">Stay in the loop</h3>
         <p class="text-lg">
-          Subscribe to be notified when the book is ready. No spam, unsubscribe
-          any time.
+          Subscribe and I'll let you know when the book is ready!
         </p>
 
         <form
@@ -189,7 +258,7 @@
             placeholder="Your email address"
           />
 
-          <div style="position: absolute; left: -5000px;" aria-hidden="true">
+          <div style="position: absolute; left: -5000px" aria-hidden="true">
             <input
               type="text"
               name="b_afec48f956164ed4f7ef44b5e_d486253791"
@@ -205,6 +274,8 @@
             Subscribe
           </button>
         </form>
+
+        <p class="text-sm">No spam. Unsubscribe whenever.</p>
       </div>
 
       <div class="text-lg">
@@ -235,7 +306,9 @@
           You can follow me on Twitter
           <a href="https://twitter.com/_alpacaaa">@_alpacaaa</a>. Feel free to
           send me an email about the book (or anything else) at
-          <a href="mailto:babbonatale@alpacaaa.net">babbonatale@alpacaaa.net</a>.
+          <a href="mailto:marco.sampellegrini@protonmail.com"
+            >marco.sampellegrini@protonmail.com</a
+          >.
         </p>
         <p class="text-sm">
           In case you're wondering, the name Quad is a tribute to the popular CI
